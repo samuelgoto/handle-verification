@@ -1,5 +1,5 @@
 *.html
-!index.html
+!draft-goto-handle-verification.html
 *.pdf
 *.redxml
 *.swp

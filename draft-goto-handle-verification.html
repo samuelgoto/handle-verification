@@ -8,7 +8,7 @@
 <meta content="Sam Goto" name="author">
 <meta content="
        This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls an AT Protocol handle, such as  @alice.example , and presents it to a verifier. HVP uses the same three-party model as the Email Verification Protocol ( ), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer. 
-       This document defines the syntax of handles, the resolution of a handle to its DID, its DID document, and the issuer that vouches for it, the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ( ). 
+       This document defines the syntax of handles, the resolution of a handle to its DID, its DID document, and the issuers authorized to vouch for it, the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ( ). 
     " name="description">
 <meta content="xml2rfc 3.31.0" name="generator">
 <meta content="handle" name="keyword">
@@ -1257,7 +1257,7 @@ li > p:last-of-type:only-child {
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls an AT Protocol handle, such as <code>@alice.example</code>, and presents it to a verifier. HVP uses the same three-party model as the Email Verification Protocol (<span>[<a href="#EVP" class="cite xref">EVP</a>]</span>), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">This document defines the syntax of handles, the resolution of a handle to its DID, its DID document, and the issuer that vouches for it, the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>).<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This document defines the syntax of handles, the resolution of a handle to its DID, its DID document, and the issuers authorized to vouch for it, the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>).<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1387,7 +1387,10 @@ li > p:last-of-type:only-child {
                 <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-resolution-steps" class="internal xref">Resolution Steps</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-caching" class="internal xref">Caching</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-the-handleissuer-service" class="internal xref">The HandleIssuer Service</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-caching" class="internal xref">Caching</a></p>
 </li>
             </ul>
 </li>
@@ -1469,7 +1472,7 @@ li > p:last-of-type:only-child {
                 <p id="section-toc.1-1.13.2.4.1"><a href="#section-13.4" class="auto internal xref">13.4</a>.  <a href="#name-handle-reassignment" class="internal xref">Handle Reassignment</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.5">
-                <p id="section-toc.1-1.13.2.5.1"><a href="#section-13.5" class="auto internal xref">13.5</a>.  <a href="#name-trust-in-the-pds-and-its-au" class="internal xref">Trust in the PDS and Its Authorization Server</a></p>
+                <p id="section-toc.1-1.13.2.5.1"><a href="#section-13.5" class="auto internal xref">13.5</a>.  <a href="#name-multiple-authorized-issuers" class="internal xref">Multiple Authorized Issuers</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.6">
                 <p id="section-toc.1-1.13.2.6.1"><a href="#section-13.6" class="auto internal xref">13.6</a>.  <a href="#name-trust-in-the-plc-directory" class="internal xref">Trust in the PLC Directory</a></p>
@@ -1515,10 +1518,13 @@ li > p:last-of-type:only-child {
                 <p id="section-toc.1-1.15.2.4.1"><a href="#section-15.4" class="auto internal xref">15.4</a>.  <a href="#name-why-does-the-verifier-resol" class="internal xref">Why Does the Verifier Resolve the Handle?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.5">
-                <p id="section-toc.1-1.15.2.5.1"><a href="#section-15.5" class="auto internal xref">15.5</a>.  <a href="#name-why-restate-at-protocol-han" class="internal xref">Why Restate AT Protocol Handle Resolution?</a></p>
+                <p id="section-toc.1-1.15.2.5.1"><a href="#section-15.5" class="auto internal xref">15.5</a>.  <a href="#name-why-require-an-explicit-han" class="internal xref">Why Require an Explicit HandleIssuer Service?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.6">
-                <p id="section-toc.1-1.15.2.6.1"><a href="#section-15.6" class="auto internal xref">15.6</a>.  <a href="#name-why-are-email-addresses-out" class="internal xref">Why Are Email Addresses Out of Scope?</a></p>
+                <p id="section-toc.1-1.15.2.6.1"><a href="#section-15.6" class="auto internal xref">15.6</a>.  <a href="#name-why-restate-at-protocol-han" class="internal xref">Why Restate AT Protocol Handle Resolution?</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.7">
+                <p id="section-toc.1-1.15.2.7.1"><a href="#section-15.7" class="auto internal xref">15.7</a>.  <a href="#name-why-are-email-addresses-out" class="internal xref">Why Are Email Addresses Out of Scope?</a></p>
 </li>
             </ul>
 </li>
@@ -1599,10 +1605,10 @@ li > p:last-of-type:only-child {
             <strong>Syntax</strong> (<a href="#handles" class="auto internal xref">Section 4</a>): what a handle is, and how it is written and normalized.<a href="#section-1.2-2.1" class="pilcrow">¶</a>
 </li>
           <li id="section-1.2-2.2">
-            <strong>Resolution</strong> (<a href="#resolution" class="auto internal xref">Section 5</a>): how a handle is resolved to a DID and a DID document, checked against the handle, and turned into the issuer that vouches for it. Resolution is the handle resolution of the AT Protocol, followed by the discovery of the authorization server of the user's PDS, as in AT Protocol OAuth. That authorization server is the issuer, and opts in to HVP by publishing HVP metadata. No change to the user's DID document is needed.<a href="#section-1.2-2.2" class="pilcrow">¶</a>
+            <strong>Resolution</strong> (<a href="#resolution" class="auto internal xref">Section 5</a>): how a handle is resolved to a DID and a DID document, checked against the handle, and turned into the set of issuers that the user has authorized to vouch for it. Resolution is the handle resolution of the AT Protocol, plus a single <code>HandleIssuer</code> service that the user adds to their DID document to opt in to an issuer.<a href="#section-1.2-2.2" class="pilcrow">¶</a>
 </li>
           <li id="section-1.2-2.3">
-            <strong>Issuance and verification</strong>: how a browser obtains a Handle Verification Token (HVT) from the issuer, and how a verifier verifies it. This part reuses the token request, key binding, and token format of EVP.<a href="#section-1.2-2.3" class="pilcrow">¶</a>
+            <strong>Issuance and verification</strong>: how a browser obtains a Handle Verification Token (HVT) from an authorized issuer, and how a verifier verifies it. This part reuses the token request, key binding, and token format of EVP.<a href="#section-1.2-2.3" class="pilcrow">¶</a>
 </li>
         </ol>
 <p id="section-1.2-3">HVP keeps the privacy properties of EVP: the browser intermediates between the verifier and the issuer, so the issuer does not learn which verifier the user is signing in to.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
@@ -1652,15 +1658,15 @@ li > p:last-of-type:only-child {
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.5">DID document:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.6">The document that a DID resolves to. It lists the handle that the account claims and the account's services, including its PDS.<a href="#section-2-3.6" class="pilcrow">¶</a>
+        <dd style="margin-left: 1.5em" id="section-2-3.6">The document that a DID resolves to. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuers.<a href="#section-2-3.6" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-3.7">PDS:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.8">The personal data server that hosts the user's account, named by the <code>#atproto_pds</code> service of the DID document.<a href="#section-2-3.8" class="pilcrow">¶</a>
+<dt id="section-2-3.7">Authorized issuers:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.8">The set of issuer identifiers that the DID document names with <code>HandleIssuer</code> services (<a href="#handle-issuer" class="auto internal xref">Section 5.2</a>). Only an authorized issuer can issue an HVT that a verifier accepts for that handle.<a href="#section-2-3.8" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.9">Issuer:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.10">The authorization server of the user's PDS, when it supports HVP. It verifies that the user controls a handle and issues HVTs for it. An issuer is identified by an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 6.1</a>). See <a href="#issuers" class="auto internal xref">Section 6</a>.<a href="#section-2-3.10" class="pilcrow">¶</a>
+        <dd style="margin-left: 1.5em" id="section-2-3.10">A service that verifies the user controls a handle and issues HVTs for it. An issuer is identified by an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 6.1</a>).<a href="#section-2-3.10" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.11">Handle Verification Token (HVT):</dt>
@@ -1692,7 +1698,7 @@ li > p:last-of-type:only-child {
 3.2 Session Binding            |--- nonce -&gt;|                    |
                                |            |                    |
 3.3 Handle Resolution          |   [resolve handle: DID,         |
-                               |    DID document, PDS, issuer]   |
+                               |    DID document, issuers]       |
                                |            |                    |
 3.4 Token Request              |            |-- POST /issuance -&gt;|
                                |            |   (handle, ...)    |
@@ -1729,7 +1735,7 @@ li > p:last-of-type:only-child {
         <h3 id="name-handle-resolution">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-handle-resolution" class="section-name selfRef">Handle Resolution</a>
         </h3>
-<p id="section-3.3-1">The browser resolves the handle as described in <a href="#resolution" class="auto internal xref">Section 5</a>. Resolution produces the DID, the issuer, and the issuer's metadata (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>). From this point onward, the handle is never altered: it is sent byte-for-byte in the token request, and returned byte-for-byte in the <code>handle</code> claim.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">The browser resolves the handle as described in <a href="#resolution" class="auto internal xref">Section 5</a>. Resolution produces the DID and the set of authorized issuers. The browser selects one authorized issuer, and fetches its metadata (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>). If the handle has more than one authorized issuer, which one the browser selects is up to the browser API. From this point onward, the handle is never altered: it is sent byte-for-byte in the token request, and returned byte-for-byte in the <code>handle</code> claim.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="token-request">
@@ -1885,14 +1891,12 @@ alnum     = ALPHA / DIGIT
 <ul class="compact">
 <li class="compact" id="section-5-2.1">the user's <em>DID</em>, which is the subject of the HVT;<a href="#section-5-2.1" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-5-2.2">the user's <em>DID document</em>;<a href="#section-5-2.2" class="pilcrow">¶</a>
+        <li class="compact" id="section-5-2.2">the user's <em>DID document</em>; and<a href="#section-5-2.2" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-5-2.3">the user's <em>PDS</em>; and<a href="#section-5-2.3" class="pilcrow">¶</a>
-</li>
-        <li class="compact" id="section-5-2.4">the <em>issuer</em> for the handle, and its metadata.<a href="#section-5-2.4" class="pilcrow">¶</a>
+        <li class="compact" id="section-5-2.3">the set of <em>authorized issuers</em> for the handle.<a href="#section-5-2.3" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-5-3">It follows the handle resolution of the AT Protocol (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>, <span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>) and the authorization server discovery of AT Protocol OAuth (<span>[<a href="#ATPROTO-OAUTH" class="cite xref">ATPROTO-OAUTH</a>]</span>), which this section restates so that they can be used independently of that protocol.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-3">It follows the handle resolution of the AT Protocol (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>, <span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>), which this section restates so that it can be used independently of that protocol, and adds the extraction of authorized issuers.<a href="#section-5-3" class="pilcrow">¶</a></p>
 <p id="section-5-4">Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for a token; the verifier does it to check that the token was issued by an issuer that is authorized for the handle (<a href="#verification" class="auto internal xref">Section 10</a>).<a href="#section-5-4" class="pilcrow">¶</a></p>
 <div id="resolution-steps">
 <section id="section-5.1">
@@ -1932,13 +1936,7 @@ alnum     = ALPHA / DIGIT
             <p id="section-5.1-7.1.1"><strong>Back-link.</strong> Find the first element of the DID document's <code>alsoKnownAs</code> array that is <code>at://</code> followed by a string that satisfies <a href="#handle-syntax" class="auto internal xref">Section 4.1</a>. After normalization, that string MUST be identical to <em>handle</em>. Otherwise fail. This check ensures that a DID document cannot be claimed by a handle that it did not agree to.<a href="#section-5.1-7.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-7.2">
-            <p id="section-5.1-7.2.1"><strong>PDS.</strong> Find the service in the DID document whose <code>id</code> is <code>#atproto_pds</code> (or the DID followed by <code>#atproto_pds</code>) and whose <code>type</code> is <code>AtprotoPersonalDataServer</code>. Its <code>serviceEndpoint</code> is the PDS URL, which MUST be an <code>https</code> URL with no path, query, or fragment. If there is no such service, fail.<a href="#section-5.1-7.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-5.1-7.3">
-            <p id="section-5.1-7.3.1"><strong>Issuer.</strong> <code>GET</code> the PDS URL followed by <code>/.well-known/oauth-protected-resource</code>, the protected resource metadata of the PDS (<span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>). Its <code>resource</code> member MUST be identical to the PDS URL, and its <code>authorization_servers</code> member MUST be an array with exactly one element, which MUST be an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 6.1</a>). That element is the issuer. Otherwise fail.<a href="#section-5.1-7.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-5.1-7.4">
-            <p id="section-5.1-7.4.1"><strong>Opt-in.</strong> Fetch the issuer's HVP metadata (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>). If the issuer does not serve it, for example because the request returns a 404 (Not Found) response, the issuer does not support HVP, and resolution fails.<a href="#section-5.1-7.4.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-7.2.1"><strong>Issuers.</strong> The authorized issuers are the <code>serviceEndpoint</code> values of the DID document's <code>HandleIssuer</code> services (<a href="#handle-issuer" class="auto internal xref">Section 5.2</a>). If there are none, fail.<a href="#section-5.1-7.2.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-5.1-8">If any step fails, resolution fails.<a href="#section-5.1-8" class="pilcrow">¶</a></p>
@@ -1959,23 +1957,37 @@ alnum     = ALPHA / DIGIT
   -&gt; did:plc:bftbdgcbe4zclvpkboe4hleq
 GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
   -&gt; alsoKnownAs: ["at://samuelgoto.bsky.social"]
-     #atproto_pds: https://oyster.us-east.host.bsky.network
-GET https://oyster.us-east.host.bsky.network
-      /.well-known/oauth-protected-resource
-  -&gt; authorization_servers: ["https://bsky.social"]
-GET https://bsky.social/.well-known/handle-verification
-  -&gt; 404 (Not Found)
 </pre><a href="#section-5.1-12" class="pilcrow">¶</a>
 </div>
-<p id="section-5.1-13">so its DID is <code>did:plc:bftbdgcbe4zclvpkboe4hleq</code> and its issuer would be <code>https://bsky.social</code>, which does not support HVP yet. See <a href="#examples" class="auto internal xref">Appendix A</a>.<a href="#section-5.1-13" class="pilcrow">¶</a></p>
+<p id="section-5.1-13">so its DID is <code>did:plc:bftbdgcbe4zclvpkboe4hleq</code>. Its DID document has no <code>HandleIssuer</code> service yet, so it has no authorized issuers. See <a href="#examples" class="auto internal xref">Appendix A</a>.<a href="#section-5.1-13" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="handle-issuer">
+<section id="section-5.2">
+        <h3 id="name-the-handleissuer-service">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-the-handleissuer-service" class="section-name selfRef">The HandleIssuer Service</a>
+        </h3>
+<p id="section-5.2-1">A DID document names the issuers authorized to vouch for its handle with services (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>) whose <code>type</code> is <code>HandleIssuer</code> and whose <code>serviceEndpoint</code> is an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 6.1</a>):<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-5.2-2">
+<pre>{ "id": "#handle_issuer", "type": "HandleIssuer",
+  "serviceEndpoint": "https://issuer.example" }
+</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-3">A <code>HandleIssuer</code> service whose <code>serviceEndpoint</code> is not an issuer identifier, that is, not an <code>https</code> origin with no path, query, or fragment, is ignored. A DID document without any valid <code>HandleIssuer</code> service has no authorized issuers, and HVP cannot be used with its handle.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">Authorization is always explicit: resolution does not infer an issuer from the account's existing services, such as its PDS (the <code>#atproto_pds</code> service) or the PDS's authorization server. An issuer has to deploy HVP anyway, and requiring the DID document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See <a href="#why-opt-in" class="auto internal xref">Section 15.5</a>.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">A user who moves their account to another PDS, and whose issuer is that PDS, updates their <code>HandleIssuer</code> service as part of the move, in the same way as their <code>#atproto_pds</code> service.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<blockquote id="section-5.2-6">
+          <p id="section-5.2-6.1">Open Issue: The name of the DID service type, and whether it should be registered in the W3C DID Extensions registry.<a href="#section-5.2-6.1" class="pilcrow">¶</a></p>
+<p id="section-5.2-6.2">Open Issue: Whether the PDS named by the <code>#atproto_pds</code> service should be an authorized issuer by default, which would let HVP work with existing accounts without changing their DID documents, at the cost of the explicit opt-in.<a href="#section-5.2-6.2" class="pilcrow">¶</a></p>
+</blockquote>
 </section>
 </div>
 <div id="caching">
-<section id="section-5.2">
+<section id="section-5.3">
         <h3 id="name-caching">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-caching" class="section-name selfRef">Caching</a>
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-caching" class="section-name selfRef">Caching</a>
         </h3>
-<p id="section-5.2-1">A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying a token, because a user who moves their account to another PDS, or who loses control of their handle, expects the change to take effect promptly.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-1">A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying a token, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1985,15 +1997,13 @@ GET https://bsky.social/.well-known/handle-verification
       <h2 id="name-issuers">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-issuers" class="section-name selfRef">Issuers</a>
       </h2>
-<p id="section-6-1">The issuer for a handle is the authorization server of the user's PDS, as discovered by resolution (<a href="#resolution-steps" class="auto internal xref">Section 5.1</a>). This is the same authorization server that AT Protocol OAuth (<span>[<a href="#ATPROTO-OAUTH" class="cite xref">ATPROTO-OAUTH</a>]</span>) uses to authenticate the user and to authorize access to their repository. Each handle has exactly one issuer at a time.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">An authorization server opts in to HVP by serving HVP metadata (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>) and implementing the issuance endpoint. No change to the user's DID document is needed, so HVP works with existing accounts as soon as their PDS's authorization server supports it. When a user moves their account to another PDS, their issuer changes with it.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <div id="issuer-identifier">
 <section id="section-6.1">
         <h3 id="name-issuer-identifier">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-issuer-identifier" class="section-name selfRef">Issuer Identifier</a>
         </h3>
 <p id="section-6.1-1">An issuer identifier is an HTTPS origin: the string <code>https://</code> followed by a host, with no port, path, or trailing slash, for example <code>https://issuer.example</code>. This is the same form as the issuer identifier of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, and for the same reasons: it names the same thing as the <code>iss</code> claim of OpenID Connect and the issuer of <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span>, and it can be compared byte-for-byte.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">Every use of the issuer identity in this document (the issuer that resolution yields, the <code>iss</code> claim of the HVT, the <code>issuer</code> member of the metadata, and the base of the well-known URL) is this origin. Comparisons are byte-for-byte; no scheme defaulting, port normalization, or trailing-slash tolerance is applied.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">Every use of the issuer identity in this document (the authorized issuers that resolution yields, the <code>iss</code> claim of the HVT, the <code>issuer</code> member of the metadata, and the base of the well-known URL) is this origin. Comparisons are byte-for-byte; no scheme defaulting, port normalization, or trailing-slash tolerance is applied.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="issuer-metadata">
@@ -2081,7 +2091,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 </li>
         <li id="section-7-6.3">Checks that the cookies represent a signed-in user who controls the handle. If they do not, the issuer returns an <code>authentication_required</code> error.<a href="#section-7-6.3" class="pilcrow">¶</a>
 </li>
-        <li id="section-7-6.4">SHOULD resolve the handle (<a href="#resolution" class="auto internal xref">Section 5</a>) and check that it is the issuer and that the DID is the user's. An HVT from an issuer that is not the handle's issuer is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.<a href="#section-7-6.4" class="pilcrow">¶</a>
+        <li id="section-7-6.4">SHOULD resolve the handle (<a href="#resolution" class="auto internal xref">Section 5</a>) and check that it is one of the authorized issuers and that the DID is the user's. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.<a href="#section-7-6.4" class="pilcrow">¶</a>
 </li>
         <li id="section-7-6.5">Creates an HVT (<a href="#hvt-creation" class="auto internal xref">Section 8.2</a>) and returns it as the value of <code>issuance_token</code> in an <code>application/json</code> response, as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-7-6.5" class="pilcrow">¶</a>
 </li>
@@ -2206,13 +2216,15 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <li class="compact" id="section-8.3-2.4.2.1">the DID that resolution produces is byte-for-byte identical to <code>sub</code>; and<a href="#section-8.3-2.4.2.1" class="pilcrow">¶</a>
 </li>
               <li class="compact" id="section-8.3-2.4.2.2">
-                <code>iss</code> is byte-for-byte identical to the issuer that resolution produces.<a href="#section-8.3-2.4.2.2" class="pilcrow">¶</a>
+                <code>iss</code> is byte-for-byte identical to one of the authorized issuers.<a href="#section-8.3-2.4.2.2" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
-          <li id="section-8.3-2.5">Fetch the issuer's public keys from the <code>jwks_uri</code> of the issuer metadata that resolution produced, and verify the HVT's signature with the key identified by <code>kid</code>.<a href="#section-8.3-2.5" class="pilcrow">¶</a>
+          <li id="section-8.3-2.5">Fetch the issuer metadata from <code>iss</code> (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>).<a href="#section-8.3-2.5" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.3-2.6">Verify that <code>iat</code> is within an acceptable time window.<a href="#section-8.3-2.6" class="pilcrow">¶</a>
+          <li id="section-8.3-2.6">Fetch the issuer's public keys from its <code>jwks_uri</code>, and verify the HVT's signature with the key identified by <code>kid</code>.<a href="#section-8.3-2.6" class="pilcrow">¶</a>
+</li>
+          <li id="section-8.3-2.7">Verify that <code>iat</code> is within an acceptable time window.<a href="#section-8.3-2.7" class="pilcrow">¶</a>
 </li>
         </ol>
 <p id="section-8.3-3">The browser additionally verifies that <code>handle</code> is byte-for-byte identical to the handle it requested, and that <code>cnf.jwk</code> matches the public key it generated. The browser MAY reuse the results of the resolution it performed before the token request for step 4.<a href="#section-8.3-3" class="pilcrow">¶</a></p>
@@ -2285,12 +2297,12 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-resolution-traffic">
 <a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-resolution-traffic" class="section-name selfRef">Resolution Traffic</a>
         </h3>
-<p id="section-12.3-1">Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which queries only the email domain and is shared by every user of that domain, the first steps of HVP resolution are specific to one user: the DNS name queried is the handle itself, and the DID document is the user's. Any party that observes a resolution therefore learns which user is being resolved, and when.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
-<p id="section-12.3-2">When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, the PLC directory for <code>did:plc</code>, the user's PDS, and the issuer) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
-<p id="section-12.3-3">When the verifier resolves a handle to verify a token, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host or the user's PDS is operated by the user's issuer, as is common for hosted accounts, the issuer can correlate the tokens it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol reveals this anyway.<a href="#section-12.3-3" class="pilcrow">¶</a></p>
+<p id="section-12.3-1">Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: the DNS name queried is the handle itself, and the DID document is the user's. Any party that observes a resolution therefore learns which user is being resolved, and when.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
+<p id="section-12.3-2">When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host and, for <code>did:plc</code>, the PLC directory) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
+<p id="section-12.3-3">When the verifier resolves a handle to verify a token, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host is also the user's issuer, as is common for handles under a PDS's domain, the issuer can correlate the tokens it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol reveals this anyway.<a href="#section-12.3-3" class="pilcrow">¶</a></p>
 <p id="section-12.3-4">Verifiers can reduce this exposure by:<a href="#section-12.3-4" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-12.3-5.1">caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.2</a>, which helps for returning users but not for first sign-ins (the PDS's protected resource metadata and the issuer metadata are shared by every account on the same PDS, and can be cached across users);<a href="#section-12.3-5.1" class="pilcrow">¶</a>
+<li class="compact" id="section-12.3-5.1">caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.3</a>, which helps for returning users but not for first sign-ins;<a href="#section-12.3-5.1" class="pilcrow">¶</a>
 </li>
           <li class="compact" id="section-12.3-5.2">resolving through an intermediary shared by many verifiers, such as a resolution service reached over Oblivious HTTP (<span>[<a href="#RFC9458" class="cite xref">RFC9458</a>]</span>), so that the servers involved do not see the verifier's network address; and<a href="#section-12.3-5.2" class="pilcrow">¶</a>
 </li>
@@ -2320,7 +2332,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-resolution-is-not-authentic">
 <a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-resolution-is-not-authentic" class="section-name selfRef">Resolution Is Not Authentication</a>
         </h3>
-<p id="section-13.1-1">Resolution establishes which issuer is authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the verifier accepts, because the verifier resolves the handle itself.<a href="#section-13.1-1" class="pilcrow">¶</a></p>
+<p id="section-13.1-1">Resolution establishes which issuers are authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the verifier accepts, because the verifier resolves the handle itself.<a href="#section-13.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="dns-security">
@@ -2328,7 +2340,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-dns-spoofing">
 <a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-dns-spoofing" class="section-name selfRef">DNS Spoofing</a>
         </h3>
-<p id="section-13.2-1">Resolution relies on DNS <code>TXT</code> records, which are not authenticated unless DNSSEC is used. As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, spoofing the browser's DNS resolution discloses the handle to the attacker but yields no token the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the PDS and the issuer. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.<a href="#section-13.2-1" class="pilcrow">¶</a></p>
+<p id="section-13.2-1">Resolution relies on DNS <code>TXT</code> records, which are not authenticated unless DNSSEC is used. As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, spoofing the browser's DNS resolution discloses the handle to the attacker but yields no token the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuers. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.<a href="#section-13.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="domain-control-is-handle-control">
@@ -2347,12 +2359,12 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <p id="section-13.4-1">Handles can be reassigned: a domain can expire and be re-registered, and a hosting provider can let a new account take a handle that a deleted account used. Verifiers SHOULD identify accounts by the DID in the <code>sub</code> claim rather than by the <code>handle</code> claim. A DID survives changes of handle and of PDS, so a verifier that keys accounts on it is not affected when a handle moves to another account.<a href="#section-13.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="pds-trust">
+<div id="multiple-authorized-issuers">
 <section id="section-13.5">
-        <h3 id="name-trust-in-the-pds-and-its-au">
-<a href="#section-13.5" class="section-number selfRef">13.5. </a><a href="#name-trust-in-the-pds-and-its-au" class="section-name selfRef">Trust in the PDS and Its Authorization Server</a>
+        <h3 id="name-multiple-authorized-issuers">
+<a href="#section-13.5" class="section-number selfRef">13.5. </a><a href="#name-multiple-authorized-issuers" class="section-name selfRef">Multiple Authorized Issuers</a>
         </h3>
-<p id="section-13.5-1">The issuer of a handle is whichever authorization server the user's PDS names in its protected resource metadata. The PDS and its authorization server can therefore obtain or issue HVTs for any account that the PDS hosts, and the PDS can change which authorization server is the issuer by changing its metadata, without any change to the DID document. This is the trust that AT Protocol OAuth already places in them: the authorization server authenticates the user and authorizes access to the user's repository, and the PDS hosts that repository. HVP gives them no capability over the account that they do not already have. A user who does not trust their PDS or its authorization server to vouch for their handle can move their account to another PDS.<a href="#section-13.5-1" class="pilcrow">¶</a></p>
+<p id="section-13.5-1">A handle can have more than one authorized issuer, when its DID document has more than one <code>HandleIssuer</code> service. Any of them can issue an HVT that the verifier accepts, so the security of the handle is the security of the weakest of them. This is the user's choice.<a href="#section-13.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="plc-trust">
@@ -2360,15 +2372,15 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-trust-in-the-plc-directory">
 <a href="#section-13.6" class="section-number selfRef">13.6. </a><a href="#name-trust-in-the-plc-directory" class="section-name selfRef">Trust in the PLC Directory</a>
         </h3>
-<p id="section-13.6-1">For <code>did:plc</code> DIDs, resolution trusts the PLC directory to return the current DID document, and therefore the current PDS and issuer.<a href="#section-13.6-1" class="pilcrow">¶</a></p>
+<p id="section-13.6-1">For <code>did:plc</code> DIDs, resolution trusts the PLC directory to return the current DID document, and therefore the current authorized issuers.<a href="#section-13.6-1" class="pilcrow">¶</a></p>
 <p id="section-13.6-2">Operations in the PLC directory are signed by the account's rotation keys, and the DID is derived from the hash of the signed genesis operation, so the operation log is self-certifying: a resolving party can fetch the log and verify it instead of trusting the directory's rendering of the DID document. Doing so prevents the directory from forging operations, and therefore from naming an issuer that the account's rotation keys did not authorize.<a href="#section-13.6-2" class="pilcrow">¶</a></p>
 <p id="section-13.6-3">Verifying the log does not remove all trust in the directory. As the "PLC Server Trust Model" section of <span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span> states, some trust in the directory is required, and its attacks are limited to:<a href="#section-13.6-3" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-13.6-4.1">
-            <strong>Denial of service:</strong> rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that changes the account's <code>#atproto_pds</code> service, for example after the user moves to another PDS, so that a resolving party keeps accepting tokens from the previous PDS's authorization server and rejects tokens from the new one.<a href="#section-13.6-4.1" class="pilcrow">¶</a>
+            <strong>Denial of service:</strong> rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that removes a <code>HandleIssuer</code> service, so that a resolving party keeps accepting tokens from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.<a href="#section-13.6-4.1" class="pilcrow">¶</a>
 </li>
           <li class="compact" id="section-13.6-4.2">
-            <strong>Misordering:</strong> in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which PDS, and therefore which issuer, is in effect.<a href="#section-13.6-4.2" class="pilcrow">¶</a>
+            <strong>Misordering:</strong> in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which <code>HandleIssuer</code> services are in effect.<a href="#section-13.6-4.2" class="pilcrow">¶</a>
 </li>
         </ul>
 <p id="section-13.6-5">Neither the browser nor the verifier can detect these attacks. Operations are submitted only to the PLC directory, and are not published anywhere else that a resolving party could observe independently: mirrors and replicas obtain their operations from the directory, and the timestamps that the directory assigns to operations, on which the resolution of forks depends, are not signed. Both the browser and the verifier therefore place this trust in the PLC directory, and HVP inherits it for every handle that resolves to a <code>did:plc</code> DID. Handles that resolve to a <code>did:web</code> DID instead rely on the security of the DID's domain, as described in <a href="#dns-security" class="auto internal xref">Section 13.2</a>.<a href="#section-13.6-5" class="pilcrow">¶</a></p>
@@ -2522,20 +2534,29 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <p id="section-15.4-1">The verifier cannot trust the browser's resolution, which could be manipulated, and it cannot trust the issuer to say which handles it is authorized for. Resolving the handle itself is how the verifier checks that the issuer is authorized, in the same way that the verifier looks up the DNS delegation in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-15.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="why-restate-at-protocol-handle-resolution">
+<div id="why-opt-in">
 <section id="section-15.5">
-        <h3 id="name-why-restate-at-protocol-han">
-<a href="#section-15.5" class="section-number selfRef">15.5. </a><a href="#name-why-restate-at-protocol-han" class="section-name selfRef">Why Restate AT Protocol Handle Resolution?</a>
+        <h3 id="name-why-require-an-explicit-han">
+<a href="#section-15.5" class="section-number selfRef">15.5. </a><a href="#name-why-require-an-explicit-han" class="section-name selfRef">Why Require an Explicit HandleIssuer Service?</a>
         </h3>
-<p id="section-15.5-1">AT Protocol handles are DNS names with a resolution method that is useful outside the AT Protocol. Restating the resolution here makes HVP implementable from this document alone, by verifiers that do not otherwise implement the AT Protocol.<a href="#section-15.5-1" class="pilcrow">¶</a></p>
+<p id="section-15.5-1">An AT Protocol account already says who can authenticate it: the authorization server of its PDS. HVP could infer its issuer from it. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a PDS can add a <code>HandleIssuer</code> service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to sign them in with AT Protocol OAuth has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document.<a href="#section-15.5-1" class="pilcrow">¶</a></p>
+<p id="section-15.5-2">An explicit service also lets a user choose an issuer that is not their PDS.<a href="#section-15.5-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="why-restate-at-protocol-handle-resolution">
+<section id="section-15.6">
+        <h3 id="name-why-restate-at-protocol-han">
+<a href="#section-15.6" class="section-number selfRef">15.6. </a><a href="#name-why-restate-at-protocol-han" class="section-name selfRef">Why Restate AT Protocol Handle Resolution?</a>
+        </h3>
+<p id="section-15.6-1">AT Protocol handles are DNS names with a resolution method that is useful outside the AT Protocol. Restating the resolution here makes HVP implementable from this document alone, by verifiers that do not otherwise implement the AT Protocol.<a href="#section-15.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-are-email-addresses-out-of-scope">
-<section id="section-15.6">
+<section id="section-15.7">
         <h3 id="name-why-are-email-addresses-out">
-<a href="#section-15.6" class="section-number selfRef">15.6. </a><a href="#name-why-are-email-addresses-out" class="section-name selfRef">Why Are Email Addresses Out of Scope?</a>
+<a href="#section-15.7" class="section-number selfRef">15.7. </a><a href="#name-why-are-email-addresses-out" class="section-name selfRef">Why Are Email Addresses Out of Scope?</a>
         </h3>
-<p id="section-15.6-1">Email addresses already have a protocol of their own, <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which is further along, has implementations, and has requirements specific to email, such as private email addresses. A browser API can use EVP for email addresses and HVP for handles side by side.<a href="#section-15.6-1" class="pilcrow">¶</a></p>
+<p id="section-15.7-1">Email addresses already have a protocol of their own, <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which is further along, has implementations, and has requirements specific to email, such as private email addresses. A browser API can use EVP for email addresses and HVP for handles side by side.<a href="#section-15.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2636,12 +2657,8 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Well-Known Uniform Resource Identifiers (URIs)"</span>, <span class="seriesInfo">RFC 8615</span>, <span class="seriesInfo">DOI 10.17487/RFC8615</span>, <time datetime="2019-05" class="refDate">May 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8615">https://www.rfc-editor.org/info/rfc8615</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9421">[RFC9421]</dt>
-        <dd>
-<span class="refAuthor">Backman, A., Ed.</span>, <span class="refAuthor">Richer, J., Ed.</span>, and <span class="refAuthor">M. Sporny</span>, <span class="refTitle">"HTTP Message Signatures"</span>, <span class="seriesInfo">RFC 9421</span>, <span class="seriesInfo">DOI 10.17487/RFC9421</span>, <time datetime="2024-02" class="refDate">February 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9421">https://www.rfc-editor.org/info/rfc9421</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC9728">[RFC9728]</dt>
       <dd>
-<span class="refAuthor">Jones, M.B.</span>, <span class="refAuthor">Hunt, P.</span>, and <span class="refAuthor">A. Parecki</span>, <span class="refTitle">"OAuth 2.0 Protected Resource Metadata"</span>, <span class="seriesInfo">RFC 9728</span>, <span class="seriesInfo">DOI 10.17487/RFC9728</span>, <time datetime="2025-04" class="refDate">April 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9728">https://www.rfc-editor.org/info/rfc9728</a>&gt;</span>. </dd>
+<span class="refAuthor">Backman, A., Ed.</span>, <span class="refAuthor">Richer, J., Ed.</span>, and <span class="refAuthor">M. Sporny</span>, <span class="refTitle">"HTTP Message Signatures"</span>, <span class="seriesInfo">RFC 9421</span>, <span class="seriesInfo">DOI 10.17487/RFC9421</span>, <time datetime="2024-02" class="refDate">February 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9421">https://www.rfc-editor.org/info/rfc9421</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -2714,7 +2731,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
       <h2 id="name-examples">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
       </h2>
-<p id="appendix-A-1">This appendix shows the resolution of real handles at the time of writing. Neither issuer supports HVP yet, so each example ends where the issuer would opt in by serving HVP metadata. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">This appendix shows the resolution of real handles at the time of writing. Neither publishes a <code>HandleIssuer</code> service yet, so each example shows the service that would be added to opt in to a hypothetical issuer. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div id="handle-on-a-self-hosted-pds">
 <section id="appendix-A.1">
         <h3 id="name-handle-on-a-self-hosted-pds">
@@ -2725,13 +2742,11 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 DNS TXT _atproto.sgo.to -&gt; "did=did:plc:thaoj4hhvraos7y6v3yog7re"
 DID document (plc.directory):
   alsoKnownAs: ["at://sgo.to"]                  (back-link ok)
-  #atproto_pds: https://pds.sgo.to
 DID:           did:plc:thaoj4hhvraos7y6v3yog7re
-GET https://pds.sgo.to/.well-known/oauth-protected-resource
-  authorization_servers: ["https://pds.sgo.to"]
-Issuer:        https://pds.sgo.to
-To opt in, the issuer serves:
-  https://pds.sgo.to/.well-known/handle-verification
+To opt in, add to the DID document's services:
+  { "id": "#handle_issuer", "type": "HandleIssuer",
+    "serviceEndpoint": "https://pds.sgo.to" }
+Issuers:       https://pds.sgo.to
 </pre><a href="#appendix-A.1-1" class="pilcrow">¶</a>
 </div>
 </section>
@@ -2747,14 +2762,11 @@ GET https://samuelgoto.bsky.social/.well-known/atproto-did
   -&gt; did:plc:bftbdgcbe4zclvpkboe4hleq
 DID document (plc.directory):
   alsoKnownAs: ["at://samuelgoto.bsky.social"]  (back-link ok)
-  #atproto_pds: https://oyster.us-east.host.bsky.network
 DID:           did:plc:bftbdgcbe4zclvpkboe4hleq
-GET https://oyster.us-east.host.bsky.network
-      /.well-known/oauth-protected-resource
-  authorization_servers: ["https://bsky.social"]
-Issuer:        https://bsky.social
-To opt in, the issuer serves:
-  https://bsky.social/.well-known/handle-verification
+To opt in, add to the DID document's services:
+  { "id": "#handle_issuer", "type": "HandleIssuer",
+    "serviceEndpoint": "https://bsky.social" }
+Issuers:       https://bsky.social
 </pre><a href="#appendix-A.2-1" class="pilcrow">¶</a>
 </div>
 </section>
@@ -2771,7 +2783,7 @@ To opt in, the issuer serves:
 <ul class="compact">
 <li class="compact" id="appendix-B-3.1">The browser API decides which handles to offer, lets the user register and select them, and delivers the token to the verifier. HVP defines what a handle is, how it is resolved, and how the token is issued and verified.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="appendix-B-3.2">The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. For AT Protocol handles, it could instead use the syntax and resolution of this document, so that the identity provider of a handle is its issuer.<a href="#appendix-B-3.2" class="pilcrow">¶</a>
+        <li class="compact" id="appendix-B-3.2">The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. For AT Protocol handles, it could instead use the syntax and resolution of this document, so that the identity provider of a handle is one of its authorized issuers.<a href="#appendix-B-3.2" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="appendix-B-3.3">A verifier request for a "federation" in that API could correspond to HVP, and the token that the verifier receives could be an HVT+KB.<a href="#appendix-B-3.3" class="pilcrow">¶</a>
 </li>

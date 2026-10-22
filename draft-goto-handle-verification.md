@@ -48,6 +48,16 @@ organization = "Google"
   </front>
 </reference>
 
+<reference anchor="EMAIL-VERIFICATION-API" target="https://github.com/WICG/email-verification-protocol">
+  <front>
+    <title>Email Verification API</title>
+    <author>
+      <organization>W3C Web Incubator Community Group</organization>
+    </author>
+    <date year="2026"/>
+  </front>
+</reference>
+
 <reference anchor="FEDCM" target="https://w3c-fedid.github.io/FedCM/">
   <front>
     <title>Federated Credential Management API</title>
@@ -164,8 +174,9 @@ Email shows that an open federation can still be verified. A verifier accepts an
 A website that wants to let users sign in with an AT Protocol handle today uses AT Protocol OAuth ([@?ATPROTO-OAUTH]). It presents a text field for the user to type their handle, resolves the handle to a DID and PDS, discovers the PDS's authorization server, and redirects the user to it. This works, but:
 
 - the user has to know and type their handle, which experience with OpenID 2.0 suggests many users do not;
-- the website is registered with, and visible to, the user's authorization server, which learns every site the user signs in to; and
-- the browser, which often already knows the user's handles, has no role in the flow.
+- the website is identified to the user's authorization server, which learns every site the user signs in to;
+- the browser, which often already knows the user's handles, has no role in the flow, unlike in [@!EVP] and the Email Verification API ([@?EMAIL-VERIFICATION-API]), which let the browser integrate verification into autofill and form submission, into a JavaScript API, or into FedCM ([@?FEDCM]); and
+- each authorization server and each website implements the protocol independently, and nothing between them checks the result. An authorization server learns whether it interoperates with a website only by testing against that website, so interoperability across many authorization servers and many websites rests on conformance testing and certification rather than on the protocol itself.
 
 ## Solution
 
@@ -710,6 +721,8 @@ Other ecosystems can be addressed by their own documents. The parts of HVP that 
 
 AT Protocol OAuth ([@?ATPROTO-OAUTH]) lets a verifier sign a user in, and grants it access to the user's repository. But it asks the verifier to present a text field for the user to type a handle, and it reveals the verifier to the user's authorization server. HVP lets the browser offer the user's handles without the user typing them, and keeps the verifier hidden from the issuer. A verifier that needs access to the user's repository, and not only proof that the user controls a handle, still uses AT Protocol OAuth.
 
+HVP also changes how interoperability is achieved. In OAuth, the authorization server's response goes to the client, and nothing in between checks it: whether an authorization server interoperates with a given client is discovered by testing that pair, and ecosystems with many of each rely on conformance test suites and certification programs. In HVP, the browser verifies every HVT ((#hvt-verification)) with the same checks that a verifier performs, before any verifier receives it, and does not deliver an HVT that fails. An issuer that develops against a browser therefore has an independent verifier in its development loop, and an HVT that the browser accepts is accepted by any verifier that implements (#verification), unless the handle's resolution changes in between. Each issuer and each verifier needs to interoperate only with the browser's verification, rather than each issuer with each verifier.
+
 ## Why Generalize EVP?
 
 EVP already solves the same problem for email addresses, with a three-party model, proof of possession of a browser key, and a token format compatible with SD-JWT. Reusing it lets verifiers and issuers share code and keys between the two, and keeps the privacy properties. An alternative would be to profile OpenID Connect, but OpenID Connect's redirect-based flow reveals the verifier to the provider.
@@ -784,7 +797,7 @@ Issuers:       https://bsky.social
 
 *This section is non-normative.*
 
-The W3C IdP Registration API ([@?IDP-REGISTRATION]) extends FedCM ([@?FEDCM]) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the W3C Email Verification API relates to EVP:
+The W3C IdP Registration API ([@?IDP-REGISTRATION]) extends FedCM ([@?FEDCM]) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API ([@?EMAIL-VERIFICATION-API]) relates to EVP:
 
 - The browser API decides which handles to offer, lets the user register and select them, and delivers the token to the verifier. HVP defines what a handle is, how it is resolved, and how the token is issued and verified.
 - The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. For AT Protocol handles, it could instead use the syntax and resolution of this document, so that the identity provider of a handle is one of its authorized issuers.

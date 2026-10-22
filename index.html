@@ -1585,9 +1585,11 @@ li > p:last-of-type:only-child {
 <ul class="compact">
 <li class="compact" id="section-1.1-2.1">the user has to know and type their handle, which experience with OpenID 2.0 suggests many users do not;<a href="#section-1.1-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-1.1-2.2">the website is registered with, and visible to, the user's authorization server, which learns every site the user signs in to; and<a href="#section-1.1-2.2" class="pilcrow">¶</a>
+          <li class="compact" id="section-1.1-2.2">the website is identified to the user's authorization server, which learns every site the user signs in to;<a href="#section-1.1-2.2" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-1.1-2.3">the browser, which often already knows the user's handles, has no role in the flow.<a href="#section-1.1-2.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-1.1-2.3">the browser, which often already knows the user's handles, has no role in the flow, unlike in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> and the Email Verification API (<span>[<a href="#EMAIL-VERIFICATION-API" class="cite xref">EMAIL-VERIFICATION-API</a>]</span>), which let the browser integrate verification into autofill and form submission, into a JavaScript API, or into FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>); and<a href="#section-1.1-2.3" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-1.1-2.4">each authorization server and each website implements the protocol independently, and nothing between them checks the result. An authorization server learns whether it interoperates with a website only by testing against that website, so interoperability across many authorization servers and many websites rests on conformance testing and certification rather than on the protocol itself.<a href="#section-1.1-2.4" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>
@@ -2512,6 +2514,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-why-not-at-protocol-oauth" class="section-name selfRef">Why Not AT Protocol OAuth?</a>
         </h3>
 <p id="section-15.2-1">AT Protocol OAuth (<span>[<a href="#ATPROTO-OAUTH" class="cite xref">ATPROTO-OAUTH</a>]</span>) lets a verifier sign a user in, and grants it access to the user's repository. But it asks the verifier to present a text field for the user to type a handle, and it reveals the verifier to the user's authorization server. HVP lets the browser offer the user's handles without the user typing them, and keeps the verifier hidden from the issuer. A verifier that needs access to the user's repository, and not only proof that the user controls a handle, still uses AT Protocol OAuth.<a href="#section-15.2-1" class="pilcrow">¶</a></p>
+<p id="section-15.2-2">HVP also changes how interoperability is achieved. In OAuth, the authorization server's response goes to the client, and nothing in between checks it: whether an authorization server interoperates with a given client is discovered by testing that pair, and ecosystems with many of each rely on conformance test suites and certification programs. In HVP, the browser verifies every HVT (<a href="#hvt-verification" class="auto internal xref">Section 8.3</a>) with the same checks that a verifier performs, before any verifier receives it, and does not deliver an HVT that fails. An issuer that develops against a browser therefore has an independent verifier in its development loop, and an HVT that the browser accepts is accepted by any verifier that implements <a href="#verification" class="auto internal xref">Section 10</a>, unless the handle's resolution changes in between. Each issuer and each verifier needs to interoperate only with the browser's verification, rather than each issuer with each verifier.<a href="#section-15.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-generalize-evp">
@@ -2695,6 +2698,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <dd>
 <span class="refAuthor">W3C Credentials Community Group</span>, <span class="refTitle">"did:web Method Specification"</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://w3c-ccg.github.io/did-method-web/">https://w3c-ccg.github.io/did-method-web/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="EMAIL-VERIFICATION-API">[EMAIL-VERIFICATION-API]</dt>
+        <dd>
+<span class="refAuthor">W3C Web Incubator Community Group</span>, <span class="refTitle">"Email Verification API"</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://github.com/WICG/email-verification-protocol">https://github.com/WICG/email-verification-protocol</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="FEDCM">[FEDCM]</dt>
         <dd>
 <span class="refAuthor">W3C Federated Identity Working Group</span>, <span class="refTitle">"Federated Credential Management API"</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://w3c-fedid.github.io/FedCM/">https://w3c-fedid.github.io/FedCM/</a>&gt;</span>. </dd>
@@ -2771,7 +2778,7 @@ Issuers:       https://bsky.social
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-relationship-to-idp-registr" class="section-name selfRef">Relationship to IdP Registration</a>
       </h2>
 <p id="appendix-B-1"><em>This section is non-normative.</em><a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) extends FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the W3C Email Verification API relates to EVP:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) extends FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API (<span>[<a href="#EMAIL-VERIFICATION-API" class="cite xref">EMAIL-VERIFICATION-API</a>]</span>) relates to EVP:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="appendix-B-3.1">The browser API decides which handles to offer, lets the user register and select them, and delivers the token to the verifier. HVP defines what a handle is, how it is resolved, and how the token is issued and verified.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
 </li>

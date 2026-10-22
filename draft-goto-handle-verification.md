@@ -592,9 +592,23 @@ AT Protocol handles and DIDs are public by design: they are meant to be shared, 
 
 ## Resolution Traffic
 
-Resolution consists of DNS queries and unauthenticated HTTPS requests. When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host and, for `did:plc`, the PLC directory) can observe that someone is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.
+Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of [@!EVP], which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: the DNS name queried is the handle itself, and the DID document is the user's. Any party that observes a resolution therefore learns which user is being resolved, and when.
 
-When the verifier resolves a handle to verify a token, the same servers can observe that the verifier is checking the handle at that time. This is a difference from [@!EVP], where the verifier's lookup is a DNS query for the email domain only. The servers learn that the user signed in to the verifier, which is often information they would learn anyway once the verifier interacts with the user's account in the AT Protocol. Verifiers can reduce this by caching resolution results within the limits of (#caching).
+When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host and, for `did:plc`, the PLC directory) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.
+
+When the verifier resolves a handle to verify a token, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host is also the user's issuer, as is common for handles under a PDS's domain, the issuer can correlate the tokens it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol reveals this anyway.
+
+Verifiers can reduce this exposure by:
+
+- caching resolution results within the limits of (#caching), which helps for returning users but not for first sign-ins;
+- resolving through an intermediary shared by many verifiers, such as a resolution service reached over Oblivious HTTP ([@?RFC9458]), so that the servers involved do not see the verifier's network address; and
+- for `did:plc` DIDs, maintaining a local copy of the PLC directory, as described below.
+
+A browser or verifier can remove the PLC directory from per-sign-in traffic entirely by maintaining a local copy of the directory, ingested through its bulk export endpoint and kept current through its streaming endpoint ([@?DID-PLC]), and verifying each operation's signatures as it is ingested. Resolving a `did:plc` DID then consults the local copy and sends no request that reveals which DID is being resolved. This has limits:
+
+- It applies only to the DID-to-DID-document step. The handle-to-DID step still queries DNS records and a well-known URL of the handle's host, which observe the resolution as described above.
+- It does not change the trust placed in the PLC directory ((#plc-trust)): the local copy contains only what the directory chose to publish, in the order it chose.
+- It requires storing and continuously ingesting every operation for every DID, which is a significant cost, particularly for browsers on constrained devices and for small verifiers.
 
 # Security Considerations
 
@@ -618,7 +632,7 @@ Handles can be reassigned: a domain can expire and be re-registered, and a hosti
 
 A handle can have more than one authorized issuer, when its DID document has more than one `HandleIssuer` service. Any of them can issue an HVT that the verifier accepts, so the security of the handle is the security of the weakest of them. This is the user's choice.
 
-## Trust in the PLC Directory
+## Trust in the PLC Directory {#plc-trust}
 
 For `did:plc` DIDs, resolution trusts the PLC directory to return the current DID document, and therefore the current authorized issuers.
 

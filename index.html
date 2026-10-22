@@ -2294,8 +2294,27 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-resolution-traffic">
 <a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-resolution-traffic" class="section-name selfRef">Resolution Traffic</a>
         </h3>
-<p id="section-12.3-1">Resolution consists of DNS queries and unauthenticated HTTPS requests. When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host and, for <code>did:plc</code>, the PLC directory) can observe that someone is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
-<p id="section-12.3-2">When the verifier resolves a handle to verify a token, the same servers can observe that the verifier is checking the handle at that time. This is a difference from <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, where the verifier's lookup is a DNS query for the email domain only. The servers learn that the user signed in to the verifier, which is often information they would learn anyway once the verifier interacts with the user's account in the AT Protocol. Verifiers can reduce this by caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.3</a>.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
+<p id="section-12.3-1">Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: the DNS name queried is the handle itself, and the DID document is the user's. Any party that observes a resolution therefore learns which user is being resolved, and when.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
+<p id="section-12.3-2">When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host and, for <code>did:plc</code>, the PLC directory) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
+<p id="section-12.3-3">When the verifier resolves a handle to verify a token, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host is also the user's issuer, as is common for handles under a PDS's domain, the issuer can correlate the tokens it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol reveals this anyway.<a href="#section-12.3-3" class="pilcrow">¶</a></p>
+<p id="section-12.3-4">Verifiers can reduce this exposure by:<a href="#section-12.3-4" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-12.3-5.1">caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.3</a>, which helps for returning users but not for first sign-ins;<a href="#section-12.3-5.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-12.3-5.2">resolving through an intermediary shared by many verifiers, such as a resolution service reached over Oblivious HTTP (<span>[<a href="#RFC9458" class="cite xref">RFC9458</a>]</span>), so that the servers involved do not see the verifier's network address; and<a href="#section-12.3-5.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-12.3-5.3">for <code>did:plc</code> DIDs, maintaining a local copy of the PLC directory, as described below.<a href="#section-12.3-5.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-12.3-6">A browser or verifier can remove the PLC directory from per-sign-in traffic entirely by maintaining a local copy of the directory, ingested through its bulk export endpoint and kept current through its streaming endpoint (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>), and verifying each operation's signatures as it is ingested. Resolving a <code>did:plc</code> DID then consults the local copy and sends no request that reveals which DID is being resolved. This has limits:<a href="#section-12.3-6" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-12.3-7.1">It applies only to the DID-to-DID-document step. The handle-to-DID step still queries DNS records and a well-known URL of the handle's host, which observe the resolution as described above.<a href="#section-12.3-7.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-12.3-7.2">It does not change the trust placed in the PLC directory (<a href="#plc-trust" class="auto internal xref">Section 13.6</a>): the local copy contains only what the directory chose to publish, in the order it chose.<a href="#section-12.3-7.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-12.3-7.3">It requires storing and continuously ingesting every operation for every DID, which is a significant cost, particularly for browsers on constrained devices and for small verifiers.<a href="#section-12.3-7.3" class="pilcrow">¶</a>
+</li>
+        </ul>
 </section>
 </div>
 </section>
@@ -2345,7 +2364,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <p id="section-13.5-1">A handle can have more than one authorized issuer, when its DID document has more than one <code>HandleIssuer</code> service. Any of them can issue an HVT that the verifier accepts, so the security of the handle is the security of the weakest of them. This is the user's choice.<a href="#section-13.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="trust-in-the-plc-directory">
+<div id="plc-trust">
 <section id="section-13.6">
         <h3 id="name-trust-in-the-plc-directory">
 <a href="#section-13.6" class="section-number selfRef">13.6. </a><a href="#name-trust-in-the-plc-directory" class="section-name selfRef">Trust in the PLC Directory</a>
@@ -2689,8 +2708,12 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <span class="refAuthor">Rosenbaum, R.</span>, <span class="refTitle">"Using the Domain Name System To Store Arbitrary String Attributes"</span>, <span class="seriesInfo">RFC 1464</span>, <span class="seriesInfo">DOI 10.17487/RFC1464</span>, <time datetime="1993-05" class="refDate">May 1993</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc1464">https://www.rfc-editor.org/info/rfc1464</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC3696">[RFC3696]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Klensin, J.</span>, <span class="refTitle">"Application Techniques for Checking and Transformation of Names"</span>, <span class="seriesInfo">RFC 3696</span>, <span class="seriesInfo">DOI 10.17487/RFC3696</span>, <time datetime="2004-02" class="refDate">February 2004</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc3696">https://www.rfc-editor.org/info/rfc3696</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9458">[RFC9458]</dt>
+      <dd>
+<span class="refAuthor">Thomson, M.</span> and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Oblivious HTTP"</span>, <span class="seriesInfo">RFC 9458</span>, <span class="seriesInfo">DOI 10.17487/RFC9458</span>, <time datetime="2024-01" class="refDate">January 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9458">https://www.rfc-editor.org/info/rfc9458</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>

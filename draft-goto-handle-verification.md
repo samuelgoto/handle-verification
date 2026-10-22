@@ -192,6 +192,8 @@ HVP keeps the privacy properties of EVP: the browser intermediates between the v
 
 This document covers AT Protocol handles only. Other ecosystems that identify users with human-readable identifiers have their own notions of identity documents and their own resolution rules, and are expected to be addressed by separate documents that reuse the same EVP-based issuance and verification. Email addresses are verified with [@!EVP]. See (#why-atproto).
 
+HVP provides verified identification, for example to sign a user in: it tells the verifier that the user controls a handle, and which DID that handle resolves to. It does not provide authorization: an HVT grants no access to the user's PDS, and cannot be used to read from or write to the user's repository or to act on the user's behalf. A verifier that needs such access continues to use AT Protocol OAuth ([@?ATPROTO-OAUTH]), and can use HVP and OAuth together, for example by signing the user in with HVP and requesting OAuth authorization later, only when it needs it. See (#why-not-oauth).
+
 ## Relationship to EVP
 
 HVP reuses the mechanics of [@!EVP] (the token request, key binding, and token format) with the substitutions described in this document. A browser API can offer both, using EVP for email addresses and HVP for AT Protocol handles.
@@ -717,7 +719,7 @@ A single document could cover several ecosystems at once, with a common notation
 
 Other ecosystems can be addressed by their own documents. The parts of HVP that are not specific to the AT Protocol (the issuer identifier and metadata, the token request, the token format, key binding, and verification) are the parts it takes from [@!EVP], and are equally reusable by them.
 
-## Why Not AT Protocol OAuth?
+## Why Not AT Protocol OAuth? {#why-not-oauth}
 
 AT Protocol OAuth ([@?ATPROTO-OAUTH]) lets a verifier sign a user in, and grants it access to the user's repository. But it asks the verifier to present a text field for the user to type a handle, and it reveals the verifier to the user's authorization server. HVP lets the browser offer the user's handles without the user typing them, and keeps the verifier hidden from the issuer. A verifier that needs access to the user's repository, and not only proof that the user controls a handle, still uses AT Protocol OAuth.
 

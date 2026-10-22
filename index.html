@@ -1620,6 +1620,7 @@ li > p:last-of-type:only-child {
 <a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-scope" class="section-name selfRef">Scope</a>
         </h3>
 <p id="section-1.3-1">This document covers AT Protocol handles only. Other ecosystems that identify users with human-readable identifiers have their own notions of identity documents and their own resolution rules, and are expected to be addressed by separate documents that reuse the same EVP-based issuance and verification. Email addresses are verified with <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>. See <a href="#why-atproto" class="auto internal xref">Section 15.1</a>.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<p id="section-1.3-2">HVP provides verified identification, for example to sign a user in: it tells the verifier that the user controls a handle, and which DID that handle resolves to. It does not provide authorization: an HVT grants no access to the user's PDS, and cannot be used to read from or write to the user's repository or to act on the user's behalf. A verifier that needs such access continues to use AT Protocol OAuth (<span>[<a href="#ATPROTO-OAUTH" class="cite xref">ATPROTO-OAUTH</a>]</span>), and can use HVP and OAuth together, for example by signing the user in with HVP and requesting OAuth authorization later, only when it needs it. See <a href="#why-not-oauth" class="auto internal xref">Section 15.2</a>.<a href="#section-1.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="relationship-to-evp">
@@ -2508,7 +2509,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <p id="section-15.1-2">Other ecosystems can be addressed by their own documents. The parts of HVP that are not specific to the AT Protocol (the issuer identifier and metadata, the token request, the token format, key binding, and verification) are the parts it takes from <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, and are equally reusable by them.<a href="#section-15.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="why-not-at-protocol-oauth">
+<div id="why-not-oauth">
 <section id="section-15.2">
         <h3 id="name-why-not-at-protocol-oauth">
 <a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-why-not-at-protocol-oauth" class="section-name selfRef">Why Not AT Protocol OAuth?</a>

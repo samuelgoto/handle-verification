@@ -247,7 +247,7 @@ Step                       Verifier     Browser              Issuer
                                |    DID document, issuer]        |
                                |            |                    |
 3.4 Token Request              |            |-- POST /issuance ->|
-                               |            |   (handle, ...)    |
+                               |            |   (did, ...)       |
                                |            |                    |
 3.5 HVT Issuance               |            |<------- HVT -------|
                                |            |                    |
@@ -271,7 +271,7 @@ As in [@!EVP]: the verifier generates a cryptographically random nonce with at l
 
 ## Handle Resolution {#flow-resolution}
 
-The browser resolves the handle as described in (#resolution). Resolution produces the DID and the authorized issuer. The browser fetches the issuer's metadata ((#issuer-metadata)). From this point onward, the handle is never altered: it is sent byte-for-byte in the token request, and returned byte-for-byte in the `handle` claim.
+The browser resolves the handle as described in (#resolution). Resolution produces the DID and the authorized issuer. The browser fetches the issuer's metadata ((#issuer-metadata)). From this point onward, the DID is never altered: it is sent byte-for-byte in the token request, and returned byte-for-byte in the `sub` claim.
 
 ## Token Request {#token-request}
 
@@ -283,7 +283,7 @@ The issuer verifies the request, checks that the browser's cookies represent a s
 
 ## KB Creation {#kb-creation}
 
-The browser verifies the HVT ((#hvt-verification)), additionally confirming that the `handle` claim is byte-for-byte identical to the handle it requested and that the `cnf.jwk` claim matches the public key it generated. It then creates a KB-JWT and combines it with the HVT as described in (#kb).
+The browser verifies the HVT ((#hvt-verification)), additionally confirming that the `sub` claim is byte-for-byte identical to the DID it requested and that the `cnf.jwk` claim matches the public key it generated. It then creates a KB-JWT and combines it with the HVT as described in (#kb).
 
 ## Token Presentation {#token-presentation}
 
@@ -330,7 +330,7 @@ The following top-level domains are syntactically valid in a handle, but a handl
 
 ## Normalization {#normalization}
 
-Handles are case-insensitive. The *normalized* form of a handle is the handle converted to ASCII lowercase. Every handle in this protocol (in the token request, in the `handle` claim, and in comparisons) is in normalized form, and every comparison of handles is a byte-for-byte comparison of normalized handles.
+Handles are case-insensitive. The *normalized* form of a handle is the handle converted to ASCII lowercase. Every handle in this protocol (in the `handle` claim, and in comparisons) is in normalized form, and every comparison of handles is a byte-for-byte comparison of normalized handles.
 
 ## Parsing User Input {#parsing}
 
@@ -472,7 +472,7 @@ The token request is the token request of [@!EVP], including its use of HTTP Mes
 
 - The browser performs (#resolution), not EVP's issuer discovery, to obtain the issuer and its metadata, and sends the request to the `issuance_endpoint` of the HVP metadata.
 - The request body is a JSON object with the following member:
-  - `handle` (REQUIRED): The normalized handle, byte-for-byte as resolution used it.
+  - `did` (REQUIRED): The DID that the handle resolves to, byte-for-byte as resolution produced it.
 - The `Sec-Fetch-Dest` header has the value `handle-verification`.
 
 Example:
@@ -491,15 +491,15 @@ Signature: sig=:MEQCIHd8Y8qYKm5e3dV8y....:
 Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
     x="JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs";alg="Ed25519"
 
-{"handle":"samuelgoto.bsky.social"}
+{"did":"did:plc:bftbdgcbe4zclvpkboe4hleq"}
 ```
 
 On receipt of a token request, the issuer:
 
 1. Verifies the request headers, the HTTP Message Signature, and the `Content-Digest`, as in the request verification of [@!EVP], with `handle-verification` in place of `email-verification` as the expected `Sec-Fetch-Dest`.
-2. Verifies that `handle` satisfies (#handle-syntax) and is in normalized form ((#normalization)). If it is not, the issuer returns an `invalid_request` error ((#errors)).
-3. Checks that the cookies represent a signed-in user who controls the handle. If they do not, the issuer returns an `authentication_required` error.
-4. SHOULD resolve the handle ((#resolution)) and check that it is the authorized issuer and that the DID is the user's. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.
+2. Verifies that `did` is a syntactically valid `did:plc` or `did:web` DID. If it is not, the issuer returns an `invalid_request` error ((#errors)).
+3. Checks that the cookies represent a signed-in user who controls the handle that resolves to `did`. If they do not, the issuer returns an `authentication_required` error.
+4. SHOULD resolve the handle ((#resolution)) and check that it is the authorized issuer and that resolution yields `did`. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.
 5. Creates an HVT ((#hvt-creation)) and returns it as the value of `issuance_token` in an `application/json` response, as in [@!EVP].
 
 # Handle Verification Token (HVT) {#hvt}
@@ -519,8 +519,8 @@ The Handle Verification Token (HVT) is a JWT ([@!RFC7519]) issued by an issuer. 
 - `iss` (REQUIRED): The issuer identifier ((#issuer-identifier)).
 - `iat` (REQUIRED): The time the HVT was issued.
 - `cnf` (REQUIRED): A confirmation claim ([@!RFC7800]) containing the browser's public key as a `jwk`, reproduced from the `Signature-Key` header of the token request with the same members, including its `alg`.
-- `handle` (REQUIRED): The normalized handle, byte-for-byte as it appeared in the token request.
-- `sub` (REQUIRED): The DID that resolution of the handle yields ((#resolution)).
+- `handle` (REQUIRED): The handle that the user controls, in normalized form ((#normalization)).
+- `sub` (REQUIRED): The DID that the handle resolves to, byte-for-byte as it appeared in the token request.
 
 Example:
 
@@ -568,7 +568,7 @@ Both the browser and the verifier verify the HVT:
 6. Fetch the issuer's public keys from its `jwks_uri`, and verify the HVT's signature with the key identified by `kid`.
 7. Verify that `iat` is within an acceptable time window.
 
-The browser additionally verifies that `handle` is byte-for-byte identical to the handle it requested, and that `cnf.jwk` matches the public key it generated. The browser MAY reuse the results of the resolution it performed before the token request for step 4.
+The browser additionally verifies that `sub` is byte-for-byte identical to the DID it requested, and that `cnf.jwk` matches the public key it generated. The browser MAY reuse the results of the resolution it performed before the token request for step 4.
 
 # Key Binding (HVT+KB) {#kb}
 
@@ -594,7 +594,7 @@ The verifier MUST perform its own resolution in step 2, and MUST NOT rely on res
 
 # Error Responses {#errors}
 
-The issuer returns the error responses of [@!EVP] (`invalid_request`, `invalid_signature`, `authentication_required`, and server errors), with the `handle` member in place of the `email` member.
+The issuer returns the error responses of [@!EVP] (`invalid_request`, `invalid_signature`, `authentication_required`, and server errors), with the `did` member in place of the `email` member.
 
 
 # Privacy Considerations

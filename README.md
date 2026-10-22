@@ -7,7 +7,7 @@ This is the working area for the individual Internet-Draft, "Handle Verification
 
 ## Abstract
 
-This document defines the Handle Verification Protocol (HVP), which enables web applications to verify that a user controls a handle — such as an AT Protocol handle (`@alice.example`), an ActivityPub address (`@alice@social.example`), or a URL identity used by IndieAuth and Linked Web Storage (`https://alice.example/`) — without integrating with each protocol separately. It defines the notation of handles, how a handle is resolved to a machine-readable identity document and to the issuers authorized to vouch for it, and how a browser obtains a signed Handle Verification Token from such an issuer and presents it to a relying party. HVP generalizes the Email Verification Protocol (EVP) to handles; email addresses remain out of scope and are verified with EVP, which can be used alongside HVP.
+This document defines the Handle Verification Protocol (HVP), which enables web applications to verify that a user controls a handle — such as an AT Protocol handle (`@alice.example`), an ActivityPub address (`@alice@social.example`), or a URL identity used by IndieAuth and Linked Web Storage (`https://alice.example/`) — without integrating with each protocol separately. It defines the notation of handles, how a handle is resolved to a machine-readable identity document and to the issuers authorized to vouch for it, and how a browser obtains a signed Handle Verification Token from such an issuer and presents it to a verifier. HVP generalizes the Email Verification Protocol (EVP) to handles; email addresses remain out of scope and are verified with EVP, which can be used alongside HVP.
 
 ## Related Work
 

@@ -7,8 +7,8 @@
 <title>Handle Verification Protocol</title>
 <meta content="Sam Goto" name="author">
 <meta content="
-       This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls a  handle , and presents it to a relying party (RP). A handle is a human-readable identifier at an open-ended set of providers, written with a leading  @  and carried as an  at://  URI: an AT Protocol handle such as  @alice.example , an ActivityPub address such as  @alice@social.example , or a URL identity as used by IndieAuth and Linked Web Storage, such as  @alice.example/profile/card#me . HVP uses the same three-party model as the Email Verification Protocol (EVP), in which the browser intermediates between the RP and the issuer and hides the RP's identity from the issuer. 
-       This document defines the notation of handles and the  at  URI scheme that carries them, the resolution of a handle to a machine-readable identity document and to the issuers authorized to vouch for it, the token issuance request, the Handle Verification Token (HVT), and token verification. Email addresses are out of scope: they are verified with EVP, which can be used alongside HVP. The browser API, that is, how the user selects a handle and how the token is delivered to the RP, is defined separately, for example by the W3C IdP Registration API ( ). 
+       This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls a  handle , and presents it to a verifier. A handle is a human-readable identifier at an open-ended set of providers, written with a leading  @  and carried as an  at://  URI: an AT Protocol handle such as  @alice.example , an ActivityPub address such as  @alice@social.example , or a URL identity as used by IndieAuth and Linked Web Storage, such as  @alice.example/profile/card#me . HVP uses the same three-party model as the Email Verification Protocol (EVP), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer. 
+       This document defines the notation of handles and the  at  URI scheme that carries them, the resolution of a handle to a machine-readable identity document and to the issuers authorized to vouch for it, the token issuance request, the Handle Verification Token (HVT), and token verification. Email addresses are out of scope: they are verified with EVP, which can be used alongside HVP. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ( ). 
     " name="description">
 <meta content="xml2rfc 3.31.0" name="generator">
 <meta content="handle" name="keyword">
@@ -1258,8 +1258,8 @@ li > p:last-of-type:only-child {
 <h1 id="title">Handle Verification Protocol</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls a <em>handle</em>, and presents it to a relying party (RP). A handle is a human-readable identifier at an open-ended set of providers, written with a leading <code>@</code> and carried as an <code>at://</code> URI: an AT Protocol handle such as <code>@alice.example</code>, an ActivityPub address such as <code>@alice@social.example</code>, or a URL identity as used by IndieAuth and Linked Web Storage, such as <code>@alice.example/profile/card#me</code>. HVP uses the same three-party model as the Email Verification Protocol (EVP), in which the browser intermediates between the RP and the issuer and hides the RP's identity from the issuer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">This document defines the notation of handles and the <code>at</code> URI scheme that carries them, the resolution of a handle to a machine-readable identity document and to the issuers authorized to vouch for it, the token issuance request, the Handle Verification Token (HVT), and token verification. Email addresses are out of scope: they are verified with EVP, which can be used alongside HVP. The browser API, that is, how the user selects a handle and how the token is delivered to the RP, is defined separately, for example by the W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>).<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls a <em>handle</em>, and presents it to a verifier. A handle is a human-readable identifier at an open-ended set of providers, written with a leading <code>@</code> and carried as an <code>at://</code> URI: an AT Protocol handle such as <code>@alice.example</code>, an ActivityPub address such as <code>@alice@social.example</code>, or a URL identity as used by IndieAuth and Linked Web Storage, such as <code>@alice.example/profile/card#me</code>. HVP uses the same three-party model as the Email Verification Protocol (EVP), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This document defines the notation of handles and the <code>at</code> URI scheme that carries them, the resolution of a handle to a machine-readable identity document and to the issuers authorized to vouch for it, the token issuance request, the Handle Verification Token (HVT), and token verification. Email addresses are out of scope: they are verified with EVP, which can be used alongside HVP. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>).<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1549,7 +1549,7 @@ li > p:last-of-type:only-child {
                 <p id="section-toc.1-1.15.2.3.1"><a href="#section-15.3" class="auto internal xref">15.3</a>.  <a href="#name-why-a-single-at-uri-form" class="internal xref">Why a Single at URI Form?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.4">
-                <p id="section-toc.1-1.15.2.4.1"><a href="#section-15.4" class="auto internal xref">15.4</a>.  <a href="#name-why-does-the-rp-resolve-the" class="internal xref">Why Does the RP Resolve the Handle?</a></p>
+                <p id="section-toc.1-1.15.2.4.1"><a href="#section-15.4" class="auto internal xref">15.4</a>.  <a href="#name-why-does-the-verifier-resol" class="internal xref">Why Does the Verifier Resolve the Handle?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.5">
                 <p id="section-toc.1-1.15.2.5.1"><a href="#section-15.5" class="auto internal xref">15.5</a>.  <a href="#name-why-require-an-explicit-han" class="internal xref">Why Require an Explicit handle-issuer Link?</a></p>
@@ -1617,8 +1617,8 @@ li > p:last-of-type:only-child {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">Web applications let users sign in with an account they already have elsewhere. With federated sign-in, the application (the relying party, RP) lists the identity providers it accepts, integrates with each of them, and shows each as a button. This works for a handful of large providers. It does not work for the long tail: users whose identity lives on their own domain, on one of thousands of ActivityPub servers, on a self-hosted AT Protocol personal data server, or in a Solid pod.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Email shows that an open federation is possible. An RP accepts an email address at any mail domain without a prior relationship with the domain, and the Email Verification Protocol (<span>[<a href="#EVP" class="cite xref">EVP</a>]</span>) lets the RP verify such an address with a signed token. HVP extends that model to the other kinds of human-readable identifiers that users already have, which this document calls <em>handles</em>.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-1">Web applications let users sign in with an account they already have elsewhere. With federated sign-in, the application lists the identity providers it accepts, integrates with each of them, and shows each as a button. This works for a handful of large providers. It does not work for the long tail: users whose identity lives on their own domain, on one of thousands of ActivityPub servers, on a self-hosted AT Protocol personal data server, or in a Solid pod.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Email shows that an open federation is possible. A verifier accepts an email address at any mail domain without a prior relationship with the domain, and the Email Verification Protocol (<span>[<a href="#EVP" class="cite xref">EVP</a>]</span>) lets the verifier check such an address with a signed token. HVP extends that model to the other kinds of human-readable identifiers that users already have, which this document calls <em>handles</em>.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <div id="the-open-federation-problem">
 <section id="section-1.1">
         <h3 id="name-the-open-federation-problem">
@@ -1635,7 +1635,7 @@ li > p:last-of-type:only-child {
           <li class="compact" id="section-1.1-2.4">Solid and Linked Web Storage (<span>[<a href="#LWS" class="cite xref">LWS</a>]</span>) identify users with a WebID (<span>[<a href="#WEBID" class="cite xref">WEBID</a>]</span>), a URL such as <code>https://alice.example/profile/card#me</code>.<a href="#section-1.1-2.4" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-1.1-3">An RP that wants to accept all of these users today has to implement each protocol's discovery and sign-in flow, and has to present a text field asking the user to type an identifier. Experience with OpenID 2.0 suggests that most users do not know what to type into such a field.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">A verifier that wants to accept all of these users today has to implement each protocol's discovery and sign-in flow, and has to present a text field asking the user to type an identifier. Experience with OpenID 2.0 suggests that most users do not know what to type into such a field.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protocol-fragmentation">
@@ -1671,11 +1671,11 @@ li > p:last-of-type:only-child {
             <strong>Resolution</strong> (<a href="#resolution" class="auto internal xref">Section 5</a>): how a handle URI is resolved to a machine-readable identity document, checked against the handle, and turned into a stable subject identifier and the set of issuers that the user has authorized to vouch for it. Resolution depends on the shape of the handle URI and on what its host publishes, and reuses each protocol's existing discovery mechanisms.<a href="#section-1.3-2.2" class="pilcrow">¶</a>
 </li>
           <li id="section-1.3-2.3">
-            <strong>Issuance and verification</strong>: how a browser obtains a Handle Verification Token (HVT) from an authorized issuer, and how an RP verifies it. This part is the same for every handle, and reuses the token request, key binding, and token format of EVP.<a href="#section-1.3-2.3" class="pilcrow">¶</a>
+            <strong>Issuance and verification</strong>: how a browser obtains a Handle Verification Token (HVT) from an authorized issuer, and how a verifier verifies it. This part is the same for every handle, and reuses the token request, key binding, and token format of EVP.<a href="#section-1.3-2.3" class="pilcrow">¶</a>
 </li>
         </ol>
-<p id="section-1.3-3">An RP that implements HVP verifies one token format with one algorithm, whatever protocol the user's handle belongs to. Only resolution is type-specific. It consists of unauthenticated lookups (DNS queries and HTTPS <code>GET</code> requests) that each protocol already uses, plus a single <code>handle-issuer</code> link that the user adds to their identity document to opt in to an issuer.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
-<p id="section-1.3-4">HVP keeps the privacy properties of EVP: the browser intermediates between the RP and the issuer, so the issuer does not learn which RP the user is signing in to.<a href="#section-1.3-4" class="pilcrow">¶</a></p>
+<p id="section-1.3-3">A verifier that implements HVP verifies one token format with one algorithm, whatever protocol the user's handle belongs to. Only resolution is type-specific. It consists of unauthenticated lookups (DNS queries and HTTPS <code>GET</code> requests) that each protocol already uses, plus a single <code>handle-issuer</code> link that the user adds to their identity document to opt in to an issuer.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
+<p id="section-1.3-4">HVP keeps the privacy properties of EVP: the browser intermediates between the verifier and the issuer, so the issuer does not learn which verifier the user is signing in to.<a href="#section-1.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="relationship-to-evp">
@@ -1691,7 +1691,7 @@ li > p:last-of-type:only-child {
         <h3 id="name-relationship-to-the-browser">
 <a href="#section-1.5" class="section-number selfRef">1.5. </a><a href="#name-relationship-to-the-browser" class="section-name selfRef">Relationship to the Browser API</a>
         </h3>
-<p id="section-1.5-1">This document specifies the IETF protocol aspects of handle verification: the HTTP-level interactions between the browser, the issuer, and the RP, and the lookups needed to resolve a handle. How the browser learns about the user's handles, how the user selects one, and how the browser communicates with the RP are defined separately. The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>), an extension of FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>), is one such API. See <a href="#idp-registration" class="auto internal xref">Appendix B</a>.<a href="#section-1.5-1" class="pilcrow">¶</a></p>
+<p id="section-1.5-1">This document specifies the IETF protocol aspects of handle verification: the HTTP-level interactions between the browser, the issuer, and the verifier, and the lookups needed to resolve a handle. How the browser learns about the user's handles, how the user selects one, and how the browser communicates with the verifier are defined separately. The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>), an extension of FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>), is one such API. See <a href="#idp-registration" class="auto internal xref">Appendix B</a>.<a href="#section-1.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1729,7 +1729,7 @@ li > p:last-of-type:only-child {
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.13">Authorized issuers:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.14">The set of issuer identifiers that the identity document names with the <code>handle-issuer</code> link relation (<a href="#handle-issuer" class="auto internal xref">Section 5.1</a>). Only an authorized issuer can issue an HVT that an RP accepts for that handle.<a href="#section-2-3.14" class="pilcrow">¶</a>
+        <dd style="margin-left: 1.5em" id="section-2-3.14">The set of issuer identifiers that the identity document names with the <code>handle-issuer</code> link relation (<a href="#handle-issuer" class="auto internal xref">Section 5.1</a>). Only an authorized issuer can issue an HVT that a verifier accepts for that handle.<a href="#section-2-3.14" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.15">Issuer:</dt>
@@ -1741,7 +1741,11 @@ li > p:last-of-type:only-child {
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.19">HVT+KB:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.20">An HVT combined with a Key Binding JWT that binds it to an RP and a session. See <a href="#kb" class="auto internal xref">Section 9</a>.<a href="#section-2-3.20" class="pilcrow">¶</a>
+        <dd style="margin-left: 1.5em" id="section-2-3.20">An HVT combined with a Key Binding JWT that binds it to a verifier and a session. See <a href="#kb" class="auto internal xref">Section 9</a>.<a href="#section-2-3.20" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.21">Verifier:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.22">The party, typically a website, to which the browser presents an HVT+KB, and which verifies it to learn that the user controls a handle. It corresponds to the relying party (RP) of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> and of federated sign-in protocols.<a href="#section-2-3.22" class="pilcrow">¶</a>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -1752,9 +1756,9 @@ li > p:last-of-type:only-child {
       <h2 id="name-protocol-flow">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-protocol-flow" class="section-name selfRef">Protocol Flow</a>
       </h2>
-<p id="section-3-1">The protocol involves three parties: the RP, the browser, and the issuer. The following diagram shows the protocol flow:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">The protocol involves three parties: the verifier, the browser, and the issuer. The following diagram shows the protocol flow:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3-2">
-<pre>Step                      RP Server     Browser              Issuer
+<pre>Step                       Verifier     Browser              Issuer
                                |            |                    |
 3.1 Handle Discovery           |      [obtain handle from user]  |
                                |            |                    |
@@ -1776,7 +1780,7 @@ li > p:last-of-type:only-child {
                          verify HVT+KB]     |                    |
 </pre><a href="#section-3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3-3">The flow is the same as the flow of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with two differences: the browser and the RP <em>resolve</em> the handle (<a href="#resolution" class="auto internal xref">Section 5</a>) where EVP looks up a DNS delegation record, and the token is an HVT rather than an EVT.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-3">The flow is the same as the flow of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with two differences: the browser and the verifier <em>resolve</em> the handle (<a href="#resolution" class="auto internal xref">Section 5</a>) where EVP looks up a DNS delegation record, and the token is an HVT rather than an EVT.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <div id="handle-discovery">
 <section id="section-3.1">
         <h3 id="name-handle-discovery">
@@ -1790,7 +1794,7 @@ li > p:last-of-type:only-child {
         <h3 id="name-session-binding">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-session-binding" class="section-name selfRef">Session Binding</a>
         </h3>
-<p id="section-3.2-1">As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>: the RP server generates a cryptographically random nonce with at least 128 bits of entropy and binds it to a session it has with the browser. How the RP server provides the nonce to the browser is defined by the browser API.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>: the verifier generates a cryptographically random nonce with at least 128 bits of entropy and binds it to a session it has with the browser. How the verifier provides the nonce to the browser is defined by the browser API.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="flow-resolution">
@@ -1830,7 +1834,7 @@ li > p:last-of-type:only-child {
         <h3 id="name-token-presentation">
 <a href="#section-3.7" class="section-number selfRef">3.7. </a><a href="#name-token-presentation" class="section-name selfRef">Token Presentation</a>
         </h3>
-<p id="section-3.7-1">The browser provides the HVT+KB to the RP. This mechanism is defined by the browser API.<a href="#section-3.7-1" class="pilcrow">¶</a></p>
+<p id="section-3.7-1">The browser provides the HVT+KB to the verifier. This mechanism is defined by the browser API.<a href="#section-3.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="token-verification">
@@ -1838,7 +1842,7 @@ li > p:last-of-type:only-child {
         <h3 id="name-token-verification">
 <a href="#section-3.8" class="section-number selfRef">3.8. </a><a href="#name-token-verification" class="section-name selfRef">Token Verification</a>
         </h3>
-<p id="section-3.8-1">The RP verifies the HVT+KB as described in <a href="#verification" class="auto internal xref">Section 10</a>. The RP resolves the handle itself, and does not rely on the browser's resolution. If verification succeeds, the RP has verified that the user controls the handle in the <code>handle</code> claim, and has learned the user's subject identifier in the <code>sub</code> claim.<a href="#section-3.8-1" class="pilcrow">¶</a></p>
+<p id="section-3.8-1">The verifier verifies the HVT+KB as described in <a href="#verification" class="auto internal xref">Section 10</a>. The verifier resolves the handle itself, and does not rely on the browser's resolution. If verification succeeds, the verifier has verified that the user controls the handle in the <code>handle</code> claim, and has learned the user's subject identifier in the <code>sub</code> claim.<a href="#section-3.8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2117,12 +2121,12 @@ url-ref    = handle-host path-abempty [ "?" query ] [ "#" fragment ]
 </li>
       </ol>
 <p id="section-5-7">If any step fails, resolution fails.<a href="#section-5-7" class="pilcrow">¶</a></p>
-<p id="section-5-8">Both the browser and the RP perform resolution. The browser does it to find an issuer to ask for a token; the RP does it to check that the token was issued by an issuer that is authorized for the handle (<a href="#verification" class="auto internal xref">Section 10</a>).<a href="#section-5-8" class="pilcrow">¶</a></p>
+<p id="section-5-8">Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for a token; the verifier does it to check that the token was issued by an issuer that is authorized for the handle (<a href="#verification" class="auto internal xref">Section 10</a>).<a href="#section-5-8" class="pilcrow">¶</a></p>
 <p id="section-5-9">The following rules apply to every resolution step:<a href="#section-5-9" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-5-10.1">DNS queries use the resolving party's DNS resolver. DNSSEC is not required, but see <a href="#dns-security" class="auto internal xref">Section 13.2</a>.<a href="#section-5-10.1" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-5-10.2">HTTP requests use the <code>https</code> scheme, MUST NOT include credentials (cookies or HTTP authentication), and SHOULD NOT include a <code>Referer</code> header. When the browser makes them, they SHOULD be made from an opaque origin, so that the servers involved do not learn which RP the user is visiting.<a href="#section-5-10.2" class="pilcrow">¶</a>
+        <li class="compact" id="section-5-10.2">HTTP requests use the <code>https</code> scheme, MUST NOT include credentials (cookies or HTTP authentication), and SHOULD NOT include a <code>Referer</code> header. When the browser makes them, they SHOULD be made from an opaque origin, so that the servers involved do not learn which verifier the user is visiting.<a href="#section-5-10.2" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="section-5-10.3">Redirects are followed only to <code>https</code> URLs, and at most 5 times for a single request.<a href="#section-5-10.3" class="pilcrow">¶</a>
 </li>
@@ -2179,7 +2183,7 @@ url-ref    = handle-host path-abempty [ "?" query ] [ "#" fragment ]
 </pre><a href="#section-5.1-12" class="pilcrow">¶</a>
 </div>
 <p id="section-5.1-13">A link target that is not an issuer identifier, that is, not an <code>https</code> origin with no path, query, or fragment, is ignored. The valid <code>handle-issuer</code> links of an identity document are its authorized issuers. An identity document without any has no authorized issuers, and HVP cannot be used with its handle.<a href="#section-5.1-13" class="pilcrow">¶</a></p>
-<p id="section-5.1-14">Authorization is always explicit: resolution does not infer an issuer from a protocol's existing sign-in mechanisms, such as the authorization server of an AT Protocol personal data server, the server of an ActivityPub actor, an IndieAuth authorization server, or the OpenID providers listed in a WebID. An issuer has to deploy HVP anyway, and requiring the identity document to name it means that a server does not become able to vouch for a handle in a new way, to RPs it may never have dealt with, without the handle's owner opting in. See <a href="#why-opt-in" class="auto internal xref">Section 15.5</a>.<a href="#section-5.1-14" class="pilcrow">¶</a></p>
+<p id="section-5.1-14">Authorization is always explicit: resolution does not infer an issuer from a protocol's existing sign-in mechanisms, such as the authorization server of an AT Protocol personal data server, the server of an ActivityPub actor, an IndieAuth authorization server, or the OpenID providers listed in a WebID. An issuer has to deploy HVP anyway, and requiring the identity document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the handle's owner opting in. See <a href="#why-opt-in" class="auto internal xref">Section 15.5</a>.<a href="#section-5.1-14" class="pilcrow">¶</a></p>
 <blockquote id="section-5.1-15">
           <p id="section-5.1-15.1">Open Issue: The name of the link relation and of the DID service type, and whether the DID service type should be registered in the W3C DID Extensions registry.<a href="#section-5.1-15.1" class="pilcrow">¶</a></p>
 </blockquote>
@@ -2201,7 +2205,7 @@ url-ref    = handle-host path-abempty [ "?" query ] [ "#" fragment ]
           <li id="section-5.2-2.4">If step 1 fails in any other way, for example because a DNS query fails or the well-known URL returns a server error, resolution fails.<a href="#section-5.2-2.4" class="pilcrow">¶</a>
 </li>
         </ol>
-<p id="section-5.2-3">Resolution does not fall back to the URL when the AT Protocol lookup fails for transient reasons, so that the browser and the RP reach the same result, and so that an attacker who can block a lookup cannot change how a handle resolves. See <a href="#downgrade" class="auto internal xref">Section 13.10</a>.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-3">Resolution does not fall back to the URL when the AT Protocol lookup fails for transient reasons, so that the browser and the verifier reach the same result, and so that an attacker who can block a lookup cannot change how a handle resolves. See <a href="#downgrade" class="auto internal xref">Section 13.10</a>.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="resolve-at">
@@ -2383,7 +2387,7 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
         <h3 id="name-caching">
 <a href="#section-5.6" class="section-number selfRef">5.6. </a><a href="#name-caching" class="section-name selfRef">Caching</a>
         </h3>
-<p id="section-5.6-1">A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. An RP SHOULD NOT cache resolution results for longer than a few minutes when verifying a token, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.<a href="#section-5.6-1" class="pilcrow">¶</a></p>
+<p id="section-5.6-1">A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying a token, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.<a href="#section-5.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2487,7 +2491,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 </li>
         <li id="section-7-6.3">Checks that the cookies represent a signed-in user who controls the handle. If they do not, the issuer returns an <code>authentication_required</code> error.<a href="#section-7-6.3" class="pilcrow">¶</a>
 </li>
-        <li id="section-7-6.4">SHOULD resolve the handle (<a href="#resolution" class="auto internal xref">Section 5</a>) and check that it is one of the authorized issuers and that the subject identifier is the user's. An HVT from an issuer that is not authorized is rejected by the RP anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.<a href="#section-7-6.4" class="pilcrow">¶</a>
+        <li id="section-7-6.4">SHOULD resolve the handle (<a href="#resolution" class="auto internal xref">Section 5</a>) and check that it is one of the authorized issuers and that the subject identifier is the user's. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.<a href="#section-7-6.4" class="pilcrow">¶</a>
 </li>
         <li id="section-7-6.5">Creates an HVT (<a href="#hvt-creation" class="auto internal xref">Section 8.2</a>) and returns it as the value of <code>issuance_token</code> in an <code>application/json</code> response, as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-7-6.5" class="pilcrow">¶</a>
 </li>
@@ -2598,7 +2602,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-hvt-verification">
 <a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-hvt-verification" class="section-name selfRef">HVT Verification</a>
         </h3>
-<p id="section-8.3-1">Both the browser and the RP verify the HVT:<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-1">Both the browser and the verifier verify the HVT:<a href="#section-8.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="compact type-1" id="section-8.3-2">
 <li id="section-8.3-2.1">Parse the HVT into its header, payload, and signature.<a href="#section-8.3-2.1" class="pilcrow">¶</a>
 </li>
@@ -2635,7 +2639,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
       <h2 id="name-key-binding-hvtkb">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-key-binding-hvtkb" class="section-name selfRef">Key Binding (HVT+KB)</a>
       </h2>
-<p id="section-9-1">Key binding is the key binding of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the HVT in place of the EVT. The browser creates a KB-JWT whose <code>aud</code> is the RP's origin, whose <code>nonce</code> is the RP's session nonce, and whose <code>sd_hash</code> is the hash of the HVT (including its trailing <code>~</code>), and signs it with its private key. The HVT+KB is:<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-1">Key binding is the key binding of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the HVT in place of the EVT. The browser creates a KB-JWT whose <code>aud</code> is the verifier's origin, whose <code>nonce</code> is the verifier's session nonce, and whose <code>sd_hash</code> is the hash of the HVT (including its trailing <code>~</code>), and signs it with its private key. The HVT+KB is:<a href="#section-9-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-9-2">
 <pre>&lt;HVT&gt;~&lt;KB-JWT&gt;
 </pre><a href="#section-9-2" class="pilcrow">¶</a>
@@ -2648,17 +2652,17 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
       <h2 id="name-token-verification-details">
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-token-verification-details" class="section-name selfRef">Token Verification Details</a>
       </h2>
-<p id="section-10-1">The RP receives the HVT+KB, and verifies it by:<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">The verifier receives the HVT+KB, and verifies it by:<a href="#section-10-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="compact type-1" id="section-10-2">
-<li id="section-10-2.1">Verifying the KB-JWT as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the HVT in place of the EVT: its <code>alg</code> matches the <code>alg</code> of the HVT's <code>cnf.jwk</code>, its <code>aud</code> is the RP's origin, its <code>nonce</code> is the session's nonce, its <code>iat</code> is recent, and its <code>sd_hash</code> is the hash of the HVT.<a href="#section-10-2.1" class="pilcrow">¶</a>
+<li id="section-10-2.1">Verifying the KB-JWT as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the HVT in place of the EVT: its <code>alg</code> matches the <code>alg</code> of the HVT's <code>cnf.jwk</code>, its <code>aud</code> is the verifier's origin, its <code>nonce</code> is the session's nonce, its <code>iat</code> is recent, and its <code>sd_hash</code> is the hash of the HVT.<a href="#section-10-2.1" class="pilcrow">¶</a>
 </li>
         <li id="section-10-2.2">Verifying the HVT as described in <a href="#hvt-verification" class="auto internal xref">Section 8.3</a>, including resolving the handle itself.<a href="#section-10-2.2" class="pilcrow">¶</a>
 </li>
         <li id="section-10-2.3">Verifying the KB-JWT's signature with the public key in the HVT's <code>cnf.jwk</code>.<a href="#section-10-2.3" class="pilcrow">¶</a>
 </li>
       </ol>
-<p id="section-10-3">If all verification steps pass, the RP has verified that the user controls the handle in the <code>handle</code> claim. The RP SHOULD identify the user's account by the <code>sub</code> claim, and treat the <code>handle</code> as a mutable attribute of the account (<a href="#reassignment" class="auto internal xref">Section 13.4</a>).<a href="#section-10-3" class="pilcrow">¶</a></p>
-<p id="section-10-4">The RP MUST perform its own resolution in step 2, and MUST NOT rely on resolution results provided by the browser. The RP's resolution is what establishes that the issuer is authorized for the handle.<a href="#section-10-4" class="pilcrow">¶</a></p>
+<p id="section-10-3">If all verification steps pass, the verifier has verified that the user controls the handle in the <code>handle</code> claim. The verifier SHOULD identify the user's account by the <code>sub</code> claim, and treat the <code>handle</code> as a mutable attribute of the account (<a href="#reassignment" class="auto internal xref">Section 13.4</a>).<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-4">The verifier MUST perform its own resolution in step 2, and MUST NOT rely on resolution results provided by the browser. The verifier's resolution is what establishes that the issuer is authorized for the handle.<a href="#section-10-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="errors">
@@ -2679,7 +2683,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-three-party-model">
 <a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-three-party-model" class="section-name selfRef">Three-Party Model</a>
         </h3>
-<p id="section-12.1-1">As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, the browser intermediates between the RP and the issuer. The issuer learns which handle the user is verifying, but not which RP the user is signing in to, and the RP learns the handle only after the user has chosen to share it.<a href="#section-12.1-1" class="pilcrow">¶</a></p>
+<p id="section-12.1-1">As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, the browser intermediates between the verifier and the issuer. The issuer learns which handle the user is verifying, but not which verifier the user is signing in to, and the verifier learns the handle only after the user has chosen to share it.<a href="#section-12.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="handles-are-public-identifiers">
@@ -2687,7 +2691,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-handles-are-public-identifi">
 <a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-handles-are-public-identifi" class="section-name selfRef">Handles Are Public Identifiers</a>
         </h3>
-<p id="section-12.2-1">Handles are public by design: an AT Protocol handle, an ActivityPub address, or a profile URL is meant to be shared and is the same at every site. An RP that receives a handle can correlate the user with other RPs that receive the same handle, and with the user's public activity under that handle. HVP does not change this, and offers no equivalent of the private email addresses of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>. Browser APIs that use HVP should make clear to the user that the RP will learn their handle.<a href="#section-12.2-1" class="pilcrow">¶</a></p>
+<p id="section-12.2-1">Handles are public by design: an AT Protocol handle, an ActivityPub address, or a profile URL is meant to be shared and is the same at every site. A verifier that receives a handle can correlate the user with other verifiers that receive the same handle, and with the user's public activity under that handle. HVP does not change this, and offers no equivalent of the private email addresses of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>. Browser APIs that use HVP should make clear to the user that the verifier will learn their handle.<a href="#section-12.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="resolution-traffic">
@@ -2695,8 +2699,8 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-resolution-traffic">
 <a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-resolution-traffic" class="section-name selfRef">Resolution Traffic</a>
         </h3>
-<p id="section-12.3-1">Resolution consists of DNS queries and unauthenticated HTTPS requests. When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, a PLC directory, the user's personal data server, the user's profile host) can observe that someone is resolving that handle, but not which RP is involved, because the requests carry no credentials or referrer.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
-<p id="section-12.3-2">When the RP resolves a handle to verify a token, the same servers can observe that the RP is verifying the handle at that time. This is a difference from <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, where the RP's lookup is a DNS query for the email domain only. The servers learn that the user signed in to the RP, which is often information they would learn anyway once the RP interacts with the user's account in that protocol. RPs can reduce this by caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.6</a>.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
+<p id="section-12.3-1">Resolution consists of DNS queries and unauthenticated HTTPS requests. When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, a PLC directory, the user's personal data server, the user's profile host) can observe that someone is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
+<p id="section-12.3-2">When the verifier resolves a handle to verify a token, the same servers can observe that the verifier is checking the handle at that time. This is a difference from <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, where the verifier's lookup is a DNS query for the email domain only. The servers learn that the user signed in to the verifier, which is often information they would learn anyway once the verifier interacts with the user's account in that protocol. verifiers can reduce this by caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.6</a>.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2711,7 +2715,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-resolution-is-not-authentic">
 <a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-resolution-is-not-authentic" class="section-name selfRef">Resolution Is Not Authentication</a>
         </h3>
-<p id="section-13.1-1">Resolution establishes which issuers are authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the RP accepts, because the RP resolves the handle itself.<a href="#section-13.1-1" class="pilcrow">¶</a></p>
+<p id="section-13.1-1">Resolution establishes which issuers are authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the verifier accepts, because the verifier resolves the handle itself.<a href="#section-13.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="dns-security">
@@ -2719,7 +2723,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-dns-spoofing">
 <a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-dns-spoofing" class="section-name selfRef">DNS Spoofing</a>
         </h3>
-<p id="section-13.2-1">Resolution of host handles relies on DNS <code>TXT</code> records, which are not authenticated unless DNSSEC is used. As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, spoofing the browser's DNS resolution discloses the handle to the attacker but yields no token the RP will accept, while spoofing the RP's DNS resolution lets the attacker choose the DID, and therefore the authorized issuers. RPs SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.<a href="#section-13.2-1" class="pilcrow">¶</a></p>
+<p id="section-13.2-1">Resolution of host handles relies on DNS <code>TXT</code> records, which are not authenticated unless DNSSEC is used. As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, spoofing the browser's DNS resolution discloses the handle to the attacker but yields no token the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuers. verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.<a href="#section-13.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="domain-control-is-handle-control">
@@ -2735,7 +2739,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-handle-reassignment">
 <a href="#section-13.4" class="section-number selfRef">13.4. </a><a href="#name-handle-reassignment" class="section-name selfRef">Handle Reassignment</a>
         </h3>
-<p id="section-13.4-1">Handles can be reassigned: a domain can expire and be re-registered, and a server can let a new account take a user name that a deleted account used. RPs SHOULD identify accounts by the <code>sub</code> claim rather than the <code>handle</code> claim. For AT Protocol handles the subject identifier is a DID, which survives changes of handle and of server. For user and URL handles the subject identifier is itself a URL on the handle's domain, which gives weaker protection against reassignment.<a href="#section-13.4-1" class="pilcrow">¶</a></p>
+<p id="section-13.4-1">Handles can be reassigned: a domain can expire and be re-registered, and a server can let a new account take a user name that a deleted account used. verifiers SHOULD identify accounts by the <code>sub</code> claim rather than the <code>handle</code> claim. For AT Protocol handles the subject identifier is a DID, which survives changes of handle and of server. For user and URL handles the subject identifier is itself a URL on the handle's domain, which gives weaker protection against reassignment.<a href="#section-13.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="shared-hosts">
@@ -2752,7 +2756,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-multiple-authorized-issuers">
 <a href="#section-13.6" class="section-number selfRef">13.6. </a><a href="#name-multiple-authorized-issuers" class="section-name selfRef">Multiple Authorized Issuers</a>
         </h3>
-<p id="section-13.6-1">A handle can have more than one authorized issuer, when its identity document has more than one <code>handle-issuer</code> link. Any of them can issue an HVT that the RP accepts, so the security of the handle is the security of the weakest of them. This is the user's choice.<a href="#section-13.6-1" class="pilcrow">¶</a></p>
+<p id="section-13.6-1">A handle can have more than one authorized issuer, when its identity document has more than one <code>handle-issuer</code> link. Any of them can issue an HVT that the verifier accepts, so the security of the handle is the security of the weakest of them. This is the user's choice.<a href="#section-13.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="trust-in-the-plc-directory">
@@ -2768,7 +2772,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-server-side-request-forgery">
 <a href="#section-13.8" class="section-number selfRef">13.8. </a><a href="#name-server-side-request-forgery" class="section-name selfRef">Server-Side Request Forgery</a>
         </h3>
-<p id="section-13.8-1">Resolution makes an RP fetch URLs derived from user-controlled input. RPs MUST resolve only <code>https</code> URLs, MUST NOT fetch URLs whose host resolves to a loopback, link-local, or private IP address, and SHOULD apply limits on redirects, response size, and time.<a href="#section-13.8-1" class="pilcrow">¶</a></p>
+<p id="section-13.8-1">Resolution makes a verifier fetch URLs derived from user-controlled input. verifiers MUST resolve only <code>https</code> URLs, MUST NOT fetch URLs whose host resolves to a loopback, link-local, or private IP address, and SHOULD apply limits on redirects, response size, and time.<a href="#section-13.8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="token-confusion">
@@ -2776,7 +2780,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-token-confusion">
 <a href="#section-13.9" class="section-number selfRef">13.9. </a><a href="#name-token-confusion" class="section-name selfRef">Token Confusion</a>
         </h3>
-<p id="section-13.9-1">The <code>typ</code> of the HVT (<code>hvt+jwt</code>) is distinct from that of the EVT (<code>evt+jwt</code>), so an HVT cannot be presented as an EVT or the other way around. Each handle URI has exactly one resolution, determined by its shape and by what its host publishes, so the RP and the browser cannot disagree on which identity document, subject, and issuers a token refers to.<a href="#section-13.9-1" class="pilcrow">¶</a></p>
+<p id="section-13.9-1">The <code>typ</code> of the HVT (<code>hvt+jwt</code>) is distinct from that of the EVT (<code>evt+jwt</code>), so an HVT cannot be presented as an EVT or the other way around. Each handle URI has exactly one resolution, determined by its shape and by what its host publishes, so the verifier and the browser cannot disagree on which identity document, subject, and issuers a token refers to.<a href="#section-13.9-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="downgrade">
@@ -2924,7 +2928,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-why-not-each-protocols-own-">
 <a href="#section-15.1" class="section-number selfRef">15.1. </a><a href="#name-why-not-each-protocols-own-" class="section-name selfRef">Why Not Each Protocol's Own Sign-In?</a>
         </h3>
-<p id="section-15.1-1">AT Protocol, IndieAuth, and Solid each have an OAuth-based sign-in flow, and an RP can implement all of them. But each requires a separate integration, each asks the RP to present a text field for the user to type a handle, and in each the provider learns which RP the user is signing in to. HVP gives RPs a single integration, lets the browser offer the user's handles without the user typing them, and keeps the RP hidden from the issuer. It reuses each protocol's resolution, which is the part that is already widely deployed.<a href="#section-15.1-1" class="pilcrow">¶</a></p>
+<p id="section-15.1-1">AT Protocol, IndieAuth, and Solid each have an OAuth-based sign-in flow, and a verifier can implement all of them. But each requires a separate integration, each asks the verifier to present a text field for the user to type a handle, and in each the provider learns which verifier the user is signing in to. HVP gives verifiers a single integration, lets the browser offer the user's handles without the user typing them, and keeps the verifier hidden from the issuer. It reuses each protocol's resolution, which is the part that is already widely deployed.<a href="#section-15.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-generalize-evp">
@@ -2932,7 +2936,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-why-generalize-evp">
 <a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-why-generalize-evp" class="section-name selfRef">Why Generalize EVP?</a>
         </h3>
-<p id="section-15.2-1">EVP already solves the same problem for email addresses, with a three-party model, proof of possession of a browser key, and a token format compatible with SD-JWT. Generalizing it lets RPs and issuers share code and keys between the two, and keeps the privacy properties. An alternative would be to profile OpenID Connect, but OpenID Connect's redirect-based flow reveals the RP to the provider.<a href="#section-15.2-1" class="pilcrow">¶</a></p>
+<p id="section-15.2-1">EVP already solves the same problem for email addresses, with a three-party model, proof of possession of a browser key, and a token format compatible with SD-JWT. Generalizing it lets verifiers and issuers share code and keys between the two, and keeps the privacy properties. An alternative would be to profile OpenID Connect, but OpenID Connect's redirect-based flow reveals the verifier to the provider.<a href="#section-15.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-a-single-at-uri-form">
@@ -2944,12 +2948,12 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <p id="section-15.3-2">Which protocol a handle belongs to is then decided by the owner of its host, through what the host publishes, and not by how the handle is written. The cost is that IndieAuth and Solid users type <code>@alice.example</code> where they used to type <code>https://alice.example/</code>, and that the <code>at</code> scheme is broadened beyond the AT Protocol (<a href="#at-uri-scheme" class="auto internal xref">Section 4.2</a>).<a href="#section-15.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="why-does-the-rp-resolve-the-handle">
+<div id="why-does-the-verifier-resolve-the-handle">
 <section id="section-15.4">
-        <h3 id="name-why-does-the-rp-resolve-the">
-<a href="#section-15.4" class="section-number selfRef">15.4. </a><a href="#name-why-does-the-rp-resolve-the" class="section-name selfRef">Why Does the RP Resolve the Handle?</a>
+        <h3 id="name-why-does-the-verifier-resol">
+<a href="#section-15.4" class="section-number selfRef">15.4. </a><a href="#name-why-does-the-verifier-resol" class="section-name selfRef">Why Does the Verifier Resolve the Handle?</a>
         </h3>
-<p id="section-15.4-1">The RP cannot trust the browser's resolution, which could be manipulated, and it cannot trust the issuer to say which handles it is authorized for. Resolving the handle itself is how the RP checks that the issuer is authorized, in the same way that the RP looks up the DNS delegation in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-15.4-1" class="pilcrow">¶</a></p>
+<p id="section-15.4-1">The verifier cannot trust the browser's resolution, which could be manipulated, and it cannot trust the issuer to say which handles it is authorized for. Resolving the handle itself is how the verifier checks that the issuer is authorized, in the same way that the verifier looks up the DNS delegation in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-15.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-opt-in">
@@ -2957,7 +2961,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-why-require-an-explicit-han">
 <a href="#section-15.5" class="section-number selfRef">15.5. </a><a href="#name-why-require-an-explicit-han" class="section-name selfRef">Why Require an Explicit handle-issuer Link?</a>
         </h3>
-<p id="section-15.5-1">Each protocol already says who can authenticate its users: the PDS's authorization server, the IndieAuth metadata, the WebID's OpenID providers. HVP could infer its issuers from them. It does not, for two reasons. First, there is nothing to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and can add a <code>handle-issuer</code> link to the identity documents it serves at the same time. Second, an HVT is a new kind of statement, presented to RPs through the browser, and a user who authorized a server to sign them in to one protocol has not necessarily authorized it to make that statement. An explicit link makes the user's opt-in visible in their identity document.<a href="#section-15.5-1" class="pilcrow">¶</a></p>
+<p id="section-15.5-1">Each protocol already says who can authenticate its users: the PDS's authorization server, the IndieAuth metadata, the WebID's OpenID providers. HVP could infer its issuers from them. It does not, for two reasons. First, there is nothing to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and can add a <code>handle-issuer</code> link to the identity documents it serves at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to sign them in to one protocol has not necessarily authorized it to make that statement. An explicit link makes the user's opt-in visible in their identity document.<a href="#section-15.5-1" class="pilcrow">¶</a></p>
 <p id="section-15.5-2">A single link relation, which works in every format that identity documents use, also lets a user choose an issuer that is not their protocol's sign-in server, without waiting for each protocol to define a way to do it.<a href="#section-15.5-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2985,7 +2989,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <a href="#section-16" class="section-number selfRef">16. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
       </h2>
 <p id="section-16-1"><em>Note: This section is to be removed before publishing as an RFC.</em><a href="#section-16-1" class="pilcrow">¶</a></p>
-<p id="section-16-2">There are no implementations of this document yet. Prototypes of the related IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) exist in Chrome behind a flag, together with prototype identity providers and relying parties from the IndieWeb and Solid communities.<a href="#section-16-2" class="pilcrow">¶</a></p>
+<p id="section-16-2">There are no implementations of this document yet. Prototypes of the related IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) exist in Chrome behind a flag, together with prototype identity providers and verifiers from the IndieWeb and Solid communities.<a href="#section-16-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="document-history">
@@ -3293,13 +3297,13 @@ Issuers:       https://solidcommunity.net
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-relationship-to-idp-registr" class="section-name selfRef">Relationship to IdP Registration</a>
       </h2>
 <p id="appendix-B-1"><em>This section is non-normative.</em><a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) extends FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>) so that an RP can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the W3C Email Verification API relates to EVP:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) extends FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the W3C Email Verification API relates to EVP:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="appendix-B-3.1">The browser API decides which handles to offer, lets the user register and select them, and delivers the token to the RP. HVP defines what a handle is, how it is resolved, and how the token is issued and verified.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
+<li class="compact" id="appendix-B-3.1">The browser API decides which handles to offer, lets the user register and select them, and delivers the token to the verifier. HVP defines what a handle is, how it is resolved, and how the token is issued and verified.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="appendix-B-3.2">The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. It could instead use the notation and resolution of this document, so that the identity provider of a handle is one of its authorized issuers.<a href="#appendix-B-3.2" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="appendix-B-3.3">An RP request for a "federation" in that API could correspond to HVP, and the token that the RP receives could be an HVT+KB.<a href="#appendix-B-3.3" class="pilcrow">¶</a>
+        <li class="compact" id="appendix-B-3.3">A verifier request for a "federation" in that API could correspond to HVP, and the token that the verifier receives could be an HVT+KB.<a href="#appendix-B-3.3" class="pilcrow">¶</a>
 </li>
       </ul>
 </section>

@@ -153,7 +153,7 @@ organization = "Google"
 
 This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls an AT Protocol handle, such as `@alice.example`, and presents it to a verifier. HVP uses the same three-party model as the Email Verification Protocol ([@!EVP]), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.
 
-This document defines the syntax of handles, the resolution of a handle to its DID, its DID document, and the issuers authorized to vouch for it, the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ([@?IDP-REGISTRATION]).
+This document defines the syntax of handles, the resolution of a handle to its DID, its DID document, and the issuer authorized to vouch for it, the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ([@?IDP-REGISTRATION]).
 
 .# Discussion Venues
 
@@ -183,7 +183,7 @@ A website that wants to let users sign in with an AT Protocol handle today uses 
 HVP separates the problem into three parts:
 
 1. **Syntax** ((#handles)): what a handle is, and how it is written and normalized.
-2. **Resolution** ((#resolution)): how a handle is resolved to a DID and a DID document, checked against the handle, and turned into the set of issuers that the user has authorized to vouch for it. Resolution is the handle resolution of the AT Protocol, plus a single `HandleIssuer` service that the user adds to their DID document to opt in to an issuer.
+2. **Resolution** ((#resolution)): how a handle is resolved to a DID and a DID document, checked against the handle, and turned into the issuer that the user has authorized to vouch for it. Resolution is the handle resolution of the AT Protocol, plus a single `HandleIssuer` service that the user adds to their DID document to opt in to an issuer.
 3. **Issuance and verification**: how a browser obtains a Handle Verification Token (HVT) from an authorized issuer, and how a verifier verifies it. This part reuses the token request, key binding, and token format of EVP.
 
 HVP keeps the privacy properties of EVP: the browser intermediates between the verifier and the issuer, so the issuer does not learn which verifier the user is signing in to.
@@ -215,10 +215,10 @@ DID:
 : A decentralized identifier ([@?DID-CORE]) that identifies an AT Protocol account permanently, such as `did:plc:bftbdgcbe4zclvpkboe4hleq`. A handle resolves to a DID.
 
 DID document:
-: The document that a DID resolves to. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuers.
+: The document that a DID resolves to. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuer.
 
-Authorized issuers:
-: The set of issuer identifiers that the DID document names with `HandleIssuer` services ((#handle-issuer)). Only an authorized issuer can issue an HVT that a verifier accepts for that handle.
+Authorized issuer:
+: The issuer identifier that the DID document names with its `HandleIssuer` service ((#handle-issuer)). Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.
 
 Issuer:
 : A service that verifies the user controls a handle and issues HVTs for it. An issuer is identified by an issuer identifier ((#issuer-identifier)).
@@ -244,7 +244,7 @@ Step                       Verifier     Browser              Issuer
 3.2 Session Binding            |--- nonce ->|                    |
                                |            |                    |
 3.3 Handle Resolution          |   [resolve handle: DID,         |
-                               |    DID document, issuers]       |
+                               |    DID document, issuer]        |
                                |            |                    |
 3.4 Token Request              |            |-- POST /issuance ->|
                                |            |   (handle, ...)    |
@@ -271,7 +271,7 @@ As in [@!EVP]: the verifier generates a cryptographically random nonce with at l
 
 ## Handle Resolution {#flow-resolution}
 
-The browser resolves the handle as described in (#resolution). Resolution produces the DID and the set of authorized issuers. The browser selects one authorized issuer, and fetches its metadata ((#issuer-metadata)). If the handle has more than one authorized issuer, which one the browser selects is up to the browser API. From this point onward, the handle is never altered: it is sent byte-for-byte in the token request, and returned byte-for-byte in the `handle` claim.
+The browser resolves the handle as described in (#resolution). Resolution produces the DID and the authorized issuer. The browser fetches the issuer's metadata ((#issuer-metadata)). From this point onward, the handle is never altered: it is sent byte-for-byte in the token request, and returned byte-for-byte in the `handle` claim.
 
 ## Token Request {#token-request}
 
@@ -357,9 +357,9 @@ An email address is never a handle, because `@` is not allowed in a handle. A br
 
 - the user's *DID*, which is the subject of the HVT;
 - the user's *DID document*; and
-- the set of *authorized issuers* for the handle.
+- the *authorized issuer* for the handle.
 
-It follows the handle resolution of the AT Protocol ([@?ATPROTO-HANDLE], [@?ATPROTO-DID]), which this section restates so that it can be used independently of that protocol, and adds the extraction of authorized issuers.
+It follows the handle resolution of the AT Protocol ([@?ATPROTO-HANDLE], [@?ATPROTO-DID]), which this section restates so that it can be used independently of that protocol, and adds the extraction of the authorized issuer.
 
 Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for a token; the verifier does it to check that the token was issued by an issuer that is authorized for the handle ((#verification)).
 
@@ -383,7 +383,7 @@ Given a normalized handle *handle*:
 
 3. **Back-link.** Find the first element of the DID document's `alsoKnownAs` array that is `at://` followed by a string that satisfies (#handle-syntax). After normalization, that string MUST be identical to *handle*. Otherwise fail. This check ensures that a DID document cannot be claimed by a handle that it did not agree to.
 
-4. **Issuers.** The authorized issuers are the `serviceEndpoint` values of the DID document's `HandleIssuer` services ((#handle-issuer)). If there are none, fail.
+4. **Issuer.** The authorized issuer is the `serviceEndpoint` of the DID document's `HandleIssuer` service ((#handle-issuer)). If there is none, fail.
 
 If any step fails, resolution fails.
 
@@ -403,18 +403,22 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
   -> alsoKnownAs: ["at://samuelgoto.bsky.social"]
 ```
 
-so its DID is `did:plc:bftbdgcbe4zclvpkboe4hleq`. Its DID document has no `HandleIssuer` service yet, so it has no authorized issuers. See (#examples).
+so its DID is `did:plc:bftbdgcbe4zclvpkboe4hleq`. Its DID document has no `HandleIssuer` service yet, so it has no authorized issuer. See (#examples).
 
 ## The HandleIssuer Service {#handle-issuer}
 
-A DID document names the issuers authorized to vouch for its handle with services ([@?DID-CORE]) whose `type` is `HandleIssuer` and whose `serviceEndpoint` is an issuer identifier ((#issuer-identifier)):
+A DID document names the issuer authorized to vouch for its handle with a service ([@?DID-CORE]) whose `id` is `#handle_issuer`, whose `type` is `HandleIssuer`, and whose `serviceEndpoint` is an issuer identifier ((#issuer-identifier)):
 
 ```json
 { "id": "#handle_issuer", "type": "HandleIssuer",
   "serviceEndpoint": "https://issuer.example" }
 ```
 
-A `HandleIssuer` service whose `serviceEndpoint` is not an issuer identifier, that is, not an `https` origin with no path, query, or fragment, is ignored. A DID document without any valid `HandleIssuer` service has no authorized issuers, and HVP cannot be used with its handle.
+The service is identified by its `id`, which can also be written as the DID followed by `#handle_issuer`, in the same way that the AT Protocol identifies the account's PDS by the `id` `#atproto_pds` ([@?ATPROTO-DID]). Service `id`s are unique within a DID document ([@?DID-CORE]), and in `did:plc` services are stored as a map keyed by `id` ([@?DID-PLC]), so a DID document names at most one issuer.
+
+If the DID document has no service whose `id` is `#handle_issuer`, or that service's `type` is not `HandleIssuer`, or its `serviceEndpoint` is not an issuer identifier, that is, not an `https` origin with no path, query, or fragment, the handle has no authorized issuer, and HVP cannot be used with it.
+
+Because a handle has a single authorized issuer, a change of issuer takes effect at once: as soon as the DID document names a new issuer, HVTs from the previous one no longer verify. This is the same as when a user moves their account to another PDS.
 
 Authorization is always explicit: resolution does not infer an issuer from the account's existing services, such as its PDS (the `#atproto_pds` service) or the PDS's authorization server. An issuer has to deploy HVP anyway, and requiring the DID document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See (#why-opt-in).
 
@@ -434,7 +438,7 @@ A resolving party MAY cache the results of resolution, subject to DNS time-to-li
 
 An issuer identifier is an HTTPS origin: the string `https://` followed by a host, with no port, path, or trailing slash, for example `https://issuer.example`. This is the same form as the issuer identifier of [@!EVP], and for the same reasons: it names the same thing as the `iss` claim of OpenID Connect and the issuer of [@!RFC8414], and it can be compared byte-for-byte.
 
-Every use of the issuer identity in this document (the authorized issuers that resolution yields, the `iss` claim of the HVT, the `issuer` member of the metadata, and the base of the well-known URL) is this origin. Comparisons are byte-for-byte; no scheme defaulting, port normalization, or trailing-slash tolerance is applied.
+Every use of the issuer identity in this document (the authorized issuer that resolution yields, the `iss` claim of the HVT, the `issuer` member of the metadata, and the base of the well-known URL) is this origin. Comparisons are byte-for-byte; no scheme defaulting, port normalization, or trailing-slash tolerance is applied.
 
 ## Issuer Metadata {#issuer-metadata}
 
@@ -495,7 +499,7 @@ On receipt of a token request, the issuer:
 1. Verifies the request headers, the HTTP Message Signature, and the `Content-Digest`, as in the request verification of [@!EVP], with `handle-verification` in place of `email-verification` as the expected `Sec-Fetch-Dest`.
 2. Verifies that `handle` satisfies (#handle-syntax) and is in normalized form ((#normalization)). If it is not, the issuer returns an `invalid_request` error ((#errors)).
 3. Checks that the cookies represent a signed-in user who controls the handle. If they do not, the issuer returns an `authentication_required` error.
-4. SHOULD resolve the handle ((#resolution)) and check that it is one of the authorized issuers and that the DID is the user's. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.
+4. SHOULD resolve the handle ((#resolution)) and check that it is the authorized issuer and that the DID is the user's. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.
 5. Creates an HVT ((#hvt-creation)) and returns it as the value of `issuance_token` in an `application/json` response, as in [@!EVP].
 
 # Handle Verification Token (HVT) {#hvt}
@@ -559,7 +563,7 @@ Both the browser and the verifier verify the HVT:
 3. Extract the `iss`, `iat`, `cnf`, `handle`, and `sub` claims. Verify that `handle` satisfies (#handle-syntax) and is in normalized form.
 4. Resolve `handle` ((#resolution)), and verify that:
    - the DID that resolution produces is byte-for-byte identical to `sub`; and
-   - `iss` is byte-for-byte identical to one of the authorized issuers.
+   - `iss` is byte-for-byte identical to the authorized issuer.
 5. Fetch the issuer metadata from `iss` ((#issuer-metadata)).
 6. Fetch the issuer's public keys from its `jwks_uri`, and verify the HVT's signature with the key identified by `kid`.
 7. Verify that `iat` is within an acceptable time window.
@@ -627,11 +631,11 @@ A browser or verifier can remove the PLC directory from per-sign-in traffic enti
 
 ## Resolution Is Not Authentication
 
-Resolution establishes which issuers are authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the verifier accepts, because the verifier resolves the handle itself.
+Resolution establishes which issuer is authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the verifier accepts, because the verifier resolves the handle itself.
 
 ## DNS Spoofing {#dns-security}
 
-Resolution relies on DNS `TXT` records, which are not authenticated unless DNSSEC is used. As in [@!EVP], spoofing the browser's DNS resolution discloses the handle to the attacker but yields no token the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuers. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.
+Resolution relies on DNS `TXT` records, which are not authenticated unless DNSSEC is used. As in [@!EVP], spoofing the browser's DNS resolution discloses the handle to the attacker but yields no token the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuer. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.
 
 ## Domain Control Is Handle Control
 
@@ -641,20 +645,16 @@ Every handle rests on control of a DNS name: whoever controls the handle's domai
 
 Handles can be reassigned: a domain can expire and be re-registered, and a hosting provider can let a new account take a handle that a deleted account used. Verifiers SHOULD identify accounts by the DID in the `sub` claim rather than by the `handle` claim. A DID survives changes of handle and of PDS, so a verifier that keys accounts on it is not affected when a handle moves to another account.
 
-## Multiple Authorized Issuers
-
-A handle can have more than one authorized issuer, when its DID document has more than one `HandleIssuer` service. Any of them can issue an HVT that the verifier accepts, so the security of the handle is the security of the weakest of them. This is the user's choice.
-
 ## Trust in the PLC Directory {#plc-trust}
 
-For `did:plc` DIDs, resolution trusts the PLC directory to return the current DID document, and therefore the current authorized issuers.
+For `did:plc` DIDs, resolution trusts the PLC directory to return the current DID document, and therefore the current authorized issuer.
 
 Operations in the PLC directory are signed by the account's rotation keys, and the DID is derived from the hash of the signed genesis operation, so the operation log is self-certifying: a resolving party can fetch the log and verify it instead of trusting the directory's rendering of the DID document. Doing so prevents the directory from forging operations, and therefore from naming an issuer that the account's rotation keys did not authorize.
 
 Verifying the log does not remove all trust in the directory. As the "PLC Server Trust Model" section of [@?DID-PLC] states, some trust in the directory is required, and its attacks are limited to:
 
-- **Denial of service:** rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that removes a `HandleIssuer` service, so that a resolving party keeps accepting tokens from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.
-- **Misordering:** in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which `HandleIssuer` services are in effect.
+- **Denial of service:** rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that changes or removes the `HandleIssuer` service, so that a resolving party keeps accepting tokens from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.
+- **Misordering:** in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which `HandleIssuer` service is in effect.
 
 Neither the browser nor the verifier can detect these attacks. Operations are submitted only to the PLC directory, and are not published anywhere else that a resolving party could observe independently: mirrors and replicas obtain their operations from the directory, and the timestamps that the directory assigns to operations, on which the resolution of forks depends, are not signed. Both the browser and the verifier therefore place this trust in the PLC directory, and HVP inherits it for every handle that resolves to a `did:plc` DID. Handles that resolve to a `did:web` DID instead rely on the security of the DID's domain, as described in (#dns-security).
 
@@ -777,7 +777,7 @@ DID:           did:plc:thaoj4hhvraos7y6v3yog7re
 To opt in, add to the DID document's services:
   { "id": "#handle_issuer", "type": "HandleIssuer",
     "serviceEndpoint": "https://pds.sgo.to" }
-Issuers:       https://pds.sgo.to
+Issuer:        https://pds.sgo.to
 ```
 
 ## Handle on a Hosted PDS
@@ -792,7 +792,7 @@ DID:           did:plc:bftbdgcbe4zclvpkboe4hleq
 To opt in, add to the DID document's services:
   { "id": "#handle_issuer", "type": "HandleIssuer",
     "serviceEndpoint": "https://bsky.social" }
-Issuers:       https://bsky.social
+Issuer:        https://bsky.social
 ```
 
 # Relationship to IdP Registration {#idp-registration}
@@ -802,7 +802,7 @@ Issuers:       https://bsky.social
 The W3C IdP Registration API ([@?IDP-REGISTRATION]) extends FedCM ([@?FEDCM]) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API ([@?EMAIL-VERIFICATION-API]) relates to EVP:
 
 - The browser API decides which handles to offer, lets the user register and select them, and delivers the token to the verifier. HVP defines what a handle is, how it is resolved, and how the token is issued and verified.
-- The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. For AT Protocol handles, it could instead use the syntax and resolution of this document, so that the identity provider of a handle is one of its authorized issuers.
+- The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. For AT Protocol handles, it could instead use the syntax and resolution of this document, so that the identity provider of a handle is its authorized issuer.
 - A verifier request for a "federation" in that API could correspond to HVP, and the token that the verifier receives could be an HVT+KB.
 
 # Acknowledgments

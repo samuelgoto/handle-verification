@@ -410,11 +410,9 @@ Both the browser and the verifier perform resolution. The browser does it to fin
 
 Given a normalized handle *handle*:
 
-1. **Handle to DID.** Perform the following lookups in parallel. A resolving party MUST perform the first two, and MAY also perform the last two, which provide compatibility with existing AT Protocol handles ((#atproto-compat)). A lookup that fails, or yields no DID, is ignored. If the lookups that yield a DID do not all yield the same DID, fail. If none yields a DID, fail. The DID MUST use the `plc` method ([@?DID-PLC]) or the `web` method ([@?DID-WEB]); otherwise fail. A handle near the 253-character limit cannot use the DNS lookups, because the prefix would push the query name over the limit; the well-known lookups work for such handles.
+1. **Handle to DID.** Perform the following lookups in parallel. A resolving party MAY also perform, in parallel with them, the lookups for existing AT Protocol handles defined in (#atproto-compat). A lookup that fails, or yields no DID, is ignored. If the lookups that yield a DID, including any lookups of (#atproto-compat), do not all yield the same DID, fail. If none yields a DID, fail. The DID MUST use the `plc` method ([@?DID-PLC]) or the `web` method ([@?DID-WEB]); otherwise fail. A handle near the 253-character limit cannot use the DNS lookups, because the prefix would push the query name over the limit; the well-known lookups work for such handles.
    - **DNS `TXT` record.** Query `TXT` records at the name `_handle.` *handle*. Ignore records whose value does not start with `did=`. The DID is the remainder of the value. This method aligns with [@?RFC1464].
    - **Well-known document.** `GET https://` *handle* `/.well-known/handle`. A 2xx response with the `application/json` media type is a JSON object whose `did` member is the DID. Other members are reserved for future use and are ignored.
-   - **AT Protocol DNS `TXT` record (optional).** As the DNS `TXT` record above, at the name `_atproto.` *handle* ((#atproto-compat)).
-   - **AT Protocol well-known URL (optional).** `GET https://` *handle* `/.well-known/atproto-did`. A 2xx response with the `text/plain` media type contains the DID, with leading and trailing whitespace removed ((#atproto-compat)).
 
 2. **DID to DID document.** Resolve the DID to its DID document ([@?DID-CORE]), whose `id` member MUST be identical to the DID:
    - For `did:plc`, `GET` the DID from a PLC directory, by default `https://plc.directory/` followed by the DID.
@@ -462,7 +460,12 @@ so its DID is `did:plc:bftbdgcbe4zclvpkboe4hleq`. Its DID document has no `Handl
 
 The AT Protocol maps a handle to a DID with a `TXT` record at `_atproto.` followed by the handle, and with the well-known URL `/.well-known/atproto-did` ([@?ATPROTO-HANDLE]). These names are specific to the AT Protocol. This document defines ecosystem-neutral names, `_handle` and `/.well-known/handle`, which every resolving party queries.
 
-A resolving party that wants to resolve existing AT Protocol handles, which publish only the AT Protocol names, MAY also query those names, in parallel with the new ones ((#resolution-steps)), and accept a DID from any of them. A handle whose records name different DIDs then fails to resolve, in the same way that an AT Protocol handle with conflicting `_atproto` records fails today. Whether to perform these lookups is up to each resolving party, depending on whether it cares about AT Protocol handles that have not adopted the new names.
+A resolving party that wants to resolve existing AT Protocol handles, which publish only the AT Protocol names, MAY perform the following lookups in step 1 of resolution ((#resolution-steps)), in parallel with the lookups defined there, and accept a DID from any of them:
+
+- **AT Protocol DNS `TXT` record.** Query `TXT` records at the name `_atproto.` *handle*. Ignore records whose value does not start with `did=`. The DID is the remainder of the value.
+- **AT Protocol well-known URL.** `GET https://` *handle* `/.well-known/atproto-did`. A 2xx response with the `text/plain` media type contains the DID, with leading and trailing whitespace removed.
+
+A handle whose records name different DIDs then fails to resolve, in the same way that an AT Protocol handle with conflicting `_atproto` records fails today. Whether to perform these lookups is up to each resolving party, depending on whether it cares about AT Protocol handles that have not adopted the new names.
 
 As a consequence:
 

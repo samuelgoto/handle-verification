@@ -1755,19 +1755,13 @@ alnum     = ALPHA / DIGIT
 <p id="section-5.1-1">Given a normalized handle <em>handle</em>:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-2">
 <li id="section-5.1-2.1">
-            <p id="section-5.1-2.1.1"><strong>Handle to DID.</strong> Perform the following lookups in parallel. A resolving party MUST perform the first two, and MAY also perform the last two, which provide compatibility with existing AT Protocol handles (<a href="#atproto-compat" class="auto internal xref">Section 5.2</a>). A lookup that fails, or yields no DID, is ignored. If the lookups that yield a DID do not all yield the same DID, fail. If none yields a DID, fail. The DID MUST use the <code>plc</code> method (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>) or the <code>web</code> method (<span>[<a href="#DID-WEB" class="cite xref">DID-WEB</a>]</span>); otherwise fail. A handle near the 253-character limit cannot use the DNS lookups, because the prefix would push the query name over the limit; the well-known lookups work for such handles.<a href="#section-5.1-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-2.1.1"><strong>Handle to DID.</strong> Perform the following lookups in parallel. A resolving party MAY also perform, in parallel with them, the lookups for existing AT Protocol handles defined in <a href="#atproto-compat" class="auto internal xref">Section 5.2</a>. A lookup that fails, or yields no DID, is ignored. If the lookups that yield a DID, including any lookups of <a href="#atproto-compat" class="auto internal xref">Section 5.2</a>, do not all yield the same DID, fail. If none yields a DID, fail. The DID MUST use the <code>plc</code> method (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>) or the <code>web</code> method (<span>[<a href="#DID-WEB" class="cite xref">DID-WEB</a>]</span>); otherwise fail. A handle near the 253-character limit cannot use the DNS lookups, because the prefix would push the query name over the limit; the well-known lookups work for such handles.<a href="#section-5.1-2.1.1" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-5.1-2.1.2.1">
                 <strong>DNS <code>TXT</code> record.</strong> Query <code>TXT</code> records at the name <code>_handle.</code> <em>handle</em>. Ignore records whose value does not start with <code>did=</code>. The DID is the remainder of the value. This method aligns with <span>[<a href="#RFC1464" class="cite xref">RFC1464</a>]</span>.<a href="#section-5.1-2.1.2.1" class="pilcrow">¶</a>
 </li>
               <li class="compact" id="section-5.1-2.1.2.2">
                 <strong>Well-known document.</strong> <code>GET https://</code> <em>handle</em> <code>/.well-known/handle</code>. A 2xx response with the <code>application/json</code> media type is a JSON object whose <code>did</code> member is the DID. Other members are reserved for future use and are ignored.<a href="#section-5.1-2.1.2.2" class="pilcrow">¶</a>
-</li>
-              <li class="compact" id="section-5.1-2.1.2.3">
-                <strong>AT Protocol DNS <code>TXT</code> record (optional).</strong> As the DNS <code>TXT</code> record above, at the name <code>_atproto.</code> <em>handle</em> (<a href="#atproto-compat" class="auto internal xref">Section 5.2</a>).<a href="#section-5.1-2.1.2.3" class="pilcrow">¶</a>
-</li>
-              <li class="compact" id="section-5.1-2.1.2.4">
-                <strong>AT Protocol well-known URL (optional).</strong> <code>GET https://</code> <em>handle</em> <code>/.well-known/atproto-did</code>. A 2xx response with the <code>text/plain</code> media type contains the DID, with leading and trailing whitespace removed (<a href="#atproto-compat" class="auto internal xref">Section 5.2</a>).<a href="#section-5.1-2.1.2.4" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
@@ -1830,18 +1824,27 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-compatibility-with-the-at-p" class="section-name selfRef">Compatibility with the AT Protocol</a>
         </h3>
 <p id="section-5.2-1">The AT Protocol maps a handle to a DID with a <code>TXT</code> record at <code>_atproto.</code> followed by the handle, and with the well-known URL <code>/.well-known/atproto-did</code> (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>). These names are specific to the AT Protocol. This document defines ecosystem-neutral names, <code>_handle</code> and <code>/.well-known/handle</code>, which every resolving party queries.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.2-2">A resolving party that wants to resolve existing AT Protocol handles, which publish only the AT Protocol names, MAY also query those names, in parallel with the new ones (<a href="#resolution-steps" class="auto internal xref">Section 5.1</a>), and accept a DID from any of them. A handle whose records name different DIDs then fails to resolve, in the same way that an AT Protocol handle with conflicting <code>_atproto</code> records fails today. Whether to perform these lookups is up to each resolving party, depending on whether it cares about AT Protocol handles that have not adopted the new names.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
-<p id="section-5.2-3">As a consequence:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">A resolving party that wants to resolve existing AT Protocol handles, which publish only the AT Protocol names, MAY perform the following lookups in step 1 of resolution (<a href="#resolution-steps" class="auto internal xref">Section 5.1</a>), in parallel with the lookups defined there, and accept a DID from any of them:<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-5.2-4.1">A handle that is published with the new names resolves for every resolving party.<a href="#section-5.2-4.1" class="pilcrow">¶</a>
+<li class="compact" id="section-5.2-3.1">
+            <strong>AT Protocol DNS <code>TXT</code> record.</strong> Query <code>TXT</code> records at the name <code>_atproto.</code> <em>handle</em>. Ignore records whose value does not start with <code>did=</code>. The DID is the remainder of the value.<a href="#section-5.2-3.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-5.2-4.2">A handle that is published with the AT Protocol names only resolves only for resolving parties that perform the optional lookups. If the browser performs them and the verifier does not, the verifier fails to resolve the handle, and rejects the token.<a href="#section-5.2-4.2" class="pilcrow">¶</a>
-</li>
-          <li class="compact" id="section-5.2-4.3">Operators of handle domains SHOULD publish the new names, so that their handles resolve for every resolving party, and MAY also publish the AT Protocol names, for AT Protocol software that does not yet support the new ones. Operators that publish both MUST keep them consistent.<a href="#section-5.2-4.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-5.2-3.2">
+            <strong>AT Protocol well-known URL.</strong> <code>GET https://</code> <em>handle</em> <code>/.well-known/atproto-did</code>. A 2xx response with the <code>text/plain</code> media type contains the DID, with leading and trailing whitespace removed.<a href="#section-5.2-3.2" class="pilcrow">¶</a>
 </li>
         </ul>
-<blockquote id="section-5.2-5">
-          <p id="section-5.2-5.1">Open Issue: Whether, and when, the AT Protocol adopts the new names, and whether resolving parties can eventually stop querying the AT Protocol names. This needs coordination with the AT Protocol community and the IETF ATP working group.<a href="#section-5.2-5.1" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">A handle whose records name different DIDs then fails to resolve, in the same way that an AT Protocol handle with conflicting <code>_atproto</code> records fails today. Whether to perform these lookups is up to each resolving party, depending on whether it cares about AT Protocol handles that have not adopted the new names.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">As a consequence:<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-5.2-6.1">A handle that is published with the new names resolves for every resolving party.<a href="#section-5.2-6.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-5.2-6.2">A handle that is published with the AT Protocol names only resolves only for resolving parties that perform the optional lookups. If the browser performs them and the verifier does not, the verifier fails to resolve the handle, and rejects the token.<a href="#section-5.2-6.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-5.2-6.3">Operators of handle domains SHOULD publish the new names, so that their handles resolve for every resolving party, and MAY also publish the AT Protocol names, for AT Protocol software that does not yet support the new ones. Operators that publish both MUST keep them consistent.<a href="#section-5.2-6.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<blockquote id="section-5.2-7">
+          <p id="section-5.2-7.1">Open Issue: Whether, and when, the AT Protocol adopts the new names, and whether resolving parties can eventually stop querying the AT Protocol names. This needs coordination with the AT Protocol community and the IETF ATP working group.<a href="#section-5.2-7.1" class="pilcrow">¶</a></p>
 </blockquote>
 </section>
 </div>

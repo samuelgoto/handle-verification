@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>URL Handle Verification Protocol</title>
+<meta content="Sam Goto" name="author">
+<meta content="@bumblefudge.com" name="author">
+<meta content="
+       This document defines the URL Handle Verification Protocol (URL-HVP), which extends the Handle Verification Protocol ( ) to  URL handles : users who are identified by an  https  URL, such as a Solid WebID, an ActivityPub actor, or the URL of a personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a  handleIssuer  property of the document or by a  handle-issuer  link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as for a domain handle in HVP. The resolution is not specific to any ecosystem. 
+    " name="description">
+<meta content="xml2rfc 3.31.0" name="generator">
+<meta content="handle" name="keyword">
+<meta content="verification" name="keyword">
+<meta content="identity" name="keyword">
+<meta content="authentication" name="keyword">
+<meta content="url" name="keyword">
+<meta content="webid" name="keyword">
+<meta content="actor" name="keyword">
+<meta content="draft-goto-url-handle-verification-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.31.0
+    Python 3.9.6
+    ConfigArgParse 1.8.0
+    google-i18n-address 3.1.1
+    intervaltree 3.2.1
+    Jinja2 3.1.6
+    lxml 6.0.2
+    platformdirs 4.4.0
+    pycountry 24.6.1
+    pypdf 6.21.1
+    PyYAML 6.0.3
+    requests 2.32.5
+    wcwidth 0.9.2
+-->
+<link href="draft-goto-url-handle-verification.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight {
+  margin: 1em 0;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
+}
+svg {
+  display: block;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
+}
+.alignCenter {
+  margin: 1em 0;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+      float: none;
+    }
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a {
+  text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
+}
+.iref + a[href].internal {
+  color: var(--text-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
+  }
+  @media print {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+  & .prepared {
+    float: right;
+  }
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
+  }
+}
+
+/* Comments */
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
+      }
+    }
+    & a.toplink {
+      float: right;
+    }
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
+    }
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc {
+    page-break-before: always;
+    border-top: none;
+    padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">URL-HVP</td>
+<td class="right">October 2026</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Goto &amp; @bumblefudge.com</td>
+<td class="center">Expires 27 April 2027</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">TBD</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-goto-url-handle-verification-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2026-10-24" class="published">24 October 2026</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2027-04-27">27 April 2027</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">S. Goto</div>
+<div class="org">Google</div>
+</div>
+<div class="author">
+      <div class="author-name">@bumblefudge.com</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">URL Handle Verification Protocol</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document defines the URL Handle Verification Protocol (URL-HVP), which extends the Handle Verification Protocol (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>) to <em>URL handles</em>: users who are identified by an <code>https</code> URL, such as a Solid WebID, an ActivityPub actor, or the URL of a personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a <code>handleIssuer</code> property of the document or by a <code>handle-issuer</code> link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as for a domain handle in HVP. The resolution is not specific to any ecosystem.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-discussion-venues">
+<a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
+      </h2>
+<p id="section-note.1-1"><em>Note: This section is to be removed before publishing as an RFC.</em><a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Source for this draft and an issue tracker can be found at <a href="https://github.com/samuelgoto/handle-verification">https://github.com/samuelgoto/handle-verification</a>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 27 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2026 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-protocol-flow" class="internal xref">Protocol Flow</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-url-handles" class="internal xref">URL Handles</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-syntax" class="internal xref">Syntax</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-normalization" class="internal xref">Normalization</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-parsing-user-input" class="internal xref">Parsing User Input</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-handle-resolution" class="internal xref">Handle Resolution</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-the-subject-node" class="internal xref">The Subject Node</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-the-handleissuer-property" class="internal xref">The handleIssuer Property</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-the-handle-issuer-link" class="internal xref">The handle-issuer Link</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-issuance-and-verification" class="internal xref">Issuance and Verification</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-documents-that-name-other-a" class="internal xref">Documents That Name Other Accounts</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-host-control-is-handle-cont" class="internal xref">Host Control Is Handle Control</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-handle-reassignment" class="internal xref">Handle Reassignment</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.4">
+                <p id="section-toc.1-1.8.2.4.1"><a href="#section-8.4" class="auto internal xref">8.4</a>.  <a href="#name-content-negotiation" class="internal xref">Content Negotiation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-design-rationale" class="internal xref">Design Rationale</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-why-a-new-property-rather-t" class="internal xref">Why a New Property, Rather Than solid:oidcIssuer?</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-why-content-negotiation" class="internal xref">Why Content Negotiation?</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="auto internal xref">10.3</a>.  <a href="#name-why-replace-the-handle-with" class="internal xref">Why Replace the Handle With the Canonical Identifier?</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.4">
+                <p id="section-toc.1-1.10.2.4.1"><a href="#section-10.4" class="auto internal xref">10.4</a>.  <a href="#name-why-not-process-json-ld" class="internal xref">Why Not Process JSON-LD?</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
+                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
+                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.1">
+                <p id="section-toc.1-1.14.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-solid-webid" class="internal xref">Solid WebID</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.2">
+                <p id="section-toc.1-1.14.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-activitypub-actor" class="internal xref">ActivityPub Actor</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.3">
+                <p id="section-toc.1-1.14.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-website-that-serves-an-acto" class="internal xref">Website That Serves an Actor at Another URL</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.4">
+                <p id="section-toc.1-1.14.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-indieauth-website" class="internal xref">IndieAuth Website</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
+            <p id="section-toc.1-1.16.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">The Handle Verification Protocol (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP covers domain handles, such as <code>@alice.example</code>, and the Username Handle Verification Protocol (<span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>) extends it to username handles, such as <code>@alice@social.example</code>.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Several ecosystems identify users with an <code>https</code> URL instead:<a href="#section-1-2" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-1-3.1">Solid identifies users with a WebID (<span>[<a href="#WEBID" class="cite xref">WEBID</a>]</span>), such as <code>https://alice.solidcommunity.net/profile/card#me</code>, whose profile document describes the user (<span>[<a href="#SOLID-WEBID-PROFILE" class="cite xref">SOLID-WEBID-PROFILE</a>]</span>).<a href="#section-1-3.1" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-1-3.2">ActivityPub (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>) identifies actors with the URL of their actor object, such as <code>https://social.example/users/alice</code>. Handles of the form <code>@alice@social.example</code> are a convention of some implementations, and are covered by <span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>; the actor URL is the identifier that ActivityPub itself defines.<a href="#section-1-3.2" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-1-3.3">IndieAuth (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>) identifies users with the URL of their personal website, such as <code>https://alice.example/</code>.<a href="#section-1-3.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-1-4">In each, fetching the URL returns a document about the user: Solid and ActivityPub servers serve it as JSON-LD (<span>[<a href="#JSON-LD11" class="cite xref">JSON-LD11</a>]</span>) through content negotiation (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span>), and an IndieAuth website serves HTML with <code>Link</code> headers and <code>&lt;link&gt;</code> elements. This document calls such a URL a <em>URL handle</em>, and extends HVP so that it can be verified. It replaces HVP's resolution with one that fetches the URL, finds the canonical identifier of the account in the document, and reads the issuer that the user has authorized from a new <code>handleIssuer</code> property or a <code>handle-issuer</code> link. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP, with the identifier carried in a <code>url</code> member rather than a <code>did</code> member.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">The resolution does not depend on the ecosystem: it reads the same property, with the same algorithm, from a Solid profile, an ActivityPub actor, or any other JSON-LD document, and the same link from any HTML page.<a href="#section-1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">This document uses the terms issuer, issuer identifier, authorized issuer, Handle Verification Token (HVT), HVT+KB, and verifier as defined in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, and the following terms:<a href="#section-2-2" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-2-3">
+        <dt id="section-2-3.1">URL handle:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.2">A handle that is an <code>https</code> URL, such as <code>https://alice.solidcommunity.net/profile/card#me</code> or <code>https://social.example/users/alice</code>. Unlike domain handles and username handles, it is displayed as is, without a leading <code>@</code>. See <a href="#url-handles" class="auto internal xref">Section 4</a>.<a href="#section-2-3.2" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.3">Identity document:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.4">The document that is served at a URL handle, which describes the user. See <a href="#resolution" class="auto internal xref">Section 5</a>.<a href="#section-2-3.4" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.5">Unique user identifier:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.6">As in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, an identifier of the user's account that resolution produces, and that the HVT carries in its <code>sub</code> claim. For a URL handle, it is the canonical URL of the account, as named by its identity document. Resolution replaces the URL handle with it (<a href="#why-canonical" class="auto internal xref">Section 10.3</a>).<a href="#section-2-3.6" class="pilcrow">¶</a>
+</dd>
+      <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="protocol-flow">
+<section id="section-3">
+      <h2 id="name-protocol-flow">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-protocol-flow" class="section-name selfRef">Protocol Flow</a>
+      </h2>
+<p id="section-3-1">The protocol flow is the flow of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, with the following differences:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-3-2.1">The handle is a URL handle (<a href="#url-handles" class="auto internal xref">Section 4</a>).<a href="#section-3-2.1" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-3-2.2">The browser and the verifier resolve the handle as described in <a href="#resolution" class="auto internal xref">Section 5</a>, by fetching it, rather than through a DID.<a href="#section-3-2.2" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-3-2.3">The HVT request carries the unique user identifier in its <code>url</code> member, and the <code>sub</code> claim of the HVT is that URL (<a href="#issuance" class="auto internal xref">Section 6</a>).<a href="#section-3-2.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<div class="alignLeft art-text artwork" id="section-3-3">
+<pre>Step                       Verifier     Browser              Issuer
+                               |            |                    |
+Handle Discovery               |      [obtain URL from user]     |
+                               |            |                    |
+Session Binding                |--- nonce -&gt;|                    |
+                               |            |                    |
+Handle Resolution              |   [GET URL: unique user         |
+                               |    identifier, issuer]          |
+                               |            |                    |
+HVT Request                    |            |-- POST /issuance -&gt;|
+                               |            |   (handle, url)    |
+                               |            |                    |
+HVT Issuance                   |            |&lt;------- HVT -------|
+                               |            |                    |
+KB Creation                    |        [create KB-JWT]          |
+                               |            |                    |
+HVT+KB Presentation            |&lt;-- HVT+KB -|                    |
+                               |            |                    |
+HVT+KB Verification [GET URL;               |                    |
+                     verify HVT+KB]         |                    |
+</pre><a href="#section-3-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="url-handles">
+<section id="section-4">
+      <h2 id="name-url-handles">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-url-handles" class="section-name selfRef">URL Handles</a>
+      </h2>
+<div id="url-handle-syntax">
+<section id="section-4.1">
+        <h3 id="name-syntax">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-syntax" class="section-name selfRef">Syntax</a>
+        </h3>
+<p id="section-4.1-1">A URL handle is an absolute URL (<span>[<a href="#WHATWG.URL" class="cite xref">WHATWG.URL</a>]</span>) that satisfies the following rules:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-4.1-2.1">Its scheme is <code>https</code>.<a href="#section-4.1-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-4.1-2.2">It has no username or password.<a href="#section-4.1-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-4.1-2.3">Its host is a domain that satisfies the domain handle syntax of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, and does not end in one of the top-level domains that <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> excludes from resolution. As a consequence, IP addresses are not URL handles.<a href="#section-4.1-2.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-4.1-3">A URL handle can have a path, a query, and a fragment. The fragment is part of the handle, as in a WebID such as <code>https://alice.solidcommunity.net/profile/card#me</code>, which identifies a person rather than the document that describes them (<span>[<a href="#WEBID" class="cite xref">WEBID</a>]</span>), but is not sent when the handle is fetched.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="normalization">
+<section id="section-4.2">
+        <h3 id="name-normalization">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-normalization" class="section-name selfRef">Normalization</a>
+        </h3>
+<p id="section-4.2-1">The <em>normalized</em> form of a URL handle is the result of parsing it and serializing it with the URL parser and serializer of <span>[<a href="#WHATWG.URL" class="cite xref">WHATWG.URL</a>]</span>, which, among other things, converts the scheme and host to lowercase, removes the default port, and adds a <code>/</code> path to a URL that has none. Every URL handle and unique user identifier in this protocol is in normalized form, and every comparison of them is a byte-for-byte comparison of normalized forms.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="parsing">
+<section id="section-4.3">
+        <h3 id="name-parsing-user-input">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-parsing-user-input" class="section-name selfRef">Parsing User Input</a>
+        </h3>
+<p id="section-4.3-1">To parse a URL handle that a user typed:<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="compact type-1" id="section-4.3-2">
+<li id="section-4.3-2.1">Strip leading and trailing ASCII whitespace.<a href="#section-4.3-2.1" class="pilcrow">¶</a>
+</li>
+          <li id="section-4.3-2.2">If the input does not start with <code>https://</code>, compared ASCII case-insensitively, it is not a URL handle; it can still be a domain handle, parsed as described in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, or a username handle, parsed as described in <span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>.<a href="#section-4.3-2.2" class="pilcrow">¶</a>
+</li>
+          <li id="section-4.3-2.3">Normalize the input (<a href="#normalization" class="auto internal xref">Section 4.2</a>), and check that it satisfies <a href="#url-handle-syntax" class="auto internal xref">Section 4.1</a>.<a href="#section-4.3-2.3" class="pilcrow">¶</a>
+</li>
+        </ol>
+<p id="section-4.3-3">If any step fails, the input is not a URL handle.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Input</th>
+              <th class="text-left" rowspan="1" colspan="1">Handle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>https://Social.Example/users/alice</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>https://social.example/users/alice</code>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>https://alice.example</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>https://alice.example/</code>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>alice.example</code>, <code>@alice.example</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">not a URL handle (domain handle, see <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>)</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>http://alice.example/</code>, <code>https://192.0.2.1/</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">not a handle</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-4.3-5">A URL handle is always typed with its scheme, which distinguishes it from a domain handle: <code>alice.example</code> is a domain handle, and <code>https://alice.example/</code> is a URL handle. The two are resolved differently, and need not refer to the same account.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="resolution">
+<section id="section-5">
+      <h2 id="name-handle-resolution">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-handle-resolution" class="section-name selfRef">Handle Resolution</a>
+      </h2>
+<p id="section-5-1"><em>Resolution</em> takes a normalized URL handle and produces the user's unique user identifier and the authorized issuer for the handle. Both the browser and the verifier perform resolution, for the same reasons as in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, and the rules that <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> applies to every resolution step (on HTTP requests, redirects, limits, and caching) apply here too.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">Given a normalized URL handle <em>handle</em>:<a href="#section-5-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5-3">
+<li id="section-5-3.1">
+          <p id="section-5-3.1.1"><strong>Fetch.</strong> <code>GET</code> <em>handle</em>, without its fragment, with the following <code>Accept</code> header. The response MUST have a 2xx status code. The <em>final URL</em> is the URL of the response, after any redirects.<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5-3.1.2">
+<pre>Accept: application/ld+json;
+          profile="https://www.w3.org/ns/activitystreams",
+        application/ld+json;
+          profile="http://www.w3.org/ns/json-ld#expanded";q=0.9,
+        application/ld+json;q=0.8,
+        text/html;q=0.5
+</pre><a href="#section-5-3.1.2" class="pilcrow">¶</a>
+</div>
+</li>
+        <li id="section-5-3.2">
+          <p id="section-5-3.2.1"><strong>Parse.</strong> If the media type of the response is <code>application/json</code>, <code>application/ld+json</code>, <code>application/activity+json</code>, or another media type with the <code>+json</code> structured syntax suffix (<span>[<a href="#RFC6839" class="cite xref">RFC6839</a>]</span>), parse it as JSON, and find its subject node for <em>handle</em> (<a href="#subject-node" class="auto internal xref">Section 5.1</a>); if there is none, fail. If the media type is <code>text/html</code>, parse it as HTML (<span>[<a href="#WHATWG.HTML" class="cite xref">WHATWG.HTML</a>]</span>). Otherwise fail.<a href="#section-5-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-3.3">
+          <p id="section-5-3.3.1"><strong>Unique user identifier.</strong> For a JSON document, the unique user identifier is the <code>id</code> of the subject node (<a href="#subject-node" class="auto internal xref">Section 5.1</a>), normalized (<a href="#normalization" class="auto internal xref">Section 4.2</a>); if it does not satisfy <a href="#url-handle-syntax" class="auto internal xref">Section 4.1</a>, fail. For an HTML document, it is the final URL, with the fragment of <em>handle</em>, if any.<a href="#section-5-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-3.4">
+          <p id="section-5-3.4.1"><strong>Identity document.</strong> If the unique user identifier, without its fragment, is identical to the final URL, the response of step 1 is the identity document. Otherwise, the document names an account at another URL: <code>GET</code> the unique user identifier, as in step 1, and parse it, as in step 2. The final URL of this response MUST be same origin with the unique user identifier, the response MUST be a JSON document, and the <code>id</code> of its subject node for the unique user identifier MUST be identical to the unique user identifier. Otherwise fail. This response is the identity document. This step is not repeated: an identity document that names yet another account fails.<a href="#section-5-3.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-3.5">
+          <p id="section-5-3.5.1"><strong>Issuer.</strong> Collect the issuer identifiers that the identity document names: from its <code>Link</code> header fields (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) whose relation type is <code>handle-issuer</code> (<a href="#handle-issuer-link" class="auto internal xref">Section 5.3</a>); for a JSON document, from the <code>handleIssuer</code> property of its subject node (<a href="#handle-issuer-property" class="auto internal xref">Section 5.2</a>); and for an HTML document, from its <code>&lt;link&gt;</code> elements whose relation type is <code>handle-issuer</code> (<a href="#handle-issuer-link" class="auto internal xref">Section 5.3</a>). If there are none, or they are not all identical, or they are not an issuer identifier (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>), fail. Otherwise, it is the authorized issuer.<a href="#section-5-3.5.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-5-4">If any step fails, resolution fails.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">Resolution replaces the URL handle with the unique user identifier: from this point on, the unique user identifier is the handle, in the HVT request, in the HVT, and in what the browser displays. In most cases, the two are identical; they differ when the URL that the user typed serves a document about an account at another URL, or redirects to it. See <a href="#why-canonical" class="auto internal xref">Section 10.3</a>.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">For example, an ActivityPub actor resolves as follows:<a href="#section-5-6" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5-7">
+<pre>GET https://social.example/users/alice
+Accept: application/ld+json; profile="...activitystreams", ...
+  -&gt; Content-Type: application/activity+json
+     { "id": "https://social.example/users/alice",
+       "type": "Person",
+       "handleIssuer": "https://social.example", ... }
+User identifier: https://social.example/users/alice
+Issuer:          https://social.example
+</pre><a href="#section-5-7" class="pilcrow">¶</a>
+</div>
+<div id="subject-node">
+<section id="section-5.1">
+        <h3 id="name-the-subject-node">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-the-subject-node" class="section-name selfRef">The Subject Node</a>
+        </h3>
+<p id="section-5.1-1">Resolving parties do not perform JSON-LD processing (<span>[<a href="#JSON-LD11" class="cite xref">JSON-LD11</a>]</span>): they read JSON documents in the forms that Solid and ActivityPub servers serve, as follows. The <em>subject node</em> of a JSON document for a URL <em>url</em> is:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-5.1-2.1">If the document is a JSON object that has no <code>@graph</code> member, and that has an <code>id</code> or <code>@id</code> member whose value is a string, that object. Its <code>id</code> is the value of that member. This is the compacted form, which ActivityPub servers serve (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>).<a href="#section-5.1-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-5.1-2.2">Otherwise, if the document is a JSON array, or a JSON object whose <code>@graph</code> member is a JSON array, the element of that array that is a JSON object whose <code>@id</code> member, normalized (<a href="#normalization" class="auto internal xref">Section 4.2</a>), is identical to <em>url</em>. Its <code>id</code> is the value of that member. This is the expanded or flattened form, which Solid servers serve (<span>[<a href="#SOLID-PROTOCOL" class="cite xref">SOLID-PROTOCOL</a>]</span>).<a href="#section-5.1-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-5.1-2.3">Otherwise, the document has no subject node.<a href="#section-5.1-2.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-5.1-3">The <em>value</em> of a property of the subject node, whose short name is <em>name</em> and whose IRI is <em>iri</em>, is read from the member <em>name</em>, or else from the member <em>iri</em>, of the subject node. Its value MUST be a string, a JSON object whose <code>@id</code> or <code>@value</code> member is a string, or a JSON array of exactly one of these, and the property's value is that string. A property whose member is present with any other value is invalid, and resolution fails.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<blockquote id="section-5.1-4">
+          <p id="section-5.1-4.1">Open Issue: Reading JSON-LD without JSON-LD processing means that a document whose <code>@context</code> gives <code>handleIssuer</code> another meaning, or that uses another term or a compact IRI for the property, is read differently by a resolving party than by a JSON-LD processor. Resolving parties all read it the same way, so this does not let the browser and the verifier disagree, but whether this is acceptable to the JSON-LD community, or whether the <code>@context</code> should be checked, needs to be discussed.<a href="#section-5.1-4.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-4.2">Open Issue: A user who types the URL of their Solid profile document, such as <code>https://alice.solidcommunity.net/profile/card</code>, rather than their WebID, which ends in <code>#me</code>, gets the document's node as the subject node, which has no <code>handleIssuer</code> property. Whether resolution should follow the <code>foaf:primaryTopic</code> of the document to the WebID needs to be investigated.<a href="#section-5.1-4.2" class="pilcrow">¶</a></p>
+</blockquote>
+</section>
+</div>
+<div id="handle-issuer-property">
+<section id="section-5.2">
+        <h3 id="name-the-handleissuer-property">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-the-handleissuer-property" class="section-name selfRef">The handleIssuer Property</a>
+        </h3>
+<p id="section-5.2-1">An identity document names the issuer authorized to vouch for its handle with the <code>handleIssuer</code> property of its subject node, whose IRI is <code>https://w3id.org/handle-verification#handleIssuer</code>, and whose value is an issuer identifier (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>). A subject node names at most one issuer.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">In an ActivityPub actor, which is served in compacted form, the property is defined in the actor's <code>@context</code>:<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-5.2-3">
+<pre>{
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    { "handleIssuer": {
+        "@id": "https://w3id.org/handle-verification#handleIssuer",
+        "@type": "@id" } }
+  ],
+  "id": "https://social.example/users/alice",
+  "type": "Person",
+  "inbox": "https://social.example/users/alice/inbox",
+  "outbox": "https://social.example/users/alice/outbox",
+  "handleIssuer": "https://social.example"
+}
+</pre><a href="#section-5.2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-4">In a Solid WebID profile, which is authored in Turtle, the property is added to the WebID:<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.2-5">
+<pre>@prefix hvp: &lt;https://w3id.org/handle-verification#&gt; .
+&lt;#me&gt; hvp:handleIssuer &lt;https://solidcommunity.net&gt; .
+</pre><a href="#section-5.2-5" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-6">and the Solid server serves it, in expanded JSON-LD, as:<a href="#section-5.2-6" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-5.2-7">
+<pre>[{
+  "@id": "https://alice.solidcommunity.net/profile/card#me",
+  "https://w3id.org/handle-verification#handleIssuer":
+    [{ "@id": "https://solidcommunity.net" }]
+}]
+</pre><a href="#section-5.2-7" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-8">Resolving parties do not parse Turtle: Solid servers serve every RDF document as JSON-LD on request (<span>[<a href="#SOLID-PROTOCOL" class="cite xref">SOLID-PROTOCOL</a>]</span>).<a href="#section-5.2-8" class="pilcrow">¶</a></p>
+<p id="section-5.2-9">As in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, authorization is explicit: resolution does not infer an issuer from the identity document's other properties, such as the <code>solid:oidcIssuer</code> of a Solid WebID (<span>[<a href="#SOLID-OIDC" class="cite xref">SOLID-OIDC</a>]</span>), the origin of an ActivityPub actor, or the <code>authorization_endpoint</code> of an IndieAuth website. See <a href="#why-new-term" class="auto internal xref">Section 10.1</a>.<a href="#section-5.2-9" class="pilcrow">¶</a></p>
+<blockquote id="section-5.2-10">
+          <p id="section-5.2-10.1">Open Issue: The IRI of the property, the namespace it belongs to, and whether a JSON-LD context document should be published for it.<a href="#section-5.2-10.1" class="pilcrow">¶</a></p>
+</blockquote>
+</section>
+</div>
+<div id="handle-issuer-link">
+<section id="section-5.3">
+        <h3 id="name-the-handle-issuer-link">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-the-handle-issuer-link" class="section-name selfRef">The handle-issuer Link</a>
+        </h3>
+<p id="section-5.3-1">An identity document can also name the issuer authorized to vouch for its handle with a link whose relation type is <code>handle-issuer</code> (<span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>), whose target is an issuer identifier, and whose context is the identity document: in a <code>Link</code> header field (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) of the response, with any media type, or, in an HTML document, in a <code>&lt;link&gt;</code> element (<span>[<a href="#WHATWG.HTML" class="cite xref">WHATWG.HTML</a>]</span>), whose <code>href</code> is resolved against the document's base URL:<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<div class="lang-http sourcecode" id="section-5.3-2">
+<pre>HTTP/1.1 200 OK
+Content-Type: text/html
+Link: &lt;https://issuer.example&gt;; rel="handle-issuer"
+
+&lt;!doctype html&gt;
+&lt;link rel="handle-issuer" href="https://issuer.example"&gt;
+</pre><a href="#section-5.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-5.3-3">This is how IndieAuth websites already name their authorization endpoints (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>), and it lets a website that cannot vary its responses by media type, such as a static website, use its URL as a URL handle by serving HTML.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="issuance">
+<section id="section-6">
+      <h2 id="name-issuance-and-verification">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-issuance-and-verification" class="section-name selfRef">Issuance and Verification</a>
+      </h2>
+<p id="section-6-1">Issuance and verification are those of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>: the issuer metadata, the HVT request, its error responses, the HVT, the key binding, and the verification of the HVT+KB, with the following substitutions:<a href="#section-6-1" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-6-2.1">Wherever <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> resolves a handle, the resolving party resolves a URL handle as described in <a href="#resolution" class="auto internal xref">Section 5</a>.<a href="#section-6-2.1" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-6-2.2">
+          <p id="section-6-2.2.1">The body of the HVT request carries the unique user identifier in a <code>url</code> member, in place of the <code>did</code> member, as in <span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>:<a href="#section-6-2.2.1" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-6-2.2.2.1">
+              <code>handle</code> (REQUIRED): The URL handle, which is the unique user identifier that resolution produced (<a href="#resolution" class="auto internal xref">Section 5</a>).<a href="#section-6-2.2.2.1" class="pilcrow">¶</a>
+</li>
+            <li class="compact" id="section-6-2.2.2.2">
+              <code>url</code> (REQUIRED): The unique user identifier, byte-for-byte as resolution produced it.<a href="#section-6-2.2.2.2" class="pilcrow">¶</a>
+</li>
+          </ul>
+</li>
+        <li class="compact" id="section-6-2.3">On receipt of an HVT request, the issuer verifies that <code>handle</code> satisfies <a href="#url-handle-syntax" class="auto internal xref">Section 4.1</a> and is in normalized form, and that <code>url</code> is identical to it; otherwise it returns an <code>invalid_request</code> error. It then checks that the cookies represent a signed-in user whose account is the <code>url</code>.<a href="#section-6-2.3" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-6-2.4">The <code>handle</code> and <code>sub</code> claims of the HVT are both the unique user identifier, byte-for-byte as it appeared in the HVT request.<a href="#section-6-2.4" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-6-2.5">When verifying an HVT, the browser and the verifier accept a <code>handle</code> claim that satisfies <a href="#url-handle-syntax" class="auto internal xref">Section 4.1</a>, resolve it as described in <a href="#resolution" class="auto internal xref">Section 5</a>, and verify that the unique user identifier that resolution produces is identical to both <code>handle</code> and <code>sub</code>.<a href="#section-6-2.5" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-6-3">For example, the payload of an HVT for an ActivityPub actor is:<a href="#section-6-3" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-6-4">
+<pre>{
+  "iss": "https://social.example",
+  "iat": 1792620000,
+  "cnf": {
+    "jwk": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs",
+      "alg": "Ed25519"
+    }
+  },
+  "handle": "https://social.example/users/alice",
+  "sub": "https://social.example/users/alice"
+}
+</pre><a href="#section-6-4" class="pilcrow">¶</a>
+</div>
+<p id="section-6-5">A verifier distinguishes the unique user identifiers of URL handles from DIDs by their form, and from the unique user identifiers of username handles (<span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>) by the <code>handle</code> claim, which is a URL only for a URL handle.<a href="#section-6-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="privacy-considerations">
+<section id="section-7">
+      <h2 id="name-privacy-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+      </h2>
+<p id="section-7-1">The privacy considerations of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> apply. In particular, the issuer does not learn which verifier the user signs in to, and handles and unique user identifiers are public identifiers.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">Resolution of a URL handle is specific to one user: it fetches the user's identity document. When the browser resolves a URL handle, the server that hosts it, and, when step 4 of <a href="#resolution" class="auto internal xref">Section 5</a> fetches another URL, the server that hosts that URL, can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer. When the verifier resolves it, these servers see the verifier's network address, as described in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>. The server that hosts an identity document is usually the user's issuer, which can therefore often correlate the HVTs it issues with the resolutions that follow. The mitigations described in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, such as caching and resolving through a shared intermediary, apply.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">Identity documents can contain more information about the user than their handle, such as their name, picture, or contacts. Resolving parties read only the properties and links that this document defines, but the user's choice to use a URL handle shares the whole identity document with the verifier.<a href="#section-7-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-8">
+      <h2 id="name-security-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-8-1">The security considerations of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> apply, with the following additions.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<div id="other-accounts">
+<section id="section-8.1">
+        <h3 id="name-documents-that-name-other-a">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-documents-that-name-other-a" class="section-name selfRef">Documents That Name Other Accounts</a>
+        </h3>
+<p id="section-8.1-1">An identity document is controlled by the server that hosts its URL, and names both the unique user identifier and the issuer. A document at one URL could name another user's account as its <code>id</code>, and an issuer of its own choosing:<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-8.1-2">
+<pre>https://evil.example/ -&gt; id:           https://social.example/users/bob
+                         handleIssuer: https://evil.example
+</pre><a href="#section-8.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1-3">Step 4 of <a href="#resolution" class="auto internal xref">Section 5</a> prevents this: when the <code>id</code> of a document is not its own URL, resolution fetches the <code>id</code>, and reads the issuer from the document that the server that hosts the account serves, rather than from the document that named it. Bob's actor names his own issuer, or none, so the issuer of <code>evil.example</code> is never authorized for Bob's account. The URL that the user typed is replaced by Bob's account (<a href="#why-canonical" class="auto internal xref">Section 10.3</a>), and so <code>evil.example</code> cannot give Bob a handle that Bob did not agree to.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.1-4">For the same reason, step 4 requires the final URL of the second fetch to be same origin with the account, so that a server cannot redirect the request for the account to a document of its own.<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="host-control-is-handle-control">
+<section id="section-8.2">
+        <h3 id="name-host-control-is-handle-cont">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-host-control-is-handle-cont" class="section-name selfRef">Host Control Is Handle Control</a>
+        </h3>
+<p id="section-8.2-1">Whoever controls the server that hosts a URL handle controls its identity document, and therefore which issuer it names. On a server that hosts many users, such as a Solid server or an ActivityPub server, that is the server's operator, who can also name an issuer for any of its accounts. This is the same trust that users of such servers already place in them. A server that lets users publish documents of their own at URLs on its origin, or lets them control the <code>&lt;head&gt;</code> of HTML pages, lets them name issuers for those URLs.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="handle-reassignment">
+<section id="section-8.3">
+        <h3 id="name-handle-reassignment">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-handle-reassignment" class="section-name selfRef">Handle Reassignment</a>
+        </h3>
+<p id="section-8.3-1">As in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, verifiers SHOULD identify accounts by the unique user identifier in the <code>sub</code> claim. For a URL handle, the unique user identifier is the URL of the account, which changes when the account moves to another server, and which a server can reassign to a new account after deleting the previous one. Servers SHOULD NOT reassign the URLs of deleted accounts.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="content-negotiation">
+<section id="section-8.4">
+        <h3 id="name-content-negotiation">
+<a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-content-negotiation" class="section-name selfRef">Content Negotiation</a>
+        </h3>
+<p id="section-8.4-1">A server can serve different documents at the same URL depending on the <code>Accept</code> header. Resolving parties send the same <code>Accept</code> header (<a href="#resolution" class="auto internal xref">Section 5</a>), so that the browser and the verifier read the same document, and a server that serves an identity document only for some media types, and HTML for others, names its issuer in each.<a href="#section-8.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-9">
+      <h2 id="name-iana-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-9-1">This document has no IANA actions. The <code>handle-issuer</code> link relation type is registered by <span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<blockquote id="section-9-2">
+        <p id="section-9-2.1">Open Issue: Whether the <code>handle-issuer</code> link relation type should be registered by <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, so that this document and <span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span> can both use it without depending on each other.<a href="#section-9-2.1" class="pilcrow">¶</a></p>
+</blockquote>
+</section>
+</div>
+<div id="design-rationale">
+<section id="section-10">
+      <h2 id="name-design-rationale">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-design-rationale" class="section-name selfRef">Design Rationale</a>
+      </h2>
+<div id="why-new-term">
+<section id="section-10.1">
+        <h3 id="name-why-a-new-property-rather-t">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-why-a-new-property-rather-t" class="section-name selfRef">Why a New Property, Rather Than solid:oidcIssuer?</a>
+        </h3>
+<p id="section-10.1-1">A Solid WebID profile already names the OpenID Connect issuers that can authenticate the user with <code>solid:oidcIssuer</code> (<span>[<a href="#SOLID-OIDC" class="cite xref">SOLID-OIDC</a>]</span>). But an HVT is not an OpenID Connect token: OpenID Connect is a two-party protocol, in which the issuer issues tokens to the relying party, and learns who it is, while HVP is a three-party protocol, in which the browser obtains the token and hides the verifier from the issuer. A user who authorized an issuer to sign them in with OpenID Connect has not necessarily authorized it to make statements that the browser presents to verifiers that the issuer does not know. A profile can also list several OpenID Connect issuers, while a handle has a single authorized issuer in HVP. A new property, which is the same for every ecosystem, makes the user's opt-in explicit, as the <code>HandleIssuer</code> service does for DIDs (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>).<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="why-content-negotiation">
+<section id="section-10.2">
+        <h3 id="name-why-content-negotiation">
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-why-content-negotiation" class="section-name selfRef">Why Content Negotiation?</a>
+        </h3>
+<p id="section-10.2-1">ActivityPub servers serve actors through content negotiation (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>), and Solid servers serve every RDF document as Turtle or JSON-LD through content negotiation (<span>[<a href="#SOLID-PROTOCOL" class="cite xref">SOLID-PROTOCOL</a>]</span>). Requiring them to serve identity documents at another URL, such as a well-known URL, would require changes to every server, and would not fit identifiers that are not at the root of a domain. Websites that cannot vary their responses by media type can name their issuer in HTML instead (<a href="#handle-issuer-link" class="auto internal xref">Section 5.3</a>).<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-2">The <code>Accept</code> header requests JSON-LD with the ActivityStreams profile first, because ActivityPub servers are required to serve actors for it, and expanded JSON-LD next, because it can be read without a JSON-LD processor (<a href="#subject-node" class="auto internal xref">Section 5.1</a>).<a href="#section-10.2-2" class="pilcrow">¶</a></p>
+<blockquote id="section-10.2-3">
+          <p id="section-10.2-3.1">Open Issue: Requesting the ActivityStreams profile ties the <code>Accept</code> header to ActivityPub. Whether a profile that is not specific to any ecosystem can be requested instead, and how existing ActivityPub servers would respond to it, needs to be investigated.<a href="#section-10.2-3.1" class="pilcrow">¶</a></p>
+</blockquote>
+</section>
+</div>
+<div id="why-canonical">
+<section id="section-10.3">
+        <h3 id="name-why-replace-the-handle-with">
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-why-replace-the-handle-with" class="section-name selfRef">Why Replace the Handle With the Canonical Identifier?</a>
+        </h3>
+<p id="section-10.3-1">A URL that the user types can serve a document about an account at another URL, or redirect to it, for example when a personal website serves the actor of an account whose identifier is at a longer URL on the same server. Resolution then has two URLs: the one that the user typed, and the one that identifies the account. Verifying the typed URL as a handle of the account would require the account to agree to it, with a back-link from the account's identity document to the typed URL. This document instead replaces the typed URL with the account's identifier, which needs no back-link, because the server that hosts the account names the issuer itself. Typed URLs that the account agrees to could be supported later.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<blockquote id="section-10.3-2">
+          <p id="section-10.3-2.1">Open Issue: Whether to let an identity document keep the URL that the user typed as its handle, when the document lists it, for example in its <code>alsoKnownAs</code> or <code>url</code> property.<a href="#section-10.3-2.1" class="pilcrow">¶</a></p>
+</blockquote>
+</section>
+</div>
+<div id="why-not-process-json-ld">
+<section id="section-10.4">
+        <h3 id="name-why-not-process-json-ld">
+<a href="#section-10.4" class="section-number selfRef">10.4. </a><a href="#name-why-not-process-json-ld" class="section-name selfRef">Why Not Process JSON-LD?</a>
+        </h3>
+<p id="section-10.4-1">A JSON-LD processor fetches remote contexts, which adds requests, latency, and attack surface to resolution, and is a large dependency for a browser and for verifiers. ActivityPub explicitly allows its documents to be processed as plain JSON (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>), and expanded JSON-LD has no contexts to process, so reading both forms as plain JSON (<a href="#subject-node" class="auto internal xref">Section 5.1</a>) covers the documents that Solid and ActivityPub servers serve.<a href="#section-10.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="implementation-status">
+<section id="section-11">
+      <h2 id="name-implementation-status">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
+      </h2>
+<p id="section-11-1"><em>Note: This section is to be removed before publishing as an RFC.</em><a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-11-2">There are no implementations of this document yet.<a href="#section-11-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="document-history">
+<section id="section-12">
+      <h2 id="name-document-history">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
+      </h2>
+<p id="section-12-1"><em>Note: This section is to be removed before publishing as an RFC.</em><a href="#section-12-1" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-12-2.1">
+          <p id="section-12-2.1.1">draft-goto-url-handle-verification-00<a href="#section-12-2.1.1" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-12-2.1.2.1">Initial draft.<a href="#section-12-2.1.2.1" class="pilcrow">¶</a>
+</li>
+          </ul>
+</li>
+      </ul>
+</section>
+</div>
+<section id="section-13">
+      <h2 id="name-references">
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-13.1">
+        <h3 id="name-normative-references">
+<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="HVP">[HVP]</dt>
+        <dd>
+<span class="refAuthor">Goto, S.</span>, <span class="refTitle">"Handle Verification Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-goto-handle-verification-latest</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://samuelgoto.github.io/handle-verification/draft-goto-handle-verification.html">https://samuelgoto.github.io/handle-verification/draft-goto-handle-verification.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6839">[RFC6839]</dt>
+        <dd>
+<span class="refAuthor">Hansen, T.</span> and <span class="refAuthor">A. Melnikov</span>, <span class="refTitle">"Additional Media Type Structured Syntax Suffixes"</span>, <span class="seriesInfo">RFC 6839</span>, <span class="seriesInfo">DOI 10.17487/RFC6839</span>, <time datetime="2013-01" class="refDate">January 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6839">https://www.rfc-editor.org/info/rfc6839</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8288">[RFC8288]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Web Linking"</span>, <span class="seriesInfo">RFC 8288</span>, <span class="seriesInfo">DOI 10.17487/RFC8288</span>, <time datetime="2017-10" class="refDate">October 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8288">https://www.rfc-editor.org/info/rfc8288</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9110">[RFC9110]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="seriesInfo">STD 97</span>, <span class="seriesInfo">RFC 9110</span>, <span class="seriesInfo">DOI 10.17487/RFC9110</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9110">https://www.rfc-editor.org/info/rfc9110</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="WHATWG.HTML">[WHATWG.HTML]</dt>
+        <dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"HTML Standard"</span>, <span class="refContent">Living Standard</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="WHATWG.URL">[WHATWG.URL]</dt>
+      <dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"URL Standard"</span>, <span class="refContent">Living Standard</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-13.2">
+        <h3 id="name-informative-references">
+<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="ACTIVITYPUB">[ACTIVITYPUB]</dt>
+        <dd>
+<span class="refAuthor">W3C</span>, <span class="refTitle">"ActivityPub"</span>, <span class="refContent">W3C Recommendation</span>, <time datetime="2018-01" class="refDate">January 2018</time>, <span>&lt;<a href="https://www.w3.org/TR/activitypub/">https://www.w3.org/TR/activitypub/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="INDIEAUTH">[INDIEAUTH]</dt>
+        <dd>
+<span class="refAuthor">Parecki, A.</span>, <span class="refTitle">"IndieAuth"</span>, <span class="refContent">IndieWeb Living Standard</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://indieauth.spec.indieweb.org/">https://indieauth.spec.indieweb.org/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="JSON-LD11">[JSON-LD11]</dt>
+        <dd>
+<span class="refAuthor">W3C</span>, <span class="refTitle">"JSON-LD 1.1"</span>, <span class="refContent">W3C Recommendation</span>, <time datetime="2020-07" class="refDate">July 2020</time>, <span>&lt;<a href="https://www.w3.org/TR/json-ld11/">https://www.w3.org/TR/json-ld11/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="SOLID-OIDC">[SOLID-OIDC]</dt>
+        <dd>
+<span class="refAuthor">W3C Solid Community Group</span>, <span class="refTitle">"Solid-OIDC"</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://solidproject.org/TR/oidc">https://solidproject.org/TR/oidc</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="SOLID-PROTOCOL">[SOLID-PROTOCOL]</dt>
+        <dd>
+<span class="refAuthor">W3C Solid Community Group</span>, <span class="refTitle">"Solid Protocol"</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://solidproject.org/TR/protocol">https://solidproject.org/TR/protocol</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="SOLID-WEBID-PROFILE">[SOLID-WEBID-PROFILE]</dt>
+        <dd>
+<span class="refAuthor">W3C Solid Community Group</span>, <span class="refTitle">"Solid WebID Profile"</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://solid.github.io/webid-profile/">https://solid.github.io/webid-profile/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="UHVP">[UHVP]</dt>
+        <dd>
+<span class="refAuthor">Goto, S.</span>, <span class="refTitle">"Username Handle Verification Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-goto-username-handle-verification-latest</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html">https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="WEBID">[WEBID]</dt>
+      <dd>
+<span class="refAuthor">W3C WebID Incubator Group</span>, <span class="refTitle">"WebID 1.0"</span>, <time datetime="2014-03" class="refDate">March 2014</time>, <span>&lt;<a href="https://www.w3.org/2005/Incubator/webid/spec/identity/">https://www.w3.org/2005/Incubator/webid/spec/identity/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="examples">
+<section id="appendix-A">
+      <h2 id="name-examples">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+      </h2>
+<p id="appendix-A-1">This appendix shows the resolution of URL handles. The identity documents of the Solid, ActivityPub, and IndieAuth examples are real at the time of writing, and are abbreviated. None of them names an issuer yet, so each shows what would be added to opt in. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<div id="solid-webid">
+<section id="appendix-A.1">
+        <h3 id="name-solid-webid">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-solid-webid" class="section-name selfRef">Solid WebID</a>
+        </h3>
+<div class="alignLeft art-text artwork" id="appendix-A.1-1">
+<pre>Handle:        https://timbl.solidcommunity.net/profile/card#me
+GET https://timbl.solidcommunity.net/profile/card
+  -&gt; Content-Type: application/ld+json   (expanded)
+     [ ..., { "@id": "https://timbl.solidcommunity.net/profile/card#me",
+              "http://www.w3.org/ns/solid/terms#oidcIssuer":
+                [{ "@id": "https://solidcommunity.net/" }], ... } ]
+Identifier:    https://timbl.solidcommunity.net/profile/card#me
+To opt in, add to the WebID (oidcIssuer is not read):
+  &lt;#me&gt; hvp:handleIssuer &lt;https://solidcommunity.net&gt; .
+Issuer:        https://solidcommunity.net
+</pre><a href="#appendix-A.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="activitypub-actor">
+<section id="appendix-A.2">
+        <h3 id="name-activitypub-actor">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-activitypub-actor" class="section-name selfRef">ActivityPub Actor</a>
+        </h3>
+<div class="alignLeft art-text artwork" id="appendix-A.2-1">
+<pre>Handle:        https://w3c.social/users/goto
+GET https://w3c.social/users/goto
+  -&gt; Content-Type: application/activity+json
+     { "id": "https://w3c.social/users/goto", "type": "Person",
+       "webfinger": "goto@w3c.social", ... }
+Identifier:    https://w3c.social/users/goto
+To opt in, add to the actor:
+  "handleIssuer": "https://w3c.social"
+Issuer:        https://w3c.social
+</pre><a href="#appendix-A.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="website-that-serves-an-actor-at-another-url">
+<section id="appendix-A.3">
+        <h3 id="name-website-that-serves-an-acto">
+<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-website-that-serves-an-acto" class="section-name selfRef">Website That Serves an Actor at Another URL</a>
+        </h3>
+<p id="appendix-A.3-1">The website serves the actor of an account whose identifier is at another URL on the same origin. Resolution fetches the identifier, and replaces the handle with it.<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.3-2">
+<pre>Input:         https://bumblefudge.com
+Handle:        https://bumblefudge.com/
+GET https://bumblefudge.com/
+  -&gt; Content-Type: application/activity+json
+     { "id": "https://bumblefudge.com/did:scid:vh:1:QmWu.../actor",
+       "url": "https://bumblefudge.com/", ... }
+GET https://bumblefudge.com/did:scid:vh:1:QmWu.../actor
+  -&gt; { "id": "https://bumblefudge.com/did:scid:vh:1:QmWu.../actor",
+       ... }                                     (id ok)
+Identifier:    https://bumblefudge.com/did:scid:vh:1:QmWu.../actor
+To opt in, add to the actor:
+  "handleIssuer": "https://bumblefudge.com"
+Issuer:        https://bumblefudge.com
+</pre><a href="#appendix-A.3-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="indieauth-website">
+<section id="appendix-A.4">
+        <h3 id="name-indieauth-website">
+<a href="#appendix-A.4" class="section-number selfRef">A.4. </a><a href="#name-indieauth-website" class="section-name selfRef">IndieAuth Website</a>
+        </h3>
+<p id="appendix-A.4-1">The website serves HTML, and names its issuer the way it names its IndieAuth endpoints.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.4-2">
+<pre>Handle:        https://aaronparecki.com/
+GET https://aaronparecki.com/
+  -&gt; Content-Type: text/html
+     Link: &lt;https://aaronparecki.com/auth&gt;;
+             rel="authorization_endpoint"
+Identifier:    https://aaronparecki.com/
+To opt in, add a header or an element:
+  Link: &lt;https://aaronparecki.com&gt;; rel="handle-issuer"
+  &lt;link rel="handle-issuer" href="https://aaronparecki.com"&gt;
+Issuer:        https://aaronparecki.com
+</pre><a href="#appendix-A.4-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-B">
+      <h2 id="name-acknowledgments">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-B-1">This document builds on the Handle Verification Protocol, on the WebID, Solid WebID Profile, and Solid-OIDC specifications of the Solid community, on ActivityPub, and on IndieAuth.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-C">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Sam Goto</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:goto@google.com" class="email">goto@google.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">@bumblefudge.com</span></div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

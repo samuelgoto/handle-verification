@@ -1,6 +1,6 @@
 # Handle Verification Protocol
 
-This is the working area for the individual Internet-Drafts that let web applications verify that a user controls a handle, without the user typing it and without revealing the application to the user's provider. Both apply the Email Verification Protocol (EVP) to handles: the user explicitly authorizes an issuer, and the browser obtains a signed Handle Verification Token (HVT) from it and presents it to a verifier.
+This is the working area for the individual Internet-Drafts that let web applications verify that a user controls a handle, without the user typing it and without revealing the application to the user's provider. All apply the Email Verification Protocol (EVP) to handles: the user explicitly authorizes an issuer, and the browser obtains a signed Handle Verification Token (HVT) from it and presents it to a verifier.
 
 ## Handle Verification Protocol (HVP)
 
@@ -15,6 +15,13 @@ Covers domain handles, and is designed to be extended to other forms of handle. 
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-goto-username-handle-verification)
 
 Extends HVP to username handles, such as `@alice@social.example` (used by ActivityPub implementations), which are resolved through WebFinger, with a `handle-issuer` link naming the authorized issuer. It also lets a domain handle name a username handle, with a `webfinger=` record. Issuance and verification are those of HVP.
+
+## URL Handle Verification Protocol (URL-HVP)
+
+* [Editor's Copy](https://samuelgoto.github.io/handle-verification/draft-goto-url-handle-verification.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-goto-url-handle-verification)
+
+Extends HVP to URL handles: users identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or an IndieAuth website. The URL is fetched with content negotiation, and its identity document names the authorized issuer with a `handleIssuer` property or a `handle-issuer` link, without anything specific to an ecosystem. Issuance and verification are those of HVP.
 
 ## Related Work
 

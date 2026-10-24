@@ -8,7 +8,7 @@
 <meta content="Sam Goto" name="author">
 <meta content="
        This document defines the Username Handle Verification Protocol (UHVP), which extends the Handle Verification Protocol ( ) and the URL Handle Verification Protocol ( ) to  username handles , such as  @alice@social.example , which ActivityPub implementations use to identify users. A username handle is mapped with WebFinger, in a way that is backwards compatible with how ActivityPub implementations resolve handles today, to the URL of the user's account, which is then resolved as a URL handle ( ) to a unique user identifier and to the issuer that the user has authorized to vouch for it. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as in HVP. 
-       This document also defines how a domain handle, such as  @alice.example , can name a username handle rather than a DID, so that the domain handles being proposed for ActivityPub can be verified through the account's username handle. 
+       This document also defines how a domain handle, such as  @alice.example , can name a username handle or a URL handle rather than a DID, so that the domain handles being proposed for ActivityPub can be verified through the account's username handle or the URL of its actor. 
     " name="description">
 <meta content="xml2rfc 3.31.0" name="generator">
 <meta content="handle" name="keyword">
@@ -1083,7 +1083,7 @@ svg {
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document defines the Username Handle Verification Protocol (UHVP), which extends the Handle Verification Protocol (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>) and the URL Handle Verification Protocol (<span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>) to <em>username handles</em>, such as <code>@alice@social.example</code>, which ActivityPub implementations use to identify users. A username handle is mapped with WebFinger, in a way that is backwards compatible with how ActivityPub implementations resolve handles today, to the URL of the user's account, which is then resolved as a URL handle (<span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>) to a unique user identifier and to the issuer that the user has authorized to vouch for it. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as in HVP.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">This document also defines how a domain handle, such as <code>@alice.example</code>, can name a username handle rather than a DID, so that the domain handles being proposed for ActivityPub can be verified through the account's username handle.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This document also defines how a domain handle, such as <code>@alice.example</code>, can name a username handle or a URL handle rather than a DID, so that the domain handles being proposed for ActivityPub can be verified through the account's username handle or the URL of its actor.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1167,7 +1167,7 @@ svg {
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-handle-resolution" class="internal xref">Handle Resolution</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-domain-handles-that-name-us" class="internal xref">Domain Handles That Name Username Handles</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-domain-handles-that-name-ot" class="internal xref">Domain Handles That Name Other Handles</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-issuance-and-verification" class="internal xref">Issuance and Verification</a></p>
@@ -1208,7 +1208,7 @@ svg {
                 <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-why-the-same-origin-shortcu" class="internal xref">Why the Same-Origin Shortcut?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
-                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-why-alias-domain-handles-to" class="internal xref">Why Alias Domain Handles to Username Handles?</a></p>
+                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-why-let-domain-handles-name" class="internal xref">Why Let Domain Handles Name Other Handles?</a></p>
 </li>
             </ul>
 </li>
@@ -1236,16 +1236,19 @@ svg {
                 <p id="section-toc.1-1.15.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-domain-handle-that-names-a-" class="internal xref">Domain Handle That Names a Username Handle</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.2">
-                <p id="section-toc.1-1.15.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-username-handle-on-a-split-" class="internal xref">Username Handle on a Split Domain</a></p>
+                <p id="section-toc.1-1.15.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-domain-handle-that-names-a-u" class="internal xref">Domain Handle That Names a URL Handle</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.3">
-                <p id="section-toc.1-1.15.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-username-handle-hosted-by-a" class="internal xref">Username Handle Hosted by a Bridge</a></p>
+                <p id="section-toc.1-1.15.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-username-handle-on-a-split-" class="internal xref">Username Handle on a Split Domain</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.4">
-                <p id="section-toc.1-1.15.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-username-handle-whose-issue" class="internal xref">Username Handle Whose Issuer Is on Another Origin</a></p>
+                <p id="section-toc.1-1.15.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-username-handle-hosted-by-a" class="internal xref">Username Handle Hosted by a Bridge</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.5">
-                <p id="section-toc.1-1.15.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-discovery-alias-that-is-not" class="internal xref">Discovery Alias That Is Not a Handle</a></p>
+                <p id="section-toc.1-1.15.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-username-handle-whose-issue" class="internal xref">Username Handle Whose Issuer Is on Another Origin</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.6">
+                <p id="section-toc.1-1.15.2.6.1"><a href="#appendix-A.6" class="auto internal xref">A.6</a>.  <a href="#name-discovery-alias-that-is-not" class="internal xref">Discovery Alias That Is Not a Handle</a></p>
 </li>
             </ul>
 </li>
@@ -1268,7 +1271,7 @@ svg {
 <p id="section-1-2">ActivityPub (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>) has no concept of a handle itself, but its implementations identify users with handles of the form <code>@alice@social.example</code>, which they resolve to the URL of an ActivityPub actor with WebFinger (<span>[<a href="#RFC7033" class="cite xref">RFC7033</a>]</span>) and the <code>acct</code> URI scheme (<span>[<a href="#RFC7565" class="cite xref">RFC7565</a>]</span>) (<span>[<a href="#MASTODON-WEBFINGER" class="cite xref">MASTODON-WEBFINGER</a>]</span>). This document calls these <em>username handles</em>. Their accounts do not have DIDs, and asking every user to publish DNS records would not be practical, so HVP's resolution does not apply to them.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">The URL Handle Verification Protocol (<span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>) extends HVP to users who are identified by an <code>https</code> URL, such as an ActivityPub actor, and resolves such a URL to a unique user identifier and an authorized issuer by fetching it.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <p id="section-1-4">This document extends both to username handles. It maps a username handle to the URL of its account with WebFinger, which every such server already implements, and resolves that URL as described in <span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>. The only thing that this document adds to resolution is the WebFinger mapping, and a check that the account agrees to the handle. Nothing in it is specific to ActivityPub: the account URL is the <code>self</code> link of the WebFinger resource descriptor, which can refer to an ActivityPub actor, a Solid WebID, or any other identity document. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP, with the unique user identifier carried in a <code>url</code> member rather than a <code>did</code> member. A verifier that implements all three documents accepts domain handles, URL handles, and username handles alike.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">This document also lets a domain handle name a username handle, with a <code>webfinger=</code> key in HVP's handle records (<a href="#activitypub" class="auto internal xref">Section 6</a>), so that a user of an ActivityPub server can use a domain handle such as <code>@alice.example</code>, as proposed by the SWICG Handles Task Force (<span>[<a href="#HANDLES-TF" class="cite xref">HANDLES-TF</a>]</span>).<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-5">This document also lets a domain handle name a username handle or a URL handle, with a <code>me=</code> key in HVP's handle records (<a href="#domain-handles" class="auto internal xref">Section 6</a>), so that a user of an ActivityPub server, or of any server that identifies its accounts by URL, can use a domain handle such as <code>@alice.example</code>, as proposed by the SWICG Handles Task Force (<span>[<a href="#HANDLES-TF" class="cite xref">HANDLES-TF</a>]</span>).<a href="#section-1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1297,7 +1300,7 @@ svg {
       </h2>
 <p id="section-3-1">The protocol flow is the flow of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, with the following differences:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-3-2.1">The handle is a username handle (<a href="#username-handles" class="auto internal xref">Section 4</a>), or a domain handle that names one (<a href="#activitypub" class="auto internal xref">Section 6</a>).<a href="#section-3-2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-3-2.1">The handle is a username handle (<a href="#username-handles" class="auto internal xref">Section 4</a>), or a domain handle that names a username handle or a URL handle (<a href="#domain-handles" class="auto internal xref">Section 6</a>).<a href="#section-3-2.1" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="section-3-2.2">The browser and the verifier resolve the handle as described in <a href="#resolve-user" class="auto internal xref">Section 5</a>: with WebFinger, and then as a URL handle (<span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>).<a href="#section-3-2.2" class="pilcrow">¶</a>
 </li>
@@ -1462,30 +1465,33 @@ Issuer:             https://social.example.com    (same origin)
 </blockquote>
 </section>
 </div>
-<div id="activitypub">
+<div id="domain-handles">
 <section id="section-6">
-      <h2 id="name-domain-handles-that-name-us">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-domain-handles-that-name-us" class="section-name selfRef">Domain Handles That Name Username Handles</a>
+      <h2 id="name-domain-handles-that-name-ot">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-domain-handles-that-name-ot" class="section-name selfRef">Domain Handles That Name Other Handles</a>
       </h2>
-<p id="section-6-1">Adding domain handles to ActivityPub is ongoing work, proposed by the SWICG Handles Task Force (<span>[<a href="#HANDLES-TF" class="cite xref">HANDLES-TF</a>]</span>). This section extends the resolution of domain handles of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> so that a domain handle can name a username handle, rather than a DID, so that such handles can be verified as they are adopted, without the account adopting any new identifier.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">Adding domain handles to ActivityPub is ongoing work, proposed by the SWICG Handles Task Force (<span>[<a href="#HANDLES-TF" class="cite xref">HANDLES-TF</a>]</span>). This section extends the resolution of domain handles of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> so that a domain handle can name a username handle (<a href="#username-handles" class="auto internal xref">Section 4</a>) or a URL handle (<span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>), rather than a DID, so that such handles can be verified as they are adopted, without the account adopting any new identifier.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2"><span>[<a href="#HVP" class="cite xref">HVP</a>]</span> maps a domain handle to a DID with a <code>TXT</code> record at <code>_handle.</code> followed by the handle, whose value starts with <code>did=</code>, and with the <code>did</code> member of the well-known document <code>/.well-known/handle</code>, and ignores records and members with other keys. This document defines another key for each:<a href="#section-6-2" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-6-3.1">
-          <strong>DNS <code>TXT</code> record.</strong> A record at <code>_handle.</code> followed by the handle, whose value starts with <code>webfinger=</code>, names a username handle, in the remainder of the value.<a href="#section-6-3.1" class="pilcrow">¶</a>
+          <strong>DNS <code>TXT</code> record.</strong> A record at <code>_handle.</code> followed by the handle, whose value starts with <code>me=</code>, names a handle, in the remainder of the value.<a href="#section-6-3.1" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="section-6-3.2">
-          <strong>Well-known document.</strong> The <code>webfinger</code> member of the well-known document, if present, names a username handle.<a href="#section-6-3.2" class="pilcrow">¶</a>
+          <strong>Well-known document.</strong> The <code>me</code> member of the well-known document, if present, names a handle.<a href="#section-6-3.2" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-6-4">The username handle MUST be written with its leading <code>@</code>, and satisfy <a href="#username-handle-syntax" class="auto internal xref">Section 4.1</a> once the <code>@</code> is removed; otherwise fail. A resolving party that implements this document applies the rules of step 1 of the resolution of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> to these keys as well: if the two lookups name different username handles, compared in normalized form (<a href="#normalization" class="auto internal xref">Section 4.2</a>), or one names a DID and the other a username handle, resolution fails; and a handle that names a username handle with either lookup names something, so the resolving party does not fall back to the AT Protocol names.<a href="#section-6-4" class="pilcrow">¶</a></p>
-<p id="section-6-5">Given a domain handle <em>handle</em> that names a username handle, resolve the username handle as described in <a href="#resolve-user" class="auto internal xref">Section 5</a>, with one additional check:<a href="#section-6-5" class="pilcrow">¶</a></p>
-<ul class="compact">
-<li class="compact" id="section-6-6.1">
-          <strong>Back-link.</strong> The <code>aliases</code> array of the WebFinger resource descriptor of the username handle (<span>[<a href="#RFC7033" class="cite xref">RFC7033</a>]</span>) MUST contain <code>at://</code> followed by <em>handle</em>, compared after conversion to ASCII lowercase. Otherwise fail. This check ensures that a username handle cannot be claimed by a domain handle that it did not agree to. The <code>at</code> URI form (<span>[<a href="#ATPROTO-URI" class="cite xref">ATPROTO-URI</a>]</span>) is the form in which <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> writes domain handles of every ecosystem.<a href="#section-6-6.1" class="pilcrow">¶</a>
+<p id="section-6-4">The named handle is either a username handle, written with its leading <code>@</code>, such as <code>@alice@social.example</code>, or a URL handle, such as <code>https://social.example/users/alice</code>. The resolving party parses it as a username handle (<a href="#parsing" class="auto internal xref">Section 4.3</a>) if it starts with <code>@</code>, and as a URL handle (<span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>) if it starts with <code>https://</code>; if it is neither, fail. A resolving party that implements this document applies the rules of step 1 of the resolution of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> to these keys as well: if the two lookups name different handles, compared in normalized form, or one names a DID and the other a handle, resolution fails; and a handle that names a handle with either lookup names something, so the resolving party does not fall back to the AT Protocol names.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">Given a domain handle <em>handle</em> that names another handle <em>named</em>:<a href="#section-6-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="compact type-1" id="section-6-6">
+<li id="section-6-6.1">
+          <strong>Resolution.</strong> Resolve <em>named</em>, as described in <a href="#resolve-user" class="auto internal xref">Section 5</a> if it is a username handle, or in <span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span> if it is a URL handle. If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces.<a href="#section-6-6.1" class="pilcrow">¶</a>
 </li>
-      </ul>
-<p id="section-6-7">The unique user identifier and the authorized issuer are those of the username handle. No DID is involved. The <code>handle</code> of the HVT request and of the HVT is the domain handle.<a href="#section-6-7" class="pilcrow">¶</a></p>
-<p id="section-6-8">For example, a user whose account is <code>@alice@social.example</code>, and who wants to use the domain handle <code>@alice.example</code>, publishes a <code>TXT</code> record <code>_handle.alice.example</code> with the value <code>webfinger=@alice@social.example</code>, or the well-known document:<a href="#section-6-8" class="pilcrow">¶</a></p>
+        <li id="section-6-6.2">
+          <strong>Back-link.</strong> The identity document of the account (<span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>) MUST claim <em>handle</em> back, with <code>at://</code> followed by <em>handle</em>, compared after conversion to ASCII lowercase. A JSON identity document claims it in the <code>alsoKnownAs</code> property of its subject node, whose IRI is <code>https://www.w3.org/ns/activitystreams#alsoKnownAs</code>, as ActivityPub actors and DID documents (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>) do; the value of the property is read as in <span>[<a href="#URL-HVP" class="cite xref">URL-HVP</a>]</span>, except that it can be a JSON array of any number of values. An HTML identity document claims it with a link whose relation type is <code>me</code>, in a <code>Link</code> header field (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) or in a <code>&lt;link&gt;</code> element, as IndieWeb websites link to their other identities (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>). Otherwise fail. This check ensures that an account cannot be claimed by a domain handle that it did not agree to. The <code>at</code> URI form (<span>[<a href="#ATPROTO-URI" class="cite xref">ATPROTO-URI</a>]</span>) is the form in which <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> writes domain handles of every ecosystem.<a href="#section-6-6.2" class="pilcrow">¶</a>
+</li>
+      </ol>
+<p id="section-6-7">The named handle cannot itself be a domain handle, so resolution does not recurse. No DID is involved. The <code>handle</code> of the HVT request and of the HVT is the domain handle.<a href="#section-6-7" class="pilcrow">¶</a></p>
+<p id="section-6-8">For example, a user whose account is <code>@alice@social.example</code>, at <code>https://social.example/users/alice</code>, and who wants to use the domain handle <code>@alice.example</code>, publishes a <code>TXT</code> record <code>_handle.alice.example</code> with the value <code>me=@alice@social.example</code>, or <code>me=https://social.example/users/alice</code>, or the well-known document:<a href="#section-6-8" class="pilcrow">¶</a></p>
 <div class="lang-http sourcecode" id="section-6-9">
 <pre>GET /.well-known/handle HTTP/1.1
 Host: alice.example
@@ -1493,13 +1499,14 @@ Host: alice.example
 HTTP/1.1 200 OK
 Content-Type: application/json
 
-{"webfinger": "@alice@social.example"}
+{"me": "@alice@social.example"}
 </pre><a href="#section-6-9" class="pilcrow">¶</a>
 </div>
-<p id="section-6-10">Their server also lists <code>at://alice.example</code> in the <code>aliases</code> of the account's WebFinger resource descriptor.<a href="#section-6-10" class="pilcrow">¶</a></p>
-<p id="section-6-11">A resolving party that implements <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> but not this document ignores the <code>webfinger=</code> record and the <code>webfinger</code> member, so the handle fails to resolve for it, unless it also has AT Protocol records.<a href="#section-6-11" class="pilcrow">¶</a></p>
+<p id="section-6-10">Their server also lists <code>at://alice.example</code> in the <code>alsoKnownAs</code> of the account's actor.<a href="#section-6-10" class="pilcrow">¶</a></p>
+<p id="section-6-11">A resolving party that implements <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> but not this document ignores the <code>me=</code> record and the <code>me</code> member, so the handle fails to resolve for it, unless it also has AT Protocol records.<a href="#section-6-11" class="pilcrow">¶</a></p>
 <blockquote id="section-6-12">
-        <p id="section-6-12.1">Open Issue: Whether an ActivityPub account should also be able to resolve its domain handle to a DID, for example to have an identity that survives a move to another server, or to let one DID document, and so one domain handle, serve both the AT Protocol and ActivityPub. ActivityPub implementations do not identify accounts by DIDs today, so a verifier that receives a DID would not necessarily know how to find, or interact with, the ActivityPub account that it belongs to; the DID document could name the actor in its <code>alsoKnownAs</code>, with a check that the actor refers back to the DID (<span>[<a href="#FEP-C390" class="cite xref">FEP-C390</a>]</span>).<a href="#section-6-12.1" class="pilcrow">¶</a></p>
+        <p id="section-6-12.1">Open Issue: ActivityPub implementations, such as Mastodon, use <code>alsoKnownAs</code> to list the other actors of an account, for example when it moves to another server, and might not expect it to contain <code>at</code> URIs. Whether <code>alsoKnownAs</code> is the right property for the back-link needs to be discussed with them.<a href="#section-6-12.1" class="pilcrow">¶</a></p>
+<p id="section-6-12.2">Open Issue: Whether an ActivityPub account should also be able to resolve its domain handle to a DID, for example to have an identity that survives a move to another server, or to let one DID document, and so one domain handle, serve both the AT Protocol and ActivityPub. ActivityPub implementations do not identify accounts by DIDs today, so a verifier that receives a DID would not necessarily know how to find, or interact with, the ActivityPub account that it belongs to; the DID document could name the actor in its <code>alsoKnownAs</code>, with a check that the actor refers back to the DID (<span>[<a href="#FEP-C390" class="cite xref">FEP-C390</a>]</span>).<a href="#section-6-12.2" class="pilcrow">¶</a></p>
 </blockquote>
 </section>
 </div>
@@ -1510,13 +1517,13 @@ Content-Type: application/json
       </h2>
 <p id="section-7-1">Issuance and verification are those of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>: the issuer metadata, the HVT request, its error responses, the HVT, the key binding, and the verification of the HVT+KB, with the following substitutions:<a href="#section-7-1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-7-2.1">Wherever <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> resolves a handle, the resolving party resolves a username handle as described in <a href="#resolve-user" class="auto internal xref">Section 5</a>, and a domain handle as described in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> as extended by <a href="#activitypub" class="auto internal xref">Section 6</a>.<a href="#section-7-2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-7-2.1">Wherever <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> resolves a handle, the resolving party resolves a username handle as described in <a href="#resolve-user" class="auto internal xref">Section 5</a>, and a domain handle as described in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> as extended by <a href="#domain-handles" class="auto internal xref">Section 6</a>.<a href="#section-7-2.1" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="section-7-2.2">
           <p id="section-7-2.2.1">The body of the HVT request carries the unique user identifier in a <code>url</code> member, in place of the <code>did</code> member:<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-7-2.2.2.1">
-              <code>handle</code> (REQUIRED): The handle that the user selected, in normalized form: a username handle (<a href="#normalization" class="auto internal xref">Section 4.2</a>), or a domain handle that names one (<a href="#activitypub" class="auto internal xref">Section 6</a>).<a href="#section-7-2.2.2.1" class="pilcrow">¶</a>
+              <code>handle</code> (REQUIRED): The handle that the user selected, in normalized form: a username handle (<a href="#normalization" class="auto internal xref">Section 4.2</a>), or a domain handle that names a username handle or a URL handle (<a href="#domain-handles" class="auto internal xref">Section 6</a>).<a href="#section-7-2.2.2.1" class="pilcrow">¶</a>
 </li>
             <li class="compact" id="section-7-2.2.2.2">
               <code>url</code> (REQUIRED): The unique user identifier that the handle resolves to, byte-for-byte as resolution produced it.<a href="#section-7-2.2.2.2" class="pilcrow">¶</a>
@@ -1597,7 +1604,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <pre>acct:x@evil.example -&gt; self: https://social.example/users/bob
 </pre><a href="#section-9.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-9.1-3">Bob's issuer would then be the authorized issuer for <code>x@evil.example</code>, and a verifier would accept an HVT from it that says that Bob controls <code>x@evil.example</code>. For domain handles, the back-link checks of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> and of <a href="#activitypub" class="auto internal xref">Section 6</a> prevent the equivalent problem, in which a domain handle claims another user's DID or username handle. For username handles, step 5 of <a href="#resolve-user" class="auto internal xref">Section 5</a> prevents it, in one of two ways:<a href="#section-9.1-3" class="pilcrow">¶</a></p>
+<p id="section-9.1-3">Bob's issuer would then be the authorized issuer for <code>x@evil.example</code>, and a verifier would accept an HVT from it that says that Bob controls <code>x@evil.example</code>. For domain handles, the back-link checks of <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> and of <a href="#domain-handles" class="auto internal xref">Section 6</a> prevent the equivalent problem, in which a domain handle claims another user's DID, username handle, or URL handle. For username handles, step 5 of <a href="#resolve-user" class="auto internal xref">Section 5</a> prevents it, in one of two ways:<a href="#section-9.1-3" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-9.1-4.1">If the unique user identifier is on the origin of the authorized issuer, the issuer is the server that hosts the account, and a server that issues an HVT for one of its accounts has authenticated that account's user, and checked that the user controls the handle (<a href="#issuance" class="auto internal xref">Section 7</a>). A domain can at most give its own handles to accounts on that server, which the server can refuse.<a href="#section-9.1-4.1" class="pilcrow">¶</a>
 </li>
@@ -1675,12 +1682,13 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 </blockquote>
 </section>
 </div>
-<div id="why-alias-domain-handles-to-username-handles">
+<div id="why-let-domain-handles-name-other-handles">
 <section id="section-11.5">
-        <h3 id="name-why-alias-domain-handles-to">
-<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-why-alias-domain-handles-to" class="section-name selfRef">Why Alias Domain Handles to Username Handles?</a>
+        <h3 id="name-why-let-domain-handles-name">
+<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-why-let-domain-handles-name" class="section-name selfRef">Why Let Domain Handles Name Other Handles?</a>
         </h3>
-<p id="section-11.5-1">A domain handle of an ActivityPub account needs a stable identifier for the account, a document that claims the handle back, and a place to name the issuer. A username handle provides all three, through its WebFinger resource descriptor and the identity document of its account, so the domain handle can resolve to it without the account adopting any new identifier, such as a DID (<a href="#activitypub" class="auto internal xref">Section 6</a>).<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+<p id="section-11.5-1">A domain handle of an ActivityPub account needs a stable identifier for the account, a document that claims the handle back, and a place to name the issuer. The identity document of the account provides all three, so the domain handle can resolve to it without the account adopting any new identifier, such as a DID (<a href="#domain-handles" class="auto internal xref">Section 6</a>).<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+<p id="section-11.5-2">A single <code>me=</code> key names either a username handle or a URL handle, rather than a key for each, because the value already says which it is, and because both resolve to the same thing, an identity document. Users who know their username handle, as most ActivityPub users do, can name it, and users who know the URL of their account, such as Solid users, or whose server has no username handles, can name that.<a href="#section-11.5-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1744,6 +1752,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC8288">[RFC8288]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Web Linking"</span>, <span class="seriesInfo">RFC 8288</span>, <span class="seriesInfo">DOI 10.17487/RFC8288</span>, <time datetime="2017-10" class="refDate">October 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8288">https://www.rfc-editor.org/info/rfc8288</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="URL-HVP">[URL-HVP]</dt>
       <dd>
 <span class="refAuthor">Goto, S.</span> and <span class="refAuthor">@bumblefudge.com</span>, <span class="refTitle">"URL Handle Verification Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-goto-url-handle-verification-latest</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://samuelgoto.github.io/handle-verification/draft-goto-url-handle-verification.html">https://samuelgoto.github.io/handle-verification/draft-goto-url-handle-verification.html</a>&gt;</span>. </dd>
@@ -1763,6 +1775,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <dd>
 <span class="refAuthor">Bluesky Social PBC</span>, <span class="refTitle">"AT Protocol: AT URI Scheme"</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://atproto.com/specs/at-uri-scheme">https://atproto.com/specs/at-uri-scheme</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="DID-CORE">[DID-CORE]</dt>
+        <dd>
+<span class="refAuthor">W3C</span>, <span class="refTitle">"Decentralized Identifiers (DIDs) v1.0"</span>, <span class="refContent">W3C Recommendation</span>, <time datetime="2022-07" class="refDate">July 2022</time>, <span>&lt;<a href="https://www.w3.org/TR/did-1.0/">https://www.w3.org/TR/did-1.0/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="EVP">[EVP]</dt>
         <dd>
 <span class="refAuthor">Hardt, D.</span> and <span class="refAuthor">S. Goto</span>, <span class="refTitle">"Email Verification Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-hardt-email-verification-latest</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/draft-hardt-email-verification/">https://datatracker.ietf.org/doc/draft-hardt-email-verification/</a>&gt;</span>. </dd>
@@ -1778,6 +1794,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <dt id="HANDLES-TF">[HANDLES-TF]</dt>
         <dd>
 <span class="refAuthor">Ahooja, A.</span> and <span class="refAuthor">E. Smith</span>, <span class="refTitle">"Proposal to Create Handles Task Force"</span>, <span class="refContent">W3C Social Web Incubator Community Group</span>, <time datetime="2026-08" class="refDate">August 2026</time>, <span>&lt;<a href="https://lists.w3.org/Archives/Public/public-swicg/2026Aug/0015.html">https://lists.w3.org/Archives/Public/public-swicg/2026Aug/0015.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="INDIEAUTH">[INDIEAUTH]</dt>
+        <dd>
+<span class="refAuthor">Parecki, A.</span>, <span class="refTitle">"IndieAuth"</span>, <span class="refContent">IndieWeb Living Standard</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://indieauth.spec.indieweb.org/">https://indieauth.spec.indieweb.org/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="MASTODON-WEBFINGER">[MASTODON-WEBFINGER]</dt>
         <dd>
@@ -1795,7 +1815,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
       <h2 id="name-examples">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
       </h2>
-<p id="appendix-A-1">This appendix shows the resolution of handles. The username handle examples are real handles at the time of writing. None of their accounts names an issuer yet, so each shows what would be added to its identity document to opt in. The domain handle example is hypothetical. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">This appendix shows the resolution of handles. The username handle examples are real handles at the time of writing. None of their accounts names an issuer yet, so each shows what would be added to its identity document to opt in. The domain handle examples are hypothetical. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div id="domain-handle-that-names-a-username-handle">
 <section id="appendix-A.1">
         <h3 id="name-domain-handle-that-names-a-">
@@ -1804,29 +1824,49 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <div class="alignLeft art-text artwork" id="appendix-A.1-1">
 <pre>Handle:        @alice.example
 DNS TXT _handle.alice.example
-  -&gt; "webfinger=@alice@social.example"
+  -&gt; "me=@alice@social.example"
 Names:         @alice@social.example
 GET https://social.example/.well-known/webfinger
       ?resource=acct%3Aalice%40social.example
   subject: acct:alice@social.example            (subject ok)
-  aliases: ["at://alice.example"]               (back-link ok)
   self:    https://social.example/users/alice
 GET https://social.example/users/alice          (URL-HVP)
   id:           https://social.example/users/alice
   handleIssuer: https://social.example
+  alsoKnownAs:  ["at://alice.example"]          (back-link ok)
 Identifier:    https://social.example/users/alice
 Issuer:        https://social.example           (same origin)
 </pre><a href="#appendix-A.1-1" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
-<div id="username-handle-on-a-split-domain">
+<div id="domain-handle-that-names-a-url-handle">
 <section id="appendix-A.2">
-        <h3 id="name-username-handle-on-a-split-">
-<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-username-handle-on-a-split-" class="section-name selfRef">Username Handle on a Split Domain</a>
+        <h3 id="name-domain-handle-that-names-a-u">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-domain-handle-that-names-a-u" class="section-name selfRef">Domain Handle That Names a URL Handle</a>
         </h3>
-<p id="appendix-A.2-1">The handle is at the owner's website, and the ActivityPub server is on a subdomain.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A.2-2">
+<div class="alignLeft art-text artwork" id="appendix-A.2-1">
+<pre>Handle:        @alice.example
+DNS TXT _handle.alice.example
+  -&gt; "me=https://social.example/users/alice"
+Names:         https://social.example/users/alice
+GET https://social.example/users/alice          (URL-HVP)
+  id:           https://social.example/users/alice
+  handleIssuer: https://social.example
+  alsoKnownAs:  ["at://alice.example"]          (back-link ok)
+Identifier:    https://social.example/users/alice
+Issuer:        https://social.example
+</pre><a href="#appendix-A.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="username-handle-on-a-split-domain">
+<section id="appendix-A.3">
+        <h3 id="name-username-handle-on-a-split-">
+<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-username-handle-on-a-split-" class="section-name selfRef">Username Handle on a Split Domain</a>
+        </h3>
+<p id="appendix-A.3-1">The handle is at the owner's website, and the ActivityPub server is on a subdomain.<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.3-2">
 <pre>Handle:        @simon@simonwillison.net
 GET https://simonwillison.net/.well-known/webfinger
       ?resource=acct%3Asimon%40simonwillison.net
@@ -1838,17 +1878,17 @@ Identifier:    https://fedi.simonwillison.net/users/simon
 To opt in, add to the actor:
   "handleIssuer": "https://fedi.simonwillison.net"
 Issuer:        https://fedi.simonwillison.net   (same origin)
-</pre><a href="#appendix-A.2-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.3-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="username-handle-hosted-by-a-bridge">
-<section id="appendix-A.3">
+<section id="appendix-A.4">
         <h3 id="name-username-handle-hosted-by-a">
-<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-username-handle-hosted-by-a" class="section-name selfRef">Username Handle Hosted by a Bridge</a>
+<a href="#appendix-A.4" class="section-number selfRef">A.4. </a><a href="#name-username-handle-hosted-by-a" class="section-name selfRef">Username Handle Hosted by a Bridge</a>
         </h3>
-<p id="appendix-A.3-1">The handle is at a website, and its actor is hosted by a service that bridges the website into ActivityPub.<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A.3-2">
+<p id="appendix-A.4-1">The handle is at a website, and its actor is hosted by a service that bridges the website into ActivityPub.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.4-2">
 <pre>Handle:        @snarfed.org@snarfed.org
 GET https://snarfed.org/.well-known/webfinger
       ?resource=acct%3Asnarfed.org%40snarfed.org
@@ -1860,17 +1900,17 @@ Identifier:    https://fed.brid.gy/snarfed.org
 To opt in, add to the actor:
   "handleIssuer": "https://fed.brid.gy"
 Issuer:        https://fed.brid.gy              (same origin)
-</pre><a href="#appendix-A.3-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.4-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="username-handle-whose-issuer-is-on-another-origin">
-<section id="appendix-A.4">
+<section id="appendix-A.5">
         <h3 id="name-username-handle-whose-issue">
-<a href="#appendix-A.4" class="section-number selfRef">A.4. </a><a href="#name-username-handle-whose-issue" class="section-name selfRef">Username Handle Whose Issuer Is on Another Origin</a>
+<a href="#appendix-A.5" class="section-number selfRef">A.5. </a><a href="#name-username-handle-whose-issue" class="section-name selfRef">Username Handle Whose Issuer Is on Another Origin</a>
         </h3>
-<p id="appendix-A.4-1">The handle and the actor are on the service's original domain, and its website, where users sign in, has moved to another domain. The back-link request is required.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A.4-2">
+<p id="appendix-A.5-1">The handle and the actor are on the service's original domain, and its website, where users sign in, has moved to another domain. The back-link request is required.<a href="#appendix-A.5-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.5-2">
 <pre>Handle:        @zuck@threads.net
 GET https://threads.net/.well-known/webfinger
       ?resource=acct%3Azuck%40threads.net
@@ -1884,23 +1924,23 @@ Issuer:        https://www.threads.com          (other origin)
 Back-link:     WebFinger at threads.net for the resource
                https://threads.net/ap/users/17841401746480004/
                must name acct:zuck@threads.net
-</pre><a href="#appendix-A.4-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.5-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="discovery-alias-that-is-not-a-handle">
-<section id="appendix-A.5">
+<section id="appendix-A.6">
         <h3 id="name-discovery-alias-that-is-not">
-<a href="#appendix-A.5" class="section-number selfRef">A.5. </a><a href="#name-discovery-alias-that-is-not" class="section-name selfRef">Discovery Alias That Is Not a Handle</a>
+<a href="#appendix-A.6" class="section-number selfRef">A.6. </a><a href="#name-discovery-alias-that-is-not" class="section-name selfRef">Discovery Alias That Is Not a Handle</a>
         </h3>
-<p id="appendix-A.5-1">A domain can serve a WebFinger response that redirects discovery to an account elsewhere. Its <code>subject</code> names that account, so the input is not a handle of the account (<a href="#resolve-user" class="auto internal xref">Section 5</a>), and resolution fails.<a href="#appendix-A.5-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A.5-2">
+<p id="appendix-A.6-1">A domain can serve a WebFinger response that redirects discovery to an account elsewhere. Its <code>subject</code> names that account, so the input is not a handle of the account (<a href="#resolve-user" class="auto internal xref">Section 5</a>), and resolution fails.<a href="#appendix-A.6-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.6-2">
 <pre>Input:         @scott@hanselman.com
 GET https://hanselman.com/.well-known/webfinger
       ?resource=acct%3Ascott%40hanselman.com
   subject: acct:shanselman@hachyderm.io         (subject mismatch)
 Result:        not a handle; @shanselman@hachyderm.io is
-</pre><a href="#appendix-A.5-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.6-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>

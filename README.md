@@ -21,7 +21,7 @@ Extends HVP to URL handles: users identified by an `https` URL, such as a Solid 
 * [Editor's Copy](https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-goto-username-handle-verification)
 
-Builds on URL-HVP to cover username handles, such as `@alice@social.example` (used by ActivityPub implementations), which are mapped through WebFinger to the URL of their account, which is then resolved as a URL handle. It also lets a domain handle name a username handle, with a `webfinger=` record. Issuance and verification are those of HVP.
+Builds on URL-HVP to cover username handles, such as `@alice@social.example` (used by ActivityPub implementations), which are mapped through WebFinger to the URL of their account, which is then resolved as a URL handle. It also lets a domain handle name a username handle or a URL handle, with a `me=` record. Issuance and verification are those of HVP.
 
 ## Related Work
 

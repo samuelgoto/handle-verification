@@ -474,7 +474,7 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
 
 so its unique user identifier is the DID `did:plc:bftbdgcbe4zclvpkboe4hleq`. Its DID document has no `HandleIssuer` service yet, so it has no authorized issuer. See (#examples).
 
-Because records and members with other keys are ignored, other kinds of records can be added later without affecting resolving parties that do not support them. For example, [@?UHVP] defines the `webfinger=` key and the `webfinger` member, which let a domain handle name a username handle instead of a DID.
+Because records and members with other keys are ignored, other kinds of records can be added later without affecting resolving parties that do not support them. For example, [@?UHVP] defines the `me=` key and the `me` member, which let a domain handle name a username handle or a URL handle ([@?URL-HVP]) instead of a DID.
 
 > Open Issue: Other kinds of records could be added later with keys of their own: for example, `domain=` for another domain handle, resolved recursively and failing when a loop is detected, or `email=` for an email address verified with [@!EVP]. A handle could also be allowed to name several identifiers, any one of which proves it; this would require a rule for which unique user identifier an HVT for the handle carries, because each resolves to a different one, and a verifier identifies accounts by it.
 

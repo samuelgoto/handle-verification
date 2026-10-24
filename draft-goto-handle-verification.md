@@ -651,6 +651,7 @@ The metadata document is a JSON object with the following members:
 - `issuance_endpoint` (REQUIRED): The URL that the browser sends HVT requests to. It MUST be an `https` URL that is same site ([@!WHATWG.HTML]) with the issuer identifier, so that the HVT request carries the cookies of the issuer's site; a party that fetches the metadata MUST reject it otherwise.
 - `jwks_uri` (REQUIRED): The URL of the issuer's JSON Web Key Set ([@!RFC7517]), used to verify HVTs.
 - `signing_alg_values_supported` (OPTIONAL): As defined by [@!EVP].
+- `federations` (OPTIONAL): An array of `https` URLs, each of which identifies a federation that the accounts of the issuer belong to, such as `https://atproto.com`. HVP does not interpret these URLs, and verification does not depend on them. A browser API uses them to offer a verifier only the handles whose issuers belong to the federations that the verifier asks for ((#idp-registration)).
 
 Example:
 
@@ -659,13 +660,12 @@ Example:
   "issuer": "https://issuer.example",
   "issuance_endpoint": "https://issuer.example/hvp/issuance",
   "jwks_uri": "https://issuer.example/hvp/jwks",
-  "signing_alg_values_supported": ["Ed25519", "ES256"]
+  "signing_alg_values_supported": ["Ed25519", "ES256"],
+  "federations": ["https://atproto.com"]
 }
 ```
 
 An issuer that also acts as an EVP issuer serves its EVP metadata and its HVP metadata at their respective well-known paths. It MAY use the same keys for both.
-
-> Open Issue: How the HVP metadata relates to the FedCM configuration file ([@?FEDCM]).
 
 > Open Issue: Whether requiring the `issuance_endpoint` to be same site with the issuer identifier is appropriate, and whether [@!EVP] has, or should have, the same requirement, so that HVP does not diverge from it.
 
@@ -1147,11 +1147,12 @@ Result:        not a handle; @shanselman@hachyderm.io is
 
 *This section is non-normative.*
 
-The W3C IdP Registration API ([@?IDP-REGISTRATION]) extends FedCM ([@?FEDCM]) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API ([@?EMAIL-VERIFICATION-API]) relates to EVP:
+The W3C IdP Registration API ([@?IDP-REGISTRATION]) extends FedCM ([@?FEDCM]) so that a verifier can request any issuer in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API ([@?EMAIL-VERIFICATION-API]) relates to EVP: the browser API decides which handles to offer, lets the user register and select them, and delivers the HVT+KB to the verifier, while HVP defines what a handle is, how it is resolved, and how the HVT is issued and the HVT+KB is verified. In particular:
 
-- The browser API decides which handles to offer, lets the user register and select them, and delivers the HVT+KB to the verifier. HVP defines what a handle is, how it is resolved, and how the HVT is issued and the HVT+KB is verified.
-- The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. It could instead use the syntax and resolution of this document, so that the identity provider of a handle is its authorized issuer.
-- A verifier request for a "federation" in that API could correspond to HVP, and what the verifier receives could be an HVT+KB.
+- The IdP Registration API parses and resolves handles as described in (#handles) and (#resolution), and treats the authorized issuer of a handle as its identity provider.
+- It fetches the issuer metadata ((#issuer-metadata)) of the authorized issuer, and reads the `accounts_endpoint` and `login_url` that the browser needs to show the user's accounts and let the user sign in from FedCM's well-known file, `/.well-known/web-identity`, on the issuer's site.
+- A verifier asks for handles by federation, such as `https://atproto.com`. The browser offers the handles whose issuers list that federation in the `federations` member of their issuer metadata.
+- When the user selects an account, the browser obtains an HVT from the issuer with an HVT request ((#token-request-details)), rather than with FedCM's identity assertion endpoint, which would reveal the verifier to the issuer, creates the KB-JWT ((#kb)), and delivers the HVT+KB to the verifier, which verifies it as described in (#verification).
 
 # Acknowledgments
 

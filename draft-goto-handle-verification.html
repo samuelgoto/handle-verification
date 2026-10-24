@@ -27,7 +27,7 @@
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 6.1.3
+    lxml 6.0.2
     platformdirs 4.4.0
     pycountry 24.6.1
     pypdf 6.21.1
@@ -2066,6 +2066,9 @@ Content-Type: application/json
           <li class="compact" id="section-6.2-3.4">
             <code>signing_alg_values_supported</code> (OPTIONAL): As defined by <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-6.2-3.4" class="pilcrow">¶</a>
 </li>
+          <li class="compact" id="section-6.2-3.5">
+            <code>federations</code> (OPTIONAL): An array of <code>https</code> URLs, each of which identifies a federation that the accounts of the issuer belong to, such as <code>https://atproto.com</code>. HVP does not interpret these URLs, and verification does not depend on them. A browser API uses them to offer a verifier only the handles whose issuers belong to the federations that the verifier asks for (<a href="#idp-registration" class="auto internal xref">Appendix B</a>).<a href="#section-6.2-3.5" class="pilcrow">¶</a>
+</li>
         </ul>
 <p id="section-6.2-4">Example:<a href="#section-6.2-4" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-6.2-5">
@@ -2073,14 +2076,14 @@ Content-Type: application/json
   "issuer": "https://issuer.example",
   "issuance_endpoint": "https://issuer.example/hvp/issuance",
   "jwks_uri": "https://issuer.example/hvp/jwks",
-  "signing_alg_values_supported": ["Ed25519", "ES256"]
+  "signing_alg_values_supported": ["Ed25519", "ES256"],
+  "federations": ["https://atproto.com"]
 }
 </pre><a href="#section-6.2-5" class="pilcrow">¶</a>
 </div>
 <p id="section-6.2-6">An issuer that also acts as an EVP issuer serves its EVP metadata and its HVP metadata at their respective well-known paths. It MAY use the same keys for both.<a href="#section-6.2-6" class="pilcrow">¶</a></p>
 <blockquote id="section-6.2-7">
-          <p id="section-6.2-7.1">Open Issue: How the HVP metadata relates to the FedCM configuration file (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>).<a href="#section-6.2-7.1" class="pilcrow">¶</a></p>
-<p id="section-6.2-7.2">Open Issue: Whether requiring the <code>issuance_endpoint</code> to be same site with the issuer identifier is appropriate, and whether <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> has, or should have, the same requirement, so that HVP does not diverge from it.<a href="#section-6.2-7.2" class="pilcrow">¶</a></p>
+          <p id="section-6.2-7.1">Open Issue: Whether requiring the <code>issuance_endpoint</code> to be same site with the issuer identifier is appropriate, and whether <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> has, or should have, the same requirement, so that HVP does not diverge from it.<a href="#section-6.2-7.1" class="pilcrow">¶</a></p>
 </blockquote>
 </section>
 </div>
@@ -3067,13 +3070,15 @@ Result:        not a handle; @shanselman@hachyderm.io is
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-relationship-to-idp-registr" class="section-name selfRef">Relationship to IdP Registration</a>
       </h2>
 <p id="appendix-B-1"><em>This section is non-normative.</em><a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) extends FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API (<span>[<a href="#EMAIL-VERIFICATION-API" class="cite xref">EMAIL-VERIFICATION-API</a>]</span>) relates to EVP:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) extends FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>) so that a verifier can request any issuer in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API (<span>[<a href="#EMAIL-VERIFICATION-API" class="cite xref">EMAIL-VERIFICATION-API</a>]</span>) relates to EVP: the browser API decides which handles to offer, lets the user register and select them, and delivers the HVT+KB to the verifier, while HVP defines what a handle is, how it is resolved, and how the HVT is issued and the HVT+KB is verified. In particular:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="appendix-B-3.1">The browser API decides which handles to offer, lets the user register and select them, and delivers the HVT+KB to the verifier. HVP defines what a handle is, how it is resolved, and how the HVT is issued and the HVT+KB is verified.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
+<li class="compact" id="appendix-B-3.1">The IdP Registration API parses and resolves handles as described in <a href="#handles" class="auto internal xref">Section 4</a> and <a href="#resolution" class="auto internal xref">Section 5</a>, and treats the authorized issuer of a handle as its identity provider.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="appendix-B-3.2">The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. It could instead use the syntax and resolution of this document, so that the identity provider of a handle is its authorized issuer.<a href="#appendix-B-3.2" class="pilcrow">¶</a>
+        <li class="compact" id="appendix-B-3.2">It fetches the issuer metadata (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>) of the authorized issuer, and reads the <code>accounts_endpoint</code> and <code>login_url</code> that the browser needs to show the user's accounts and let the user sign in from FedCM's well-known file, <code>/.well-known/web-identity</code>, on the issuer's site.<a href="#appendix-B-3.2" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="appendix-B-3.3">A verifier request for a "federation" in that API could correspond to HVP, and what the verifier receives could be an HVT+KB.<a href="#appendix-B-3.3" class="pilcrow">¶</a>
+        <li class="compact" id="appendix-B-3.3">A verifier asks for handles by federation, such as <code>https://atproto.com</code>. The browser offers the handles whose issuers list that federation in the <code>federations</code> member of their issuer metadata.<a href="#appendix-B-3.3" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="appendix-B-3.4">When the user selects an account, the browser obtains an HVT from the issuer with an HVT request (<a href="#token-request-details" class="auto internal xref">Section 6.3</a>), rather than with FedCM's identity assertion endpoint, which would reveal the verifier to the issuer, creates the KB-JWT (<a href="#kb" class="auto internal xref">Section 8</a>), and delivers the HVT+KB to the verifier, which verifies it as described in <a href="#verification" class="auto internal xref">Section 9</a>.<a href="#appendix-B-3.4" class="pilcrow">¶</a>
 </li>
       </ul>
 </section>

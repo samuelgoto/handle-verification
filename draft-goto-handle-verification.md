@@ -143,6 +143,20 @@ organization = "Google"
   <refcontent>W3C Social Web Incubator Community Group</refcontent>
 </reference>
 
+<reference anchor="URL-HVP" target="https://samuelgoto.github.io/handle-verification/draft-goto-url-handle-verification.html">
+  <front>
+    <title>URL Handle Verification Protocol</title>
+    <author initials="S." surname="Goto" fullname="Sam Goto">
+      <organization>Google</organization>
+    </author>
+    <author fullname="@bumblefudge.com">
+      <organization/>
+    </author>
+    <date year="2026"/>
+  </front>
+  <seriesInfo name="Internet-Draft" value="draft-goto-url-handle-verification-latest"/>
+</reference>
+
 <reference anchor="UHVP" target="https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html">
   <front>
     <title>Username Handle Verification Protocol</title>
@@ -239,7 +253,7 @@ HVP keeps the privacy properties of EVP: the browser intermediates between the v
 
 ## Scope
 
-This document covers domain handles, which consist of a DNS name alone. Username handles, which combine a user name and a domain, such as `@alice@social.example`, are covered by a companion document, [@?UHVP], which resolves them with WebFinger and reuses the issuance and verification defined here. HVP is designed so that other forms of handle can be added in this way, with a resolution of their own, without changing issuance or verification. Email addresses are out of scope: they are verified with [@!EVP].
+This document covers domain handles, which consist of a DNS name alone. Two companion documents extend it: [@?URL-HVP] covers URL handles, that is, users identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or an IndieAuth personal website, and [@?UHVP] builds on it to cover username handles, which combine a user name and a domain, such as `@alice@social.example`, by mapping them to the URL of their account with WebFinger. Both reuse the issuance and verification defined here. HVP is designed so that other forms of handle can be added in this way, with a resolution of their own, without changing issuance or verification. Email addresses are out of scope: they are verified with [@!EVP].
 
 HVP provides verified identification, for example to sign a user in: it tells the verifier that the user controls a handle, and which unique user identifier that handle resolves to. It does not provide authorization: an HVT grants no access to the user's account, and cannot be used to read or publish content or to act on the user's behalf. A verifier that needs such access continues to use the ecosystem's authorization protocol, such as AT Protocol OAuth ([@?ATPROTO-OAUTH]), and can use HVP and that protocol together, for example by signing the user in with HVP and requesting authorization later, only when it needs it. See (#why-not-oauth).
 
@@ -406,7 +420,8 @@ If any step fails, the input is not a handle.
 |-------|--------|
 | `@Alice.Example`, `alice.example`, `at://alice.example` | `alice.example` |
 | `alice@mail.example`, `@alice@social.example` | not a domain handle |
-| `https://alice.example/`, `@192.0.2.1`, `@com` | not a handle |
+| `https://alice.example/` | not a domain handle (URL handle, see [@?URL-HVP]) |
+| `@192.0.2.1`, `@com` | not a handle |
 
 An input that contains `@` after its leading `@` is not a domain handle: `alice@mail.example` is an email address, which a browser API can verify with [@!EVP], and `@alice@social.example` is a username handle, which a browser API can verify with [@?UHVP].
 
@@ -862,7 +877,7 @@ There are no implementations of this document yet. Prototypes of the related IdP
 *Note: This section is to be removed before publishing as an RFC.*
 
 - draft-goto-handle-verification-00
-  - Initial draft, covering domain handles in the AT Protocol and ActivityPub. Username handles are covered by a companion document, [@?UHVP].
+  - Initial draft, covering domain handles in the AT Protocol and ActivityPub. URL handles and username handles are covered by companion documents, [@?URL-HVP] and [@?UHVP].
 
 {backmatter}
 

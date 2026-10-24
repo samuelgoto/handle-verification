@@ -168,7 +168,7 @@ Source for this draft and an issue tracker can be found at https://github.com/sa
 
 # Introduction
 
-The Handle Verification Protocol ([@!HVP]) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP covers domain handles, such as `@alice.example`, and the Username Handle Verification Protocol ([@?UHVP]) extends it to username handles, such as `@alice@social.example`.
+The Handle Verification Protocol ([@!HVP]) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP covers domain handles, such as `@alice.example`. This document extends it to URL handles, and the Username Handle Verification Protocol ([@?UHVP]) builds on this document to cover username handles, such as `@alice@social.example`, by mapping them to the URL of their account with WebFinger.
 
 Several ecosystems identify users with an `https` URL instead:
 
@@ -303,6 +303,8 @@ User identifier: https://social.example/users/alice
 Issuer:          https://social.example
 ```
 
+> Open Issue: Some ActivityPub servers, such as Mastodon servers with "authorized fetch" enabled, serve actors only to requests that are signed with the key of another server's actor, and respond to the unsigned requests of resolution with a 401 (Unauthorized) response, so that resolution of their actors fails. Resolving parties cannot sign their requests, because they have no actor, and because a signature would identify them. Such servers would need to serve their actors, or at least the `handle-issuer` link of their responses ((#handle-issuer-link)), to unsigned requests. This needs to be discussed with Mastodon as an implementation detail.
+
 ## The Subject Node {#subject-node}
 
 Resolving parties do not perform JSON-LD processing ([@?JSON-LD11]): they read JSON documents in the forms that Solid and ActivityPub servers serve, as follows. The *subject node* of a JSON document for a URL *url* is:
@@ -364,7 +366,7 @@ As in [@!HVP], authorization is explicit: resolution does not infer an issuer fr
 
 ## The handle-issuer Link {#handle-issuer-link}
 
-An identity document can also name the issuer authorized to vouch for its handle with a link whose relation type is `handle-issuer` ([@?UHVP]), whose target is an issuer identifier, and whose context is the identity document: in a `Link` header field ([@!RFC8288]) of the response, with any media type, or, in an HTML document, in a `<link>` element ([@!WHATWG.HTML]), whose `href` is resolved against the document's base URL:
+An identity document can also name the issuer authorized to vouch for its handle with a link whose relation type is `handle-issuer` ((#iana)), whose target is an issuer identifier, and whose context is the identity document: in a `Link` header field ([@!RFC8288]) of the response, with any media type, or, in an HTML document, in a `<link>` element ([@!WHATWG.HTML]), whose `href` is resolved against the document's base URL:
 
 ```http
 HTTP/1.1 200 OK
@@ -445,11 +447,15 @@ As in [@!HVP], verifiers SHOULD identify accounts by the unique user identifier 
 
 A server can serve different documents at the same URL depending on the `Accept` header. Resolving parties send the same `Accept` header ((#resolution)), so that the browser and the verifier read the same document, and a server that serves an identity document only for some media types, and HTML for others, names its issuer in each.
 
-# IANA Considerations
+# IANA Considerations {#iana}
 
-This document has no IANA actions. The `handle-issuer` link relation type is registered by [@?UHVP].
+## Link Relation Types
 
-> Open Issue: Whether the `handle-issuer` link relation type should be registered by [@!HVP], so that this document and [@?UHVP] can both use it without depending on each other.
+This document registers the following link relation type in the "Link Relation Types" registry ([@!RFC8288]):
+
+- Relation Name: `handle-issuer`
+- Description: Refers to the issuer that the context authorizes to issue Handle Verification Tokens for its handle.
+- Reference: (#handle-issuer-link) of this document
 
 # Design Rationale
 

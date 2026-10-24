@@ -1,5 +1,6 @@
 *.html
 !draft-goto-handle-verification.html
+!draft-goto-username-handle-verification.html
 *.pdf
 *.redxml
 *.swp
@@ -17,6 +18,7 @@
 Gemfile.lock
 archive.json
 draft-goto-handle-verification.xml
+draft-goto-username-handle-verification.xml
 package-lock.json
 report.xml
 .DS_Store

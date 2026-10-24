@@ -4,7 +4,7 @@ abbrev = "HVP"
 ipr = "trust200902"
 area = "Security"
 workgroup = "TBD"
-keyword = ["handle", "verification", "identity", "authentication", "atproto", "activitypub", "webfinger", "did"]
+keyword = ["handle", "verification", "identity", "authentication", "atproto", "activitypub", "did"]
 
 [seriesInfo]
 status = "standard"
@@ -143,45 +143,15 @@ organization = "Google"
   <refcontent>W3C Social Web Incubator Community Group</refcontent>
 </reference>
 
-<reference anchor="FEP-C390" target="https://codeberg.org/fediverse/fep/src/branch/main/fep/c390/fep-c390.md">
+<reference anchor="UHVP" target="https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html">
   <front>
-    <title>FEP-c390: Identity Proofs</title>
-    <author>
-      <organization>Fediverse Enhancement Proposals</organization>
-    </author>
-    <date year="2025"/>
-  </front>
-</reference>
-
-<reference anchor="FEP-2C59" target="https://codeberg.org/fediverse/fep/src/branch/main/fep/2c59/fep-2c59.md">
-  <front>
-    <title>FEP-2c59: Discovery of a Webfinger address from an ActivityPub actor</title>
-    <author>
-      <organization>Fediverse Enhancement Proposals</organization>
-    </author>
-    <date year="2024"/>
-  </front>
-</reference>
-
-<reference anchor="MASTODON-WEBFINGER" target="https://docs.joinmastodon.org/spec/webfinger/">
-  <front>
-    <title>WebFinger</title>
-    <author>
-      <organization>Mastodon</organization>
+    <title>Username Handle Verification Protocol</title>
+    <author initials="S." surname="Goto" fullname="Sam Goto">
+      <organization>Google</organization>
     </author>
     <date year="2026"/>
   </front>
-  <refcontent>Mastodon documentation</refcontent>
-</reference>
-
-<reference anchor="THREADS" target="https://www.threads.com/">
-  <front>
-    <title>Threads</title>
-    <author>
-      <organization>Meta Platforms, Inc.</organization>
-    </author>
-    <date year="2026"/>
-  </front>
+  <seriesInfo name="Internet-Draft" value="draft-goto-username-handle-verification-latest"/>
 </reference>
 
 <reference anchor="WHATWG.HTML" target="https://html.spec.whatwg.org/multipage/">
@@ -228,9 +198,9 @@ organization = "Google"
 
 .# Abstract
 
-This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed Handle Verification Token (HVT) from an issuer attesting that the user controls a *handle*, and presents it to a verifier. HVP covers two forms of handle: *domain handles*, such as `@alice.example`, which are used by the AT Protocol and are being proposed for ActivityPub, and *username handles*, such as `@alice@social.example`, which are used by ActivityPub. A handle of either form is verified the same way, whichever ecosystem the user's account belongs to. HVP uses the same three-party model as the Email Verification Protocol ([@!EVP]), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.
+This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed Handle Verification Token (HVT) from an issuer attesting that the user controls a *handle*, and presents it to a verifier. This document covers *domain handles*, such as `@alice.example`, which are used by the AT Protocol and are being proposed for ActivityPub, and is designed to be extended to other forms of handle, such as the username handles of ActivityPub implementations. HVP uses the same three-party model as the Email Verification Protocol ([@!EVP]), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.
 
-This document defines the syntax of handles, their resolution to a unique user identifier and to the issuer authorized to vouch for them (through a DID document for domain handles, and through WebFinger for username handles), the HVT request, the HVT, and the verification of the HVT and its key binding (HVT+KB). The browser API, that is, how the user selects a handle and how the HVT+KB is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ([@?IDP-REGISTRATION]).
+This document defines the syntax of domain handles, their resolution, through a DID document, to a unique user identifier and to the issuer authorized to vouch for them, in a way that is backwards compatible with the AT Protocol, the HVT request, the HVT, and the verification of the HVT and its key binding (HVT+KB). The browser API, that is, how the user selects a handle and how the HVT+KB is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ([@?IDP-REGISTRATION]).
 
 .# Discussion Venues
 
@@ -242,9 +212,9 @@ Source for this draft and an issue tracker can be found at https://github.com/sa
 
 # Introduction
 
-Social networks built on open protocols let any server host a user's account, and let users bring their own domain name as their identity. The AT Protocol ([@?ATPROTO]) identifies every user with a *handle* that is a DNS name, such as `@alice.example`, which resolves to a stable decentralized identifier (DID). ActivityPub ([@?ACTIVITYPUB]) identifies users with handles of the form `@alice@social.example`, which are resolved with WebFinger ([@!RFC7033]), and the W3C Social Web Incubator Community Group is considering adding domain handles, such as `@alice.example`, as an alternative ([@?HANDLES-TF]). The result is an open federation: a website that wants to accept these users cannot know their providers in advance.
+Social networks built on open protocols let any server host a user's account, and let users bring their own domain name as their identity. The AT Protocol ([@?ATPROTO]) identifies every user with a *handle* that is a DNS name, such as `@alice.example`, which resolves to a stable decentralized identifier (DID). ActivityPub ([@?ACTIVITYPUB]) implementations identify users with handles of the form `@alice@social.example`, and the W3C Social Web Incubator Community Group is considering adding domain handles, such as `@alice.example`, as an alternative ([@?HANDLES-TF]). The result is an open federation: a website that wants to accept these users cannot know their providers in advance.
 
-Email shows that an open federation can still be verified. A verifier accepts an email address at any mail domain without a prior relationship with the domain, and the Email Verification Protocol ([@!EVP]) lets the verifier check such an address with a signed token. HVP applies that model to handles, in a way that does not depend on which ecosystem the user's account belongs to.
+Email shows that an open federation can still be verified. A verifier accepts an email address at any mail domain without a prior relationship with the domain, and the Email Verification Protocol ([@!EVP]) lets the verifier check such an address with a signed token. HVP applies that model to domain handles, in a way that does not depend on which ecosystem the user's account belongs to.
 
 ## The Problem
 
@@ -259,17 +229,17 @@ A website that wants to let users sign in with a handle today has to integrate w
 
 HVP separates the problem into three parts:
 
-1. **Syntax** ((#handles)): what a handle is, in either of its two forms, and how it is written and normalized.
-2. **Resolution** ((#resolution)): how a handle is resolved to a unique user identifier, checked against the handle, and turned into the issuer that the user has authorized to vouch for it. A username handle is resolved with WebFinger, in a way that is backwards compatible with ActivityPub, and the WebFinger response names the issuer with a `handle-issuer` link. A domain handle is resolved to a DID or a username handle, in a way that is backwards compatible with the AT Protocol ((#atproto-compat)).
+1. **Syntax** ((#handles)): what a domain handle is, and how it is written and normalized.
+2. **Resolution** ((#resolution)): how a domain handle is resolved to a DID, checked against the handle, and turned into the issuer that the user has authorized to vouch for it, in a way that is backwards compatible with the AT Protocol ((#atproto-compat)).
 3. **Issuance and verification**: how a browser obtains a Handle Verification Token (HVT) from the authorized issuer, and how a verifier verifies it. This part reuses the token request, key binding, and token format of EVP.
 
-Nothing in issuance or verification depends on the form of the handle, or on whether the account belongs to the AT Protocol or to ActivityPub. A verifier that implements HVP accepts all of them.
+Nothing in issuance or verification depends on the ecosystem that the account belongs to. A verifier that implements HVP accepts domain handles of every ecosystem.
 
 HVP keeps the privacy properties of EVP: the browser intermediates between the verifier and the issuer, so the issuer does not learn which verifier the user is signing in to.
 
 ## Scope
 
-This document covers two forms of handle: domain handles, which consist of a DNS name alone, and username handles, which combine a user name and a domain. The two forms are resolved differently, each with the mechanism that is already deployed for it, and are verified the same way. See (#why-two). Email addresses are out of scope: they are verified with [@!EVP].
+This document covers domain handles, which consist of a DNS name alone. Username handles, which combine a user name and a domain, such as `@alice@social.example`, are covered by a companion document, [@?UHVP], which resolves them with WebFinger and reuses the issuance and verification defined here. HVP is designed so that other forms of handle can be added in this way, with a resolution of their own, without changing issuance or verification. Email addresses are out of scope: they are verified with [@!EVP].
 
 HVP provides verified identification, for example to sign a user in: it tells the verifier that the user controls a handle, and which unique user identifier that handle resolves to. It does not provide authorization: an HVT grants no access to the user's account, and cannot be used to read or publish content or to act on the user's behalf. A verifier that needs such access continues to use the ecosystem's authorization protocol, such as AT Protocol OAuth ([@?ATPROTO-OAUTH]), and can use HVP and that protocol together, for example by signing the user in with HVP and requesting authorization later, only when it needs it. See (#why-not-oauth).
 
@@ -288,16 +258,13 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 This document uses the following terms:
 
 Handle:
-: A human-readable identifier of a user, displayed with a leading `@`: either a domain handle or a username handle. A handle is not necessarily permanent: a user can change it. See (#handles).
+: A human-readable identifier of a user, displayed with a leading `@`. In this document, a handle is a domain handle. A handle is not necessarily permanent: a user can change it. See (#handles).
 
 Domain handle:
 : A handle that consists of a DNS name, such as `alice.example`, displayed as `@alice.example`.
 
-Username handle:
-: A handle that consists of a user name and a DNS name, such as `alice@social.example`, displayed as `@alice@social.example`.
-
 Unique user identifier:
-: An identifier of the user's account that resolution produces, and that the HVT carries in its `sub` claim: a DID, or the `self` link of the WebFinger response of a username handle. Unlike a handle, which can change hands and point to different accounts over time, it identifies one account. It can still change in some cases, for example when an account identified by a `self` link moves to another server.
+: An identifier of the user's account that resolution produces, and that the HVT carries in its `sub` claim. In this document, it is the DID that the handle resolves to. Unlike a handle, which can change hands and point to different accounts over time, it identifies one account.
 
 DID:
 : A decentralized identifier ([@?DID-CORE]) that identifies a user's account more permanently than its handle, such as `did:plc:bftbdgcbe4zclvpkboe4hleq` or `did:web:alice.example`. A handle resolves to a DID.
@@ -306,7 +273,7 @@ DID document:
 : The document that a DID resolves to. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuer.
 
 Authorized issuer:
-: The issuer identifier that resolution yields for a handle: the one that a DID document names with its `HandleIssuer` service ((#handle-issuer)), or that the WebFinger response of a username handle names with its `handle-issuer` link ((#handle-issuer-link)). Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.
+: The issuer identifier that resolution yields for a handle: the one that its DID document names with its `HandleIssuer` service ((#handle-issuer)). Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.
 
 Issuer:
 : A service that verifies the user controls a handle and issues HVTs for it, typically the server that hosts the user's account, such as an AT Protocol personal data server (PDS) or an ActivityPub server. An issuer is identified by an issuer identifier ((#issuer-identifier)).
@@ -335,7 +302,7 @@ Step                       Verifier     Browser              Issuer
                                |    identifier, issuer]          |
                                |            |                    |
 3.4 HVT Request                |            |-- POST /issuance ->|
-                               |            |   (handle, did/url)|
+                               |            |   (handle, did)    |
                                |            |                    |
 3.5 HVT Issuance               |            |<------- HVT -------|
                                |            |                    |
@@ -383,16 +350,13 @@ The verifier verifies the HVT+KB as described in (#verification). The verifier r
 
 # Handles {#handles}
 
-A handle takes one of two forms:
+A *domain handle* is a DNS name, such as `alice.example`. Domain handles are the handles of the AT Protocol ([@?ATPROTO-HANDLE]), and the domain-based handles proposed for ActivityPub ([@?HANDLES-TF]). In DID documents, a domain handle is written as an `at` URI ([@?ATPROTO-URI]), `at://` followed by the handle, such as `at://alice.example`, as in the AT Protocol. This document uses that form for domain handles of every ecosystem.
 
-- A *domain handle* is a DNS name, such as `alice.example`. Domain handles are the handles of the AT Protocol ([@?ATPROTO-HANDLE]), and the domain-based handles proposed for ActivityPub ([@?HANDLES-TF]). In DID documents, a domain handle is written as an `at` URI ([@?ATPROTO-URI]), `at://` followed by the handle, such as `at://alice.example`, as in the AT Protocol. This document uses that form for domain handles of every ecosystem.
-- A *username handle* is a user name and a DNS name separated by `@`, such as `alice@social.example`. Username handles are the handles of ActivityPub, and correspond to the `acct` URI ([@!RFC7565]) `acct:alice@social.example`, which is resolved with WebFinger ([@!RFC7033]).
-
-A handle is displayed with a leading `@`, as in `@alice.example` and `@alice@social.example`, and is carried in the protocol without it.
+A handle is displayed with a leading `@`, as in `@alice.example`, and is carried in the protocol without it.
 
 ## Domain Handle Syntax {#handle-syntax}
 
-A domain handle, and the domain of a username handle, MUST satisfy the following rules, which are a synthesis of the hostname rules of [@!RFC1035], [@?RFC3696] and [@!RFC3986]:
+A domain handle MUST satisfy the following rules, which are a synthesis of the hostname rules of [@!RFC1035], [@?RFC3696] and [@!RFC3986]:
 
 - The handle contains only ASCII characters, and is at most 253 characters long.
 - The handle consists of at least two labels separated by ASCII periods (`.`). It has no leading or trailing period.
@@ -423,40 +387,28 @@ The following top-level domains are syntactically valid in a handle, but a handl
 
 > Open Issue: How internationalized handles are displayed, and how homoglyph attacks are mitigated, in coordination with the internationalization work of [@?HANDLES-TF].
 
-## Username Handle Syntax {#username-handle-syntax}
-
-A username handle consists of a user name, `@`, and a domain that satisfies (#handle-syntax). The user name is the `userpart` of an `acct` URI ([@!RFC7565]), and so does not contain `@`:
-
-```abnf
-user-handle = userpart "@" handle
-userpart    = unreserved / sub-delims
-              0*( unreserved / pct-encoded / sub-delims )
-```
-
-where `unreserved`, `pct-encoded`, and `sub-delims` are defined by [@!RFC3986], and `handle` is defined in (#handle-syntax). The `acct` URI of a username handle is `acct:` followed by the handle.
-
 ## Normalization {#normalization}
 
-Handles of both forms are case-insensitive. The *normalized* form of a handle is the handle converted to ASCII lowercase. Every handle in this protocol (in the `handle` claim, and in comparisons) is in normalized form, and every comparison of handles is a byte-for-byte comparison of normalized handles.
+Handles are case-insensitive. The *normalized* form of a handle is the handle converted to ASCII lowercase. Every handle in this protocol (in the `handle` claim, and in comparisons) is in normalized form, and every comparison of handles is a byte-for-byte comparison of normalized handles.
 
 ## Parsing User Input {#parsing}
 
 To parse a handle that a user typed:
 
 1. Strip leading and trailing ASCII whitespace.
-2. If the input starts with `@` and contains a second `@`, it is a username handle: remove the leading `@`, normalize the rest ((#normalization)), and check that it satisfies (#username-handle-syntax).
-3. Otherwise, it is a domain handle: if the input starts with `at://`, remove it, or else if it starts with `@`, remove it; if it then ends with a single `/`, remove it; normalize the rest, and check that it satisfies (#handle-syntax).
+2. If the input starts with `at://`, remove it, or else if it starts with `@`, remove it.
+3. If the input then ends with a single `/`, remove it.
+4. Normalize the rest ((#normalization)), and check that it satisfies (#handle-syntax).
 
 If any step fails, the input is not a handle.
 
 | Input | Handle |
 |-------|--------|
-| `@Alice.Example`, `alice.example`, `at://alice.example` | `alice.example` (domain handle) |
-| `@Alice@Social.Example` | `alice@social.example` (username handle) |
-| `alice@mail.example` | not a handle |
+| `@Alice.Example`, `alice.example`, `at://alice.example` | `alice.example` |
+| `alice@mail.example`, `@alice@social.example` | not a domain handle |
 | `https://alice.example/`, `@192.0.2.1`, `@com` | not a handle |
 
-A username handle is always typed with its leading `@`, which distinguishes it from an email address: `alice@mail.example` is an email address, which a browser API can verify with [@!EVP], and `@alice@mail.example` is a username handle.
+An input that contains `@` after its leading `@` is not a domain handle: `alice@mail.example` is an email address, which a browser API can verify with [@!EVP], and `@alice@social.example` is a username handle, which a browser API can verify with [@?UHVP].
 
 # Handle Resolution {#resolution}
 
@@ -465,7 +417,7 @@ A username handle is always typed with its leading `@`, which distinguishes it f
 - the user's *unique user identifier*, which is the subject of the HVT; and
 - the *authorized issuer* for the handle.
 
-Username handles are resolved through WebFinger ([@!RFC7033]) ((#resolve-user)), and domain handles through a DID ((#resolution-steps)), or, as proposed for ActivityPub, a username handle ((#activitypub)). In both cases, resolution checks that the handle and the unique user identifier refer to each other, so that a handle cannot claim an account that does not agree to it, and finds the issuer that the user has explicitly authorized.
+A domain handle is resolved through a DID ((#resolution-steps)). Resolution checks that the handle and the DID refer to each other, so that a handle cannot claim an account that does not agree to it, and finds the issuer that the user has explicitly authorized.
 
 Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for an HVT; the verifier does it to check that the HVT was issued by an issuer that is authorized for the handle ((#verification)).
 
@@ -478,13 +430,13 @@ The following rules apply to every resolution step:
 
 ## Domain Handles {#resolution-steps}
 
-A domain handle resolves to a DID ([@?DID-CORE]), which is its unique user identifier, and whose DID document claims the handle back and names the authorized issuer. This generalizes the handle resolution of the AT Protocol ([@?ATPROTO-HANDLE], [@?ATPROTO-DID]): it uses ecosystem-neutral names for the records that map a handle to its DID, also accepts the names of the AT Protocol ((#atproto-compat)), and adds the extraction of the authorized issuer. As proposed for ActivityPub, a domain handle can instead resolve to a username handle ((#activitypub)).
+A domain handle resolves to a DID ([@?DID-CORE]), which is its unique user identifier, and whose DID document claims the handle back and names the authorized issuer. This generalizes the handle resolution of the AT Protocol ([@?ATPROTO-HANDLE], [@?ATPROTO-DID]): it uses ecosystem-neutral names for the records that map a handle to its DID, also accepts the names of the AT Protocol ((#atproto-compat)), and adds the extraction of the authorized issuer.
 
 Given a normalized domain handle *handle*:
 
-1. **Handle to DID.** Perform the following lookups. A DID MUST use the `plc` method ([@?DID-PLC]) or the `web` method ([@?DID-WEB]); otherwise fail. If both lookups yield a DID, and the DIDs differ, fail. If either lookup yields a DID, it is the handle's DID. If the lookups name a username handle instead, resolution continues as described in (#activitypub). If neither yields anything, the resolving party MUST fall back to the lookups of existing AT Protocol handles ((#atproto-compat)), but only if both lookups established that the handle names nothing: that is, if the DNS query returned no `TXT` record whose value starts with a recognized key, or no record at all, and the well-known request returned a 404 (Not Found) or 410 (Gone) response, or a document with no recognized member. If either lookup failed in any other way, for example because of a DNS server failure, a timeout, or a server error, fail. A resolving party MAY perform the lookups of (#atproto-compat) in parallel with these, to avoid adding a round trip, and use their results only when it falls back. A handle near the 253-character limit cannot use the DNS lookups, because the prefix would push the query name over the limit; the well-known lookups work for such handles.
-   - **DNS `TXT` record.** Query `TXT` records at the name `_handle.` *handle*. A record whose value starts with `did=` names a DID, in the remainder of the value. Records whose value starts with anything else are ignored, except as described in (#activitypub). This method aligns with [@?RFC1464].
-   - **Well-known document.** `GET https://` *handle* `/.well-known/handle`. A 2xx response with the `application/json` media type is a JSON object whose `did` member, if present, names a DID. Other members are ignored, except as described in (#activitypub).
+1. **Handle to DID.** Perform the following lookups. A DID MUST use the `plc` method ([@?DID-PLC]) or the `web` method ([@?DID-WEB]); otherwise fail. If both lookups yield a DID, and the DIDs differ, fail. If either lookup yields a DID, it is the handle's DID. If neither yields anything, the resolving party MUST fall back to the lookups of existing AT Protocol handles ((#atproto-compat)), but only if both lookups established that the handle names nothing: that is, if the DNS query returned no `TXT` record whose value starts with a recognized key, or no record at all, and the well-known request returned a 404 (Not Found) or 410 (Gone) response, or a document with no recognized member. If either lookup failed in any other way, for example because of a DNS server failure, a timeout, or a server error, fail. A resolving party MAY perform the lookups of (#atproto-compat) in parallel with these, to avoid adding a round trip, and use their results only when it falls back. A handle near the 253-character limit cannot use the DNS lookups, because the prefix would push the query name over the limit; the well-known lookups work for such handles.
+   - **DNS `TXT` record.** Query `TXT` records at the name `_handle.` *handle*. A record whose value starts with `did=` names a DID, in the remainder of the value. Records whose value starts with anything else are ignored. This method aligns with [@?RFC1464].
+   - **Well-known document.** `GET https://` *handle* `/.well-known/handle`. A 2xx response with the `application/json` media type is a JSON object whose `did` member, if present, names a DID. Other members are ignored.
 
 2. **DID to DID document.** Resolve the DID to its DID document ([@?DID-CORE]), whose `id` member MUST be identical to the DID:
    - For `did:plc`, `GET` the DID from a PLC directory, by default `https://plc.directory/` followed by the DID.
@@ -507,11 +459,11 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
 
 so its unique user identifier is the DID `did:plc:bftbdgcbe4zclvpkboe4hleq`. Its DID document has no `HandleIssuer` service yet, so it has no authorized issuer. See (#examples).
 
-Because records and members with other keys are ignored, other kinds of records can be added later without affecting resolving parties that do not support them.
+Because records and members with other keys are ignored, other kinds of records can be added later without affecting resolving parties that do not support them. For example, [@?UHVP] defines the `webfinger=` key and the `webfinger` member, which let a domain handle name a username handle instead of a DID.
 
 > Open Issue: Other kinds of records could be added later with keys of their own: for example, `domain=` for another domain handle, resolved recursively and failing when a loop is detected, or `email=` for an email address verified with [@!EVP]. A handle could also be allowed to name several identifiers, any one of which proves it; this would require a rule for which unique user identifier an HVT for the handle carries, because each resolves to a different one, and a verifier identifies accounts by it.
 
-> Open Issue: The SWICG Handles Task Force proposes `/.well-known/activitypub-actor`, a JSON document that refers to an ActivityPub actor, to resolve domain handles in ActivityPub ([@?HANDLES-TF]). This document proposes `/.well-known/handle` and `_handle`, which refer to a DID or a username handle instead, so that the same names serve every ecosystem. The two need to be reconciled.
+> Open Issue: The SWICG Handles Task Force proposes `/.well-known/activitypub-actor`, a JSON document that refers to an ActivityPub actor, to resolve domain handles in ActivityPub ([@?HANDLES-TF]). This document proposes `/.well-known/handle` and `_handle`, which refer to a DID instead, so that the same names serve every ecosystem. The two need to be reconciled.
 
 ### The HandleIssuer Service {#handle-issuer}
 
@@ -550,84 +502,10 @@ If both lookups yield a DID, and the DIDs differ, resolution fails, in the same 
 As a consequence:
 
 - A handle that is published with the AT Protocol names only, as every AT Protocol handle is today, resolves for every resolving party, without any change.
-- A handle that is published with the new names resolves to what they name, whatever the AT Protocol names say. This lets the owner of a handle point it elsewhere, for example to a username handle, without first removing its AT Protocol records.
+- A handle that is published with the new names resolves to what they name, whatever the AT Protocol names say. This lets the owner of a handle point it elsewhere, for example to a different DID, without first removing its AT Protocol records.
 - Operators of handle domains MAY publish both. AT Protocol software that does not yet support the new names reads only the AT Protocol names, so operators that want the handle to resolve the same way in both SHOULD keep them consistent.
 
 > Open Issue: Whether, and when, the AT Protocol adopts the new names, and whether resolving parties can eventually stop querying the AT Protocol names. This needs coordination with the AT Protocol community and the IETF ATP working group.
-
-## Username Handles {#resolve-user}
-
-A username handle is resolved with WebFinger ([@!RFC7033]), in a way that is backwards compatible with how ActivityPub servers already resolve handles to accounts ([@?MASTODON-WEBFINGER]). Given a normalized username handle *handle*, whose `acct` URI is `acct:` followed by *handle*:
-
-1. **WebFinger.** `GET https://` *domain* `/.well-known/webfinger?resource=` followed by the percent-encoded `acct` URI, where *domain* is the domain of the handle, with an `Accept` header of `application/jrd+json`. The response MUST have a 2xx status code and contain a JSON Resource Descriptor ([@!RFC7033]).
-
-2. **Subject.** The `subject` of the resource descriptor, converted to ASCII lowercase, MUST be identical to the `acct` URI. Otherwise fail. A resource descriptor whose `subject` names a different account only redirects discovery to that account, and does not make *handle* one of its handles.
-
-3. **Unique user identifier.** The unique user identifier is the `href` of the first link whose `rel` is `self` and whose `href` is an `https` URL. If there is none, fail. For an ActivityPub account, this is the URI of its actor.
-
-4. **Issuer.** The authorized issuer is the `href` of the link whose `rel` is `handle-issuer` ((#handle-issuer-link)). If there is none, or more than one, fail.
-
-5. **Back-link.** Check that the server that hosts the account that the unique user identifier refers to agrees that the account has the handle ((#same-origin)). This check ensures that a username handle cannot claim an account that did not agree to it:
-   - If the origin of the unique user identifier is identical to the authorized issuer, the check succeeds without any further request: the issuer is the server that hosts the account.
-   - Otherwise, `GET https://` *host* `/.well-known/webfinger?resource=` followed by the percent-encoded unique user identifier, where *host* is the host of the unique user identifier, with an `Accept` header of `application/jrd+json`; a WebFinger resource can be any URI ([@!RFC7033]). The response MUST have a 2xx status code and contain a JSON Resource Descriptor; the `acct` URI of the handle MUST be identical, after conversion to ASCII lowercase, to its `subject` or to one of its `aliases`; and it MUST have a `self` link whose `href` is identical to the unique user identifier. Otherwise fail.
-
-If any step fails, resolution fails.
-
-The WebFinger request of step 5 costs one request, and uses only WebFinger, so it does not depend on the protocol of the account. Some ActivityPub implementations, such as Mastodon, already answer such requests for the URLs of their accounts, with the account's canonical handle as the `subject`, including in split domain configurations. A verifier MAY also perform it when the origins are identical.
-
-The resource descriptor is served by the handle's domain, but the unique user identifier and the issuer can be on another host. This lets a domain use handles for accounts that are hosted elsewhere. For example, a domain `example.com` whose website is hosted separately can run an ActivityPub server at `social.example.com`, and give its users handles such as `@alice@example.com` (a "split domain" configuration); or a website can be bridged into ActivityPub by a service that hosts its actor. See (#examples).
-
-For example, a username handle `@alice@example.com` on a split domain could resolve as follows:
-
-```
-GET https://example.com/.well-known/webfinger
-      ?resource=acct%3Aalice%40example.com
-  -> subject: acct:alice@example.com              (subject ok)
-     self:    https://social.example.com/users/alice
-     handle-issuer: https://social.example.com
-User identifier:    https://social.example.com/users/alice
-Issuer:             https://social.example.com    (same origin)
-```
-
-### The handle-issuer Link Relation {#handle-issuer-link}
-
-A WebFinger resource descriptor names the issuer authorized to vouch for its handle with a link ([@!RFC7033]) whose `rel` is `handle-issuer` and whose `href` is an issuer identifier ((#issuer-identifier)):
-
-```json
-{ "rel": "handle-issuer", "href": "https://social.example" }
-```
-
-A resource descriptor names at most one issuer. If it has no `handle-issuer` link, or its `href` is not an issuer identifier, the handle has no authorized issuer, and HVP cannot be used with it. The issuer is usually the server that hosts the account, in which case the back-link request is skipped ((#resolve-user)), but it can be another origin, for example when a server's website and sign-in have moved to a new domain while its accounts keep their original URLs.
-
-As with the `HandleIssuer` service, authorization is explicit: resolution does not infer an issuer from the `self` link or from any other link. See (#why-opt-in).
-
-### Forwards Compatibility with ActivityPub {#activitypub}
-
-ActivityPub identifies users with username handles. Adding domain handles to ActivityPub is ongoing work, proposed by the SWICG Handles Task Force ([@?HANDLES-TF]). This section describes how HVP resolves a domain handle of an ActivityPub account, by aliasing it to the account's username handle, so that such handles can be verified as they are adopted.
-
-A domain handle names a username handle, rather than a DID, in the lookups of step 1 of (#resolution-steps): with a `TXT` record whose value starts with `webfinger=`, followed by the username handle, or with the `webfinger` member of the well-known document. The username handle MUST be written with its leading `@`, and satisfy (#username-handle-syntax) once the `@` is removed; otherwise fail. The rules of step 1 apply: if the two lookups name different username handles, compared in normalized form ((#normalization)), or one names a DID and the other a username handle, fail.
-
-Given a domain handle *handle* that names a username handle, resolve the username handle as described in (#resolve-user), with one additional check:
-
-- **Back-link.** The `aliases` array of the WebFinger resource descriptor of the username handle ([@!RFC7033]) MUST contain `at://` followed by *handle*, compared after conversion to ASCII lowercase. Otherwise fail. This check ensures that a username handle cannot be claimed by a domain handle that it did not agree to.
-
-The unique user identifier and the authorized issuer are those of the username handle. No DID is involved.
-
-For example, a user whose account is `@alice@social.example`, and who wants to use the domain handle `@alice.example`, publishes a `TXT` record `_handle.alice.example` with the value `webfinger=@alice@social.example`, or the well-known document:
-
-```http
-GET /.well-known/handle HTTP/1.1
-Host: alice.example
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{"webfinger": "@alice@social.example"}
-```
-
-Their server also lists `at://alice.example` in the `aliases` of the account's WebFinger resource descriptor, next to its `handle-issuer` link.
-
-> Open Issue: Whether an ActivityPub account should also be able to resolve its domain handle to a DID, for example to have an identity that survives a move to another server, or to let one DID document, and so one domain handle, serve both the AT Protocol and ActivityPub. ActivityPub implementations do not identify accounts by DIDs today, so a verifier that receives a DID would not necessarily know how to find, or interact with, the ActivityPub account that it belongs to; the DID document could name the actor in its `alsoKnownAs`, with a check that the actor refers back to the DID ([@?FEP-C390]).
 
 ## Caching {#caching}
 
@@ -674,10 +552,9 @@ An issuer that also acts as an EVP issuer serves its EVP metadata and its HVP me
 The HVT request is the token request of [@!EVP], including its use of HTTP Message Signatures ([@!RFC9421]) and the `hwk` key scheme, with the following substitutions:
 
 - The browser performs (#resolution), not EVP's issuer discovery, to obtain the issuer and its metadata, and sends the request to the `issuance_endpoint` of the HVP metadata.
-- The request body is a JSON object with the member `handle`, and exactly one of the members `did` and `url`:
+- The request body is a JSON object with the following members:
   - `handle` (REQUIRED): The handle that the user selected, in normalized form ((#normalization)).
-  - `did`: The unique user identifier that the handle resolves to, byte-for-byte as resolution produced it, when it is a DID.
-  - `url`: The unique user identifier that the handle resolves to, byte-for-byte as resolution produced it, when it is the `self` link of a username handle.
+  - `did` (REQUIRED): The DID that the handle resolves to, byte-for-byte as resolution produced it.
 - The `Sec-Fetch-Dest` header has the value `handle-verification`.
 
 Example:
@@ -703,9 +580,9 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 On receipt of an HVT request, the issuer:
 
 1. Verifies the request headers, the HTTP Message Signature, and the `Content-Digest`, as in the request verification of [@!EVP], with `handle-verification` in place of `email-verification` as the expected `Sec-Fetch-Dest`.
-2. Verifies that `handle` satisfies (#handle-syntax) or (#username-handle-syntax) and is in normalized form, that the body has exactly one of `did` and `url`, that a `did` is a syntactically valid `did:plc` or `did:web` DID, and that a `url` is an `https` URL. If it does not, the issuer returns an `invalid_request` error ((#errors)).
-3. Checks that the cookies represent a signed-in user who controls `handle`, and whose account is the `did` or `url`. If they do not, the issuer returns an `authentication_required` error.
-4. SHOULD resolve `handle` ((#resolution)) and check that it is the authorized issuer and that resolution yields the `did` or `url`. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing HVTs that will fail.
+2. Verifies that `handle` satisfies (#handle-syntax) and is in normalized form, and that `did` is a syntactically valid `did:plc` or `did:web` DID. If it does not, the issuer returns an `invalid_request` error ((#errors)).
+3. Checks that the cookies represent a signed-in user who controls `handle`, and whose account is the `did`. If they do not, the issuer returns an `authentication_required` error.
+4. SHOULD resolve `handle` ((#resolution)) and check that it is the authorized issuer and that resolution yields the `did`. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing HVTs that will fail.
 5. Creates an HVT ((#hvt-creation)) and returns it as the value of `issuance_token` in an `application/json` response, as in [@!EVP].
 
 ### Error Responses {#errors}
@@ -730,7 +607,7 @@ The Handle Verification Token (HVT) is a JWT ([@!RFC7519]) issued by an issuer. 
 - `iat` (REQUIRED): The time the HVT was issued.
 - `cnf` (REQUIRED): A confirmation claim ([@!RFC7800]) containing the browser's public key as a `jwk`, reproduced from the `Signature-Key` header of the HVT request with the same members, including its `alg`.
 - `handle` (REQUIRED): The handle that the user controls, byte-for-byte as it appeared in the HVT request.
-- `sub` (REQUIRED): The unique user identifier that the handle resolves to ((#resolution)), byte-for-byte as it appeared in the `did` or `url` member of the HVT request.
+- `sub` (REQUIRED): The unique user identifier that the handle resolves to ((#resolution)), byte-for-byte as it appeared in the `did` member of the HVT request.
 
 Example:
 
@@ -770,7 +647,7 @@ Both the browser and the verifier verify the HVT:
 
 1. Parse the HVT into its header, payload, and signature.
 2. Verify that `typ` is `hvt+jwt`, and validate `alg` and `kid` as for the EVT in [@!EVP].
-3. Extract the `iss`, `iat`, `cnf`, `handle`, and `sub` claims. Verify that `handle` satisfies (#handle-syntax) or (#username-handle-syntax) and is in normalized form.
+3. Extract the `iss`, `iat`, `cnf`, `handle`, and `sub` claims. Verify that `handle` satisfies (#handle-syntax) and is in normalized form.
 4. Resolve `handle` ((#resolution)), and verify that:
    - the unique user identifier that resolution produces is byte-for-byte identical to `sub`; and
    - `iss` is byte-for-byte identical to the authorized issuer.
@@ -814,11 +691,11 @@ Handles and unique user identifiers are public by design: they are meant to be s
 
 ## Resolution Traffic
 
-Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of [@!EVP], which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: for a domain handle, the DNS name queried is the handle itself, and the DID document is the user's; for a username handle, the WebFinger request names the user. Any party that observes a resolution therefore learns which user is being resolved, and when.
+Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of [@!EVP], which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: the DNS name queried is the handle itself, and the DID document is the user's. Any party that observes a resolution therefore learns which user is being resolved, and when.
 
-When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, the host of a `did:web` DID document, the PLC directory for `did:plc`, the WebFinger server for a username handle, and, when the back-link request of step 5 of (#resolve-user) is made, the server that hosts the account) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.
+When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, the host of a `did:web` DID document, and the PLC directory for `did:plc`) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.
 
-When the verifier resolves a handle to verify an HVT+KB, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host, the host of the DID document, or the WebFinger server is also the user's issuer, as is common for handles under a server's domain and for username handles, the issuer can correlate the HVTs it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.
+When the verifier resolves a handle to verify an HVT+KB, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host or the host of the DID document is also the user's issuer, as is common for handles under a server's domain, the issuer can correlate the HVTs it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.
 
 Verifiers can reduce this exposure by:
 
@@ -844,34 +721,20 @@ Resolution of domain handles relies on DNS `TXT` records, which are not authenti
 
 ## Domain Control Is Handle Control
 
-Every handle rests on control of a DNS name: whoever controls the handle's domain controls its `_handle` and `_atproto` records and its well-known URLs, and therefore which DID or username handle the handle resolves to. For a `did:web` DID on the handle's domain, the same party also controls the DID document, and therefore the authorized issuer. For a username handle, whoever controls the domain controls its WebFinger responses, and therefore which account and which issuer each username handle refers to, within the limits of step 5 of (#resolve-user): a handle can name an account on another server only if that account agrees ((#same-origin)). This is by design: it is what lets users bring their own domain. It also means that when a domain changes hands, for example when it expires and is registered by someone else, its handle changes hands too. The back-link check means the new owner cannot claim the previous owner's DID, but can point the handle at a DID of their own.
+Every handle rests on control of a DNS name: whoever controls the handle's domain controls its `_handle` and `_atproto` records and its well-known URLs, and therefore which DID the handle resolves to. For a `did:web` DID on the handle's domain, the same party also controls the DID document, and therefore the authorized issuer. This is by design: it is what lets users bring their own domain. It also means that when a domain changes hands, for example when it expires and is registered by someone else, its handle changes hands too. The back-link check means the new owner cannot claim the previous owner's DID, but can point the handle at a DID of their own.
 
 ## Conflicting Records
 
-A domain handle can be mapped to a DID or a username handle by up to four records ((#resolution-steps)): two with the new names, and two with the AT Protocol names, which are used only as a fallback ((#atproto-compat)). Resolution is designed so that the browser and the verifier cannot reach different results for the same handle, and so that an attacker who can block or delay some lookups cannot choose between them:
+A domain handle can be mapped to a DID by up to four records ((#resolution-steps)): two with the new names, and two with the AT Protocol names, which are used only as a fallback ((#atproto-compat)). Resolution is designed so that the browser and the verifier cannot reach different results for the same handle, and so that an attacker who can block or delay some lookups cannot choose between them:
 
-- Two records with the same names that name different DIDs or username handles cause resolution to fail, rather than letting the result depend on which record a resolving party happened to read.
+- Two records with the same names that name different DIDs cause resolution to fail, rather than letting the result depend on which record a resolving party happened to read.
 - The AT Protocol names are used only when the new names have positively established that the handle names nothing. If a lookup with the new names fails for any other reason, resolution fails, rather than falling back. Otherwise, an attacker who can make that lookup fail, for one party but not the other, could make the two parties resolve the handle through different records.
 
 An attacker who can block lookups can still cause resolution to fail, but cannot cause it to succeed with a different result. Only the owner of the handle's domain can create records that disagree.
 
-## Unique User Identifiers of Username Handles {#same-origin}
-
-The WebFinger response of a username handle is controlled by the owner of the handle's domain, and names both the unique user identifier and the issuer. Without a further check, a malicious domain could name another user's account as the unique user identifier, and an issuer of its own choosing:
-
-```
-acct:x@evil.example -> self:          https://social.example/users/bob
-                       handle-issuer: https://evil.example
-```
-
-Its issuer could then issue an HVT whose `sub` is Bob's account, and a verifier that identifies accounts by `sub` would sign the attacker in as Bob. For domain handles, the back-link checks of (#resolution-steps) and (#activitypub) prevent the equivalent attack, in which a domain handle claims another user's DID or username handle. For username handles, step 5 of (#resolve-user) prevents it, in one of two ways:
-
-- If the unique user identifier is on the origin of the authorized issuer, the issuer is the server that hosts the account, and a server that issues an HVT for one of its accounts has authenticated that account's user (step 3 of (#token-request-details)). A domain can at most give its own handles to accounts on that server.
-- Otherwise, the back-link check of step 5 of (#resolve-user) requires the server that hosts the account to agree that it has the handle. Bob's account does not claim `x@evil.example`, so resolution fails.
-
 ## Handle Reassignment {#reassignment}
 
-Handles can be reassigned: a domain can expire and be re-registered, and a hosting provider can let a new account take a handle that a deleted account used. Verifiers SHOULD identify accounts by the unique user identifier in the `sub` claim rather than by the `handle` claim. A DID survives changes of handle, so a verifier that keys accounts on it is not affected when a handle moves to another account. The unique user identifier of a username handle is the URL of the account on its server, which survives changes of handle that keep the account on the same server, but changes when the account moves to another server.
+Handles can be reassigned: a domain can expire and be re-registered, and a hosting provider can let a new account take a handle that a deleted account used. Verifiers SHOULD identify accounts by the unique user identifier in the `sub` claim rather than by the `handle` claim. A DID survives changes of handle, so a verifier that keys accounts on it is not affected when a handle moves to another account.
 
 ## Trust in the PLC Directory {#plc-trust}
 
@@ -930,14 +793,6 @@ This document registers the following entries in the "Underscored and Globally S
 
 > Open Issue: The `atproto-did` well-known URI and the `_atproto` DNS node name are defined by the AT Protocol. Whether this document or a document of the IETF ATP working group should register them needs coordination with that working group.
 
-## Link Relation Types
-
-This document registers the following link relation type in the "Link Relation Types" registry ([@!RFC8288]):
-
-- Relation Name: `handle-issuer`
-- Description: Refers to the issuer that the context authorizes to issue Handle Verification Tokens for its handle.
-- Reference: (#handle-issuer-link) of this document
-
 ## JSON Web Token Claims
 
 This document registers the following claim in the "JSON Web Token Claims" registry ([@!RFC7519]):
@@ -956,35 +811,17 @@ This document registers the `application/hvt+jwt` media type in the "Media Types
 
 # Design Rationale
 
-## Why Two Resolution Mechanisms? {#why-two}
-
-Domain handles and username handles are resolved differently because each already has a resolution mechanism that is deployed. Domain handles are mapped to a DID through DNS or a well-known URL, as in the AT Protocol, which lets a user bring their own domain without running a server. Username handles are mapped to an account through WebFinger, which every ActivityPub server already implements; supporting HVP then requires updating server software, not asking each user to publish DNS records. Both mechanisms produce the same things, a unique user identifier and an explicitly authorized issuer, so issuance and verification are the same for both.
-
-For username handles, HVP could instead treat the handle's domain as the issuer, as [@!EVP] treats the email domain, and skip WebFinger. But in ActivityPub the server that hosts an account is not always at the handle's domain: in a split domain configuration, the handles are at `example.com` and the server at `social.example.com`, and a bridging service can host actors for handles at many domains ((#examples)). WebFinger is what tells the two apart, per user, at the cost of one request.
-
 ## Why Resolve Domain Handles to a DID? {#why-did}
 
-HVP needs three things from the target of a domain handle: a stable identifier for the account, a document that claims the handle back, and a place to name the issuer. A DID provides all three, through its DID document, in a form that is not specific to any ecosystem, and the AT Protocol already resolves domain handles to DIDs. As proposed for ActivityPub, a username handle provides them too, through its WebFinger resource descriptor, so a domain handle of an ActivityPub account can resolve to its username handle without adopting any new identifier ((#activitypub)).
+HVP needs three things from the target of a domain handle: a stable identifier for the account, a document that claims the handle back, and a place to name the issuer. A DID provides all three, through its DID document, in a form that is not specific to any ecosystem, and the AT Protocol already resolves domain handles to DIDs.
 
-The record names the kind of value in its key, `did=` as in the AT Protocol, or `webfinger=`, so that resolution does not have to infer it, and holds a single value rather than a list. Values of other kinds, such as domain handles or email addresses, can be added later with keys of their own, which resolving parties that do not support them ignore.
+The record names the kind of value in its key, `did=` as in the AT Protocol, so that resolution does not have to infer it, and holds a single value rather than a list. Values of other kinds, such as username handles ([@?UHVP]), domain handles, or email addresses, can be added later with keys of their own, which resolving parties that do not support them ignore.
 
-Resolving a domain handle directly to an ActivityPub actor, as [@?HANDLES-TF] proposes for ActivityPub, would require a third resolution mechanism, with its own back-link and its own way to name the issuer.
-
-Only `did:plc` and `did:web` are supported, because they are the methods that the AT Protocol uses. Other methods can be added if an ecosystem needs them. A `did:key` DID, as used by [@?FEP-C390], is not sufficient on its own: its DID document is derived from the key, and so has no `alsoKnownAs` to claim the handle back and no services to name the issuer.
-
-## Why the Same-Origin Shortcut? {#why-same-origin}
-
-A username handle's WebFinger response is controlled by the handle's domain, which is not necessarily the server that hosts the account it names ((#same-origin)). HVP checks the account back with a WebFinger request for its unique user identifier (step 5 of (#resolve-user)), at the cost of one request. ActivityPub implementations perform an equivalent check by fetching the actor and reading its `webfinger` property or performing a reverse WebFinger lookup ([@?MASTODON-WEBFINGER], [@?FEP-2C59]), which is specific to ActivityPub.
-
-In the common case, the issuer is the server that hosts the account, and the unique user identifier is on its origin. The issuer then authenticates the account's user itself, which gives the same protection for the purposes of HVP, so the back-link request is skipped. This covers split domains and bridges ((#examples)).
-
-The back-link request is still needed for issuers on another origin (for example, Threads ([@?THREADS]) gives its users handles such as `@zuck@threads.net`, whose actors are at `https://threads.net/ap/users/...`, while its website, where users sign in, has moved to `https://www.threads.com`; ActivityPub accounts cannot change their URLs without breaking federation, so the natural issuer is on a different site from the accounts it vouches for).
-
-> Open Issue: At the time of writing, Threads does not answer WebFinger requests for the URLs of its accounts, which the back-link request requires when the issuer is on another origin, and the reference cited for its move to `threads.com` is its home page rather than an announcement. How Threads, and other services whose accounts are on a different site from where their users sign in, would deploy HVP needs to be investigated, and the reference replaced.
+Only `did:plc` and `did:web` are supported, because they are the methods that the AT Protocol uses. Other methods can be added if an ecosystem needs them. A `did:key` DID is not sufficient on its own: its DID document is derived from the key, and so has no `alsoKnownAs` to claim the handle back and no services to name the issuer.
 
 ## Why New Names for the Handle Records? {#why-names}
 
-The AT Protocol's `_atproto` record and `/.well-known/atproto-did` URL are specific to one ecosystem, and an ActivityPub account that published them would appear to be an AT Protocol account. Neutral names let any ecosystem use the same records. The names do not mention DIDs, because they refer to username handles as well as DIDs, and the well-known document is JSON, so that it can carry more information later. Resolving parties fall back to the AT Protocol names when the new ones are absent ((#atproto-compat)), so that every existing AT Protocol handle keeps working, and the new names take precedence when present, so that a handle can move to the new names at its own pace.
+The AT Protocol's `_atproto` record and `/.well-known/atproto-did` URL are specific to one ecosystem, and an ActivityPub account that published them would appear to be an AT Protocol account. Neutral names let any ecosystem use the same records. The names do not mention DIDs, so that they can refer to other kinds of identifiers later, and the well-known document is JSON, so that it can carry more information later. Resolving parties fall back to the AT Protocol names when the new ones are absent ((#atproto-compat)), so that every existing AT Protocol handle keeps working, and the new names take precedence when present, so that a handle can move to the new names at its own pace.
 
 ## Why Not OAuth? {#why-not-oauth}
 
@@ -1004,7 +841,7 @@ The verifier cannot trust the browser's resolution, which could be manipulated, 
 
 An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a `HandleIssuer` service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document.
 
-An explicit service also lets a user choose an issuer that is not the server that hosts their account, and gives both ecosystems the same way to name it. The `handle-issuer` link of a username handle is explicit for the same reasons.
+An explicit service also lets a user choose an issuer that is not the server that hosts their account, and gives both ecosystems the same way to name it.
 
 ## Why Define Handle Resolution Here?
 
@@ -1012,7 +849,7 @@ Handle resolution is useful outside any one ecosystem. Defining it here, in a fo
 
 ## Why Are Email Addresses Out of Scope?
 
-Email addresses already have a protocol of their own, [@!EVP], which is further along, has implementations, and has requirements specific to email, such as private email addresses. A browser API can use EVP for email addresses and HVP for handles side by side; the leading `@` of a username handle distinguishes it from an email address ((#parsing)).
+Email addresses already have a protocol of their own, [@!EVP], which is further along, has implementations, and has requirements specific to email, such as private email addresses. A browser API can use EVP for email addresses and HVP for handles side by side; an email address is never parsed as a domain handle ((#parsing)).
 
 # Implementation Status
 
@@ -1025,13 +862,13 @@ There are no implementations of this document yet. Prototypes of the related IdP
 *Note: This section is to be removed before publishing as an RFC.*
 
 - draft-goto-handle-verification-00
-  - Initial draft, covering domain handles in the AT Protocol and ActivityPub, and username handles in ActivityPub.
+  - Initial draft, covering domain handles in the AT Protocol and ActivityPub. Username handles are covered by a companion document, [@?UHVP].
 
 {backmatter}
 
 # Examples {#examples}
 
-This appendix shows the resolution of handles. The AT Protocol and username handle examples are real handles at the time of writing; the AT Protocol handles publish only the AT Protocol names, and so resolve through the fallback of (#atproto-compat). None of them publishes a `HandleIssuer` service or a `handle-issuer` link yet, so each shows what would be added to opt in. The ActivityPub domain handle example is hypothetical. The values will change over time.
+This appendix shows the resolution of handles. The examples are real handles at the time of writing, which publish only the AT Protocol names, and so resolve through the fallback of (#atproto-compat). Neither publishes a `HandleIssuer` service yet, so each shows what would be added to opt in. The values will change over time.
 
 ## AT Protocol Handle on a Self-Hosted PDS
 
@@ -1062,87 +899,6 @@ To opt in, add to the DID document's services:
 Issuer:        https://bsky.social
 ```
 
-## ActivityPub Domain Handle
-
-```
-Handle:        @alice.example
-DNS TXT _handle.alice.example
-  -> "webfinger=@alice@social.example"
-Names:         @alice@social.example
-GET https://social.example/.well-known/webfinger
-      ?resource=acct%3Aalice%40social.example
-  subject: acct:alice@social.example            (subject ok)
-  aliases: ["at://alice.example"]               (back-link ok)
-  self:    https://social.example/users/alice
-  handle-issuer: https://social.example
-Identifier:    https://social.example/users/alice
-Issuer:        https://social.example           (same origin)
-```
-
-## Username Handle on a Split Domain
-
-The handle is at the owner's website, and the ActivityPub server is on a subdomain.
-
-```
-Handle:        @simon@simonwillison.net
-GET https://simonwillison.net/.well-known/webfinger
-      ?resource=acct%3Asimon%40simonwillison.net
-  subject: acct:simon@simonwillison.net         (subject ok)
-  self:    https://fedi.simonwillison.net/users/simon
-Identifier:    https://fedi.simonwillison.net/users/simon
-To opt in, add to the resource descriptor's links:
-  { "rel": "handle-issuer",
-    "href": "https://fedi.simonwillison.net" }
-Issuer:        https://fedi.simonwillison.net   (same origin)
-```
-
-## Username Handle Hosted by a Bridge
-
-The handle is at a website, and its actor is hosted by a service that bridges the website into ActivityPub.
-
-```
-Handle:        @snarfed.org@snarfed.org
-GET https://snarfed.org/.well-known/webfinger
-      ?resource=acct%3Asnarfed.org%40snarfed.org
-  subject: acct:snarfed.org@snarfed.org         (subject ok)
-  self:    https://fed.brid.gy/snarfed.org
-Identifier:    https://fed.brid.gy/snarfed.org
-To opt in, add to the resource descriptor's links:
-  { "rel": "handle-issuer", "href": "https://fed.brid.gy" }
-Issuer:        https://fed.brid.gy              (same origin)
-```
-
-## Username Handle Whose Issuer Is on Another Origin
-
-The handle and the actor are on the service's original domain, and its website, where users sign in, has moved to another domain. The back-link request is required.
-
-```
-Handle:        @zuck@threads.net
-GET https://threads.net/.well-known/webfinger
-      ?resource=acct%3Azuck%40threads.net
-  subject: acct:zuck@threads.net                (subject ok)
-  self:    https://threads.net/ap/users/17841401746480004/
-Identifier:    https://threads.net/ap/users/17841401746480004/
-To opt in, add to the resource descriptor's links:
-  { "rel": "handle-issuer", "href": "https://www.threads.com" }
-Issuer:        https://www.threads.com          (other origin)
-Back-link:     WebFinger at threads.net for the resource
-               https://threads.net/ap/users/17841401746480004/
-               must name acct:zuck@threads.net
-```
-
-## Discovery Alias That Is Not a Handle
-
-A domain can serve a WebFinger response that redirects discovery to an account elsewhere. Its `subject` names that account, so the input is not a handle of the account ((#resolve-user)), and resolution fails.
-
-```
-Input:         @scott@hanselman.com
-GET https://hanselman.com/.well-known/webfinger
-      ?resource=acct%3Ascott%40hanselman.com
-  subject: acct:shanselman@hachyderm.io         (subject mismatch)
-Result:        not a handle; @shanselman@hachyderm.io is
-```
-
 # Relationship to IdP Registration {#idp-registration}
 
 *This section is non-normative.*
@@ -1156,4 +912,4 @@ The W3C IdP Registration API ([@?IDP-REGISTRATION]) extends FedCM ([@?FEDCM]) so
 
 # Acknowledgments
 
-This document builds on the Email Verification Protocol by Dick Hardt and Sam Goto, on the AT Protocol handle, DID, and AT URI specifications by Bluesky, on the Handles Task Force proposal by Anuj Ahooja and Emelia Smith, on FEP-c390 by silverpill, and on the WebFinger conventions of ActivityPub implementations.
+This document builds on the Email Verification Protocol by Dick Hardt and Sam Goto, on the AT Protocol handle, DID, and AT URI specifications by Bluesky, and on the Handles Task Force proposal by Anuj Ahooja and Emelia Smith.

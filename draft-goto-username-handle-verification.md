@@ -187,7 +187,7 @@ Source for this draft and an issue tracker can be found at https://github.com/sa
 
 # Introduction
 
-The Handle Verification Protocol ([@!HVP]) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP is a framework for several handle types, and defines one, domain handles, such as `@alice.example`, which are resolved to a DID, whose DID document names the issuer that the user has authorized.
+The Handle Verification Protocol ([@!HVP]) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP is extensible to several handle types, and defines one, domain handles, such as `@alice.example`, which are resolved to a DID, whose DID document names the issuer that the user has authorized.
 
 ActivityPub ([@?ACTIVITYPUB]) has no concept of a handle itself, but its implementations identify users with handles of the form `@alice@social.example`, which they resolve to the URL of an ActivityPub actor with WebFinger ([@!RFC7033]) and the `acct` URI scheme ([@!RFC7565]) ([@?MASTODON-WEBFINGER]). This document calls these *username handles*. Their accounts do not have DIDs, and asking every user to publish DNS records would not be practical, so the resolution of domain handles does not apply to them.
 

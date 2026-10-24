@@ -168,7 +168,7 @@ Source for this draft and an issue tracker can be found at https://github.com/sa
 
 # Introduction
 
-The Handle Verification Protocol ([@!HVP]) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP is a framework for several handle types, and defines one, domain handles, such as `@alice.example`. This document defines another handle type, URL handles, and [@?USERNAME-HANDLES] builds on this document to define username handles, such as `@alice@social.example`, by mapping them to the URL of their account with WebFinger.
+The Handle Verification Protocol ([@!HVP]) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP is extensible to several handle types, and defines one, domain handles, such as `@alice.example`. This document defines another handle type, URL handles, and [@?USERNAME-HANDLES] builds on this document to define username handles, such as `@alice@social.example`, by mapping them to the URL of their account with WebFinger.
 
 Several ecosystems identify users with an `https` URL instead:
 

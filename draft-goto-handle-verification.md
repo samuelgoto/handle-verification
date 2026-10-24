@@ -228,9 +228,9 @@ organization = "Google"
 
 .# Abstract
 
-This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls a *handle*, and presents it to a verifier. HVP covers two forms of handle: *domain handles*, such as `@alice.example`, which are used by the AT Protocol and are being proposed for ActivityPub, and *username handles*, such as `@alice@social.example`, which are used by ActivityPub. A handle of either form is verified the same way, whichever ecosystem the user's account belongs to. HVP uses the same three-party model as the Email Verification Protocol ([@!EVP]), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.
+This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed Handle Verification Token (HVT) from an issuer attesting that the user controls a *handle*, and presents it to a verifier. HVP covers two forms of handle: *domain handles*, such as `@alice.example`, which are used by the AT Protocol and are being proposed for ActivityPub, and *username handles*, such as `@alice@social.example`, which are used by ActivityPub. A handle of either form is verified the same way, whichever ecosystem the user's account belongs to. HVP uses the same three-party model as the Email Verification Protocol ([@!EVP]), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.
 
-This document defines the syntax of handles, their resolution to a unique user identifier and to the issuer authorized to vouch for them (through a DID document for domain handles, and through WebFinger for username handles), the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ([@?IDP-REGISTRATION]).
+This document defines the syntax of handles, their resolution to a unique user identifier and to the issuer authorized to vouch for them (through a DID document for domain handles, and through WebFinger for username handles), the HVT request, the HVT, and the verification of the HVT and its key binding (HVT+KB). The browser API, that is, how the user selects a handle and how the HVT+KB is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ([@?IDP-REGISTRATION]).
 
 .# Discussion Venues
 
@@ -334,16 +334,16 @@ Step                       Verifier     Browser              Issuer
 3.3 Handle Resolution          |   [resolve handle: subject      |
                                |    identifier, issuer]          |
                                |            |                    |
-3.4 Token Request              |            |-- POST /issuance ->|
+3.4 HVT Request                |            |-- POST /issuance ->|
                                |            |   (handle, did/url)|
                                |            |                    |
 3.5 HVT Issuance               |            |<------- HVT -------|
                                |            |                    |
 3.6 KB Creation                |        [create KB-JWT]          |
                                |            |                    |
-3.7 Token Presentation         |<-- HVT+KB -|                    |
+3.7 HVT+KB Presentation        |<-- HVT+KB -|                    |
                                |            |                    |
-3.8 Token Verification  [resolve handle;    |                    |
+3.8 HVT+KB Verification [resolve handle;    |                    |
                          verify HVT+KB]     |                    |
 ```
 
@@ -359,11 +359,11 @@ As in [@!EVP]: the verifier generates a cryptographically random nonce with at l
 
 ## Handle Resolution {#flow-resolution}
 
-The browser resolves the handle as described in (#resolution). Resolution produces the unique user identifier and the authorized issuer. The browser fetches the issuer's metadata ((#issuer-metadata)). From this point onward, the handle and the unique user identifier are never altered: they are sent byte-for-byte in the token request, and returned byte-for-byte in the `handle` and `sub` claims.
+The browser resolves the handle as described in (#resolution). Resolution produces the unique user identifier and the authorized issuer. The browser fetches the issuer's metadata ((#issuer-metadata)). From this point onward, the handle and the unique user identifier are never altered: they are sent byte-for-byte in the HVT request, and returned byte-for-byte in the `handle` and `sub` claims.
 
-## Token Request {#token-request}
+## HVT Request {#token-request}
 
-The browser sends a token request to the issuer's `issuance_endpoint`. The request is the token request of [@!EVP], with the substitutions listed in (#token-request-details).
+The browser sends an HVT request to the issuer's `issuance_endpoint`. The request is the token request of [@!EVP], with the substitutions listed in (#token-request-details).
 
 ## HVT Issuance {#hvt-issuance}
 
@@ -373,11 +373,11 @@ The issuer verifies the request, checks that the browser's cookies represent a s
 
 The browser verifies the HVT ((#hvt-verification)), additionally confirming that the `handle` and `sub` claims are byte-for-byte identical to the handle and unique user identifier it requested and that the `cnf.jwk` claim matches the public key it generated. It then creates a KB-JWT and combines it with the HVT as described in (#kb).
 
-## Token Presentation {#token-presentation}
+## HVT+KB Presentation {#token-presentation}
 
 The browser provides the HVT+KB to the verifier. This mechanism is defined by the browser API.
 
-## Token Verification {#token-verification}
+## HVT+KB Verification {#token-verification}
 
 The verifier verifies the HVT+KB as described in (#verification). The verifier resolves the handle itself, and does not rely on the browser's resolution. If verification succeeds, the verifier has verified that the user controls the handle in the `handle` claim, and has learned the user's unique user identifier in the `sub` claim.
 
@@ -467,7 +467,7 @@ A username handle is always typed with its leading `@`, which distinguishes it f
 
 Username handles are resolved through WebFinger ([@!RFC7033]) ((#resolve-user)), and domain handles through a DID ((#resolution-steps)), or, as proposed for ActivityPub, a username handle ((#activitypub)). In both cases, resolution checks that the handle and the unique user identifier refer to each other, so that a handle cannot claim an account that does not agree to it, and finds the issuer that the user has explicitly authorized.
 
-Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for a token; the verifier does it to check that the token was issued by an issuer that is authorized for the handle ((#verification)).
+Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for an HVT; the verifier does it to check that the HVT was issued by an issuer that is authorized for the handle ((#verification)).
 
 The following rules apply to every resolution step:
 
@@ -631,7 +631,7 @@ Their server also lists `at://alice.example` in the `aliases` of the account's W
 
 ## Caching {#caching}
 
-A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying a token, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.
+A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying an HVT+KB, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.
 
 # Issuers {#issuers}
 
@@ -648,7 +648,7 @@ An issuer serves its metadata at `$ISSUER/.well-known/handle-verification`, wher
 The metadata document is a JSON object with the following members:
 
 - `issuer` (REQUIRED): The issuer identifier. It MUST be identical to the issuer identifier that the document was fetched under, and a party that fetches the document MUST reject it if it is not (as in Section 3.3 of [@!RFC8414]).
-- `issuance_endpoint` (REQUIRED): The URL that the browser sends token requests to. It MUST be an `https` URL that is same site ([@!WHATWG.HTML]) with the issuer identifier, so that the token request carries the cookies of the issuer's site; a party that fetches the metadata MUST reject it otherwise.
+- `issuance_endpoint` (REQUIRED): The URL that the browser sends HVT requests to. It MUST be an `https` URL that is same site ([@!WHATWG.HTML]) with the issuer identifier, so that the HVT request carries the cookies of the issuer's site; a party that fetches the metadata MUST reject it otherwise.
 - `jwks_uri` (REQUIRED): The URL of the issuer's JSON Web Key Set ([@!RFC7517]), used to verify HVTs.
 - `signing_alg_values_supported` (OPTIONAL): As defined by [@!EVP].
 
@@ -669,9 +669,9 @@ An issuer that also acts as an EVP issuer serves its EVP metadata and its HVP me
 
 > Open Issue: Whether requiring the `issuance_endpoint` to be same site with the issuer identifier is appropriate, and whether [@!EVP] has, or should have, the same requirement, so that HVP does not diverge from it.
 
-# Token Request Details {#token-request-details}
+## HVT Request {#token-request-details}
 
-The token request is the token request of [@!EVP], including its use of HTTP Message Signatures ([@!RFC9421]) and the `hwk` key scheme, with the following substitutions:
+The HVT request is the token request of [@!EVP], including its use of HTTP Message Signatures ([@!RFC9421]) and the `hwk` key scheme, with the following substitutions:
 
 - The browser performs (#resolution), not EVP's issuer discovery, to obtain the issuer and its metadata, and sends the request to the `issuance_endpoint` of the HVP metadata.
 - The request body is a JSON object with the member `handle`, and exactly one of the members `did` and `url`:
@@ -700,13 +700,17 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
  "did":"did:plc:bftbdgcbe4zclvpkboe4hleq"}
 ```
 
-On receipt of a token request, the issuer:
+On receipt of an HVT request, the issuer:
 
 1. Verifies the request headers, the HTTP Message Signature, and the `Content-Digest`, as in the request verification of [@!EVP], with `handle-verification` in place of `email-verification` as the expected `Sec-Fetch-Dest`.
 2. Verifies that `handle` satisfies (#handle-syntax) or (#username-handle-syntax) and is in normalized form, that the body has exactly one of `did` and `url`, that a `did` is a syntactically valid `did:plc` or `did:web` DID, and that a `url` is an `https` URL. If it does not, the issuer returns an `invalid_request` error ((#errors)).
 3. Checks that the cookies represent a signed-in user who controls `handle`, and whose account is the `did` or `url`. If they do not, the issuer returns an `authentication_required` error.
-4. SHOULD resolve `handle` ((#resolution)) and check that it is the authorized issuer and that resolution yields the `did` or `url`. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.
+4. SHOULD resolve `handle` ((#resolution)) and check that it is the authorized issuer and that resolution yields the `did` or `url`. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing HVTs that will fail.
 5. Creates an HVT ((#hvt-creation)) and returns it as the value of `issuance_token` in an `application/json` response, as in [@!EVP].
+
+### Error Responses {#errors}
+
+The issuer returns the error responses of [@!EVP] (`invalid_request`, `invalid_signature`, `authentication_required`, and server errors), with the `handle` member in place of the `email` member.
 
 # Handle Verification Token (HVT) {#hvt}
 
@@ -724,9 +728,9 @@ The Handle Verification Token (HVT) is a JWT ([@!RFC7519]) issued by an issuer. 
 
 - `iss` (REQUIRED): The issuer identifier ((#issuer-identifier)).
 - `iat` (REQUIRED): The time the HVT was issued.
-- `cnf` (REQUIRED): A confirmation claim ([@!RFC7800]) containing the browser's public key as a `jwk`, reproduced from the `Signature-Key` header of the token request with the same members, including its `alg`.
-- `handle` (REQUIRED): The handle that the user controls, byte-for-byte as it appeared in the token request.
-- `sub` (REQUIRED): The unique user identifier that the handle resolves to ((#resolution)), byte-for-byte as it appeared in the `did` or `url` member of the token request.
+- `cnf` (REQUIRED): A confirmation claim ([@!RFC7800]) containing the browser's public key as a `jwk`, reproduced from the `Signature-Key` header of the HVT request with the same members, including its `alg`.
+- `handle` (REQUIRED): The handle that the user controls, byte-for-byte as it appeared in the HVT request.
+- `sub` (REQUIRED): The unique user identifier that the handle resolves to ((#resolution)), byte-for-byte as it appeared in the `did` or `url` member of the HVT request.
 
 Example:
 
@@ -774,7 +778,7 @@ Both the browser and the verifier verify the HVT:
 6. Fetch the issuer's public keys from its `jwks_uri`, and verify the HVT's signature with the key identified by `kid`.
 7. Verify that `iat` is within an acceptable time window.
 
-The browser additionally verifies that `handle` and `sub` are byte-for-byte identical to the handle and unique user identifier it requested, and that `cnf.jwk` matches the public key it generated. The browser MAY reuse the results of the resolution it performed before the token request for step 4.
+The browser additionally verifies that `handle` and `sub` are byte-for-byte identical to the handle and unique user identifier it requested, and that `cnf.jwk` matches the public key it generated. The browser MAY reuse the results of the resolution it performed before the HVT request for step 4.
 
 # Key Binding (HVT+KB) {#kb}
 
@@ -786,7 +790,7 @@ Key binding is the key binding of [@!EVP], with the HVT in place of the EVT. The
 
 The HVT+KB is compatible with SD-JWT with Key Binding ([@!I-D.ietf-oauth-selective-disclosure-jwt]), in the same way as the EVT+KB.
 
-# Token Verification Details {#verification}
+# HVT+KB Verification {#verification}
 
 The verifier receives the HVT+KB, and verifies it by:
 
@@ -797,11 +801,6 @@ The verifier receives the HVT+KB, and verifies it by:
 If all verification steps pass, the verifier has verified that the user controls the handle in the `handle` claim. The verifier SHOULD identify the user's account by the unique user identifier in the `sub` claim, and treat the `handle` as a mutable attribute of the account ((#reassignment)).
 
 The verifier MUST perform its own resolution in step 2, and MUST NOT rely on resolution results provided by the browser. The verifier's resolution is what establishes that the issuer is authorized for the handle.
-
-# Error Responses {#errors}
-
-The issuer returns the error responses of [@!EVP] (`invalid_request`, `invalid_signature`, `authentication_required`, and server errors), with the `handle` member in place of the `email` member.
-
 
 # Privacy Considerations
 
@@ -819,7 +818,7 @@ Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike th
 
 When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, the host of a `did:web` DID document, the PLC directory for `did:plc`, the WebFinger server for a username handle, and, when the back-link request of step 5 of (#resolve-user) is made, the server that hosts the account) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.
 
-When the verifier resolves a handle to verify a token, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host, the host of the DID document, or the WebFinger server is also the user's issuer, as is common for handles under a server's domain and for username handles, the issuer can correlate the tokens it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.
+When the verifier resolves a handle to verify an HVT+KB, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host, the host of the DID document, or the WebFinger server is also the user's issuer, as is common for handles under a server's domain and for username handles, the issuer can correlate the HVTs it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.
 
 Verifiers can reduce this exposure by:
 
@@ -841,7 +840,7 @@ Resolution establishes which issuer is authorized for a handle. It does not esta
 
 ## DNS Spoofing {#dns-security}
 
-Resolution of domain handles relies on DNS `TXT` records, which are not authenticated unless DNSSEC is used. As in [@!EVP], spoofing the browser's DNS resolution discloses the handle to the attacker but yields no token the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuer. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.
+Resolution of domain handles relies on DNS `TXT` records, which are not authenticated unless DNSSEC is used. As in [@!EVP], spoofing the browser's DNS resolution discloses the handle to the attacker but yields no HVT that the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuer. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.
 
 ## Domain Control Is Handle Control
 
@@ -882,7 +881,7 @@ Operations in the PLC directory are signed by the account's rotation keys, and t
 
 Verifying the log does not remove all trust in the directory. As the "PLC Server Trust Model" section of [@?DID-PLC] states, some trust in the directory is required, and its attacks are limited to:
 
-- **Denial of service:** rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that changes or removes the `HandleIssuer` service, so that a resolving party keeps accepting tokens from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.
+- **Denial of service:** rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that changes or removes the `HandleIssuer` service, so that a resolving party keeps accepting HVTs from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.
 - **Misordering:** in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which `HandleIssuer` service is in effect.
 
 Neither the browser nor the verifier can detect these attacks. Operations are submitted only to the PLC directory, and are not published anywhere else that a resolving party could observe independently: mirrors and replicas obtain their operations from the directory, and the timestamps that the directory assigns to operations, on which the resolution of forks depends, are not signed. Both the browser and the verifier therefore place this trust in the PLC directory, and HVP inherits it for every handle that resolves to a `did:plc` DID. Handles that resolve to a `did:web` DID instead rely on the security of the DID's domain, as described in (#dns-security).
@@ -1150,9 +1149,9 @@ Result:        not a handle; @shanselman@hachyderm.io is
 
 The W3C IdP Registration API ([@?IDP-REGISTRATION]) extends FedCM ([@?FEDCM]) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API ([@?EMAIL-VERIFICATION-API]) relates to EVP:
 
-- The browser API decides which handles to offer, lets the user register and select them, and delivers the token to the verifier. HVP defines what a handle is, how it is resolved, and how the token is issued and verified.
+- The browser API decides which handles to offer, lets the user register and select them, and delivers the HVT+KB to the verifier. HVP defines what a handle is, how it is resolved, and how the HVT is issued and the HVT+KB is verified.
 - The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. It could instead use the syntax and resolution of this document, so that the identity provider of a handle is its authorized issuer.
-- A verifier request for a "federation" in that API could correspond to HVP, and the token that the verifier receives could be an HVT+KB.
+- A verifier request for a "federation" in that API could correspond to HVP, and what the verifier receives could be an HVT+KB.
 
 # Acknowledgments
 

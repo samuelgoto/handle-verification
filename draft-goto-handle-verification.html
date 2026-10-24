@@ -7,8 +7,8 @@
 <title>Handle Verification Protocol</title>
 <meta content="Sam Goto" name="author">
 <meta content="
-       This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls a  handle , and presents it to a verifier. HVP covers two forms of handle:  domain handles , such as  @alice.example , which are used by the AT Protocol and are being proposed for ActivityPub, and  username handles , such as  @alice@social.example , which are used by ActivityPub. A handle of either form is verified the same way, whichever ecosystem the user's account belongs to. HVP uses the same three-party model as the Email Verification Protocol ( ), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer. 
-       This document defines the syntax of handles, their resolution to a unique user identifier and to the issuer authorized to vouch for them (through a DID document for domain handles, and through WebFinger for username handles), the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ( ). 
+       This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed Handle Verification Token (HVT) from an issuer attesting that the user controls a  handle , and presents it to a verifier. HVP covers two forms of handle:  domain handles , such as  @alice.example , which are used by the AT Protocol and are being proposed for ActivityPub, and  username handles , such as  @alice@social.example , which are used by ActivityPub. A handle of either form is verified the same way, whichever ecosystem the user's account belongs to. HVP uses the same three-party model as the Email Verification Protocol ( ), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer. 
+       This document defines the syntax of handles, their resolution to a unique user identifier and to the issuer authorized to vouch for them (through a DID document for domain handles, and through WebFinger for username handles), the HVT request, the HVT, and the verification of the HVT and its key binding (HVT+KB). The browser API, that is, how the user selects a handle and how the HVT+KB is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ( ). 
     " name="description">
 <meta content="xml2rfc 3.31.0" name="generator">
 <meta content="handle" name="keyword">
@@ -1084,8 +1084,8 @@ svg {
 <h1 id="title">Handle Verification Protocol</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed token from an issuer attesting that the user controls a <em>handle</em>, and presents it to a verifier. HVP covers two forms of handle: <em>domain handles</em>, such as <code>@alice.example</code>, which are used by the AT Protocol and are being proposed for ActivityPub, and <em>username handles</em>, such as <code>@alice@social.example</code>, which are used by ActivityPub. A handle of either form is verified the same way, whichever ecosystem the user's account belongs to. HVP uses the same three-party model as the Email Verification Protocol (<span>[<a href="#EVP" class="cite xref">EVP</a>]</span>), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">This document defines the syntax of handles, their resolution to a unique user identifier and to the issuer authorized to vouch for them (through a DID document for domain handles, and through WebFinger for username handles), the token issuance request, the Handle Verification Token (HVT), and token verification. The browser API, that is, how the user selects a handle and how the token is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>).<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed Handle Verification Token (HVT) from an issuer attesting that the user controls a <em>handle</em>, and presents it to a verifier. HVP covers two forms of handle: <em>domain handles</em>, such as <code>@alice.example</code>, which are used by the AT Protocol and are being proposed for ActivityPub, and <em>username handles</em>, such as <code>@alice@social.example</code>, which are used by ActivityPub. A handle of either form is verified the same way, whichever ecosystem the user's account belongs to. HVP uses the same three-party model as the Email Verification Protocol (<span>[<a href="#EVP" class="cite xref">EVP</a>]</span>), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This document defines the syntax of handles, their resolution to a unique user identifier and to the issuer authorized to vouch for them (through a DID document for domain handles, and through WebFinger for username handles), the HVT request, the HVT, and the verification of the HVT and its key binding (HVT+KB). The browser API, that is, how the user selects a handle and how the HVT+KB is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>).<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1178,7 +1178,7 @@ svg {
                 <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-handle-resolution" class="internal xref">Handle Resolution</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
-                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-token-request" class="internal xref">Token Request</a></p>
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-hvt-request" class="internal xref">HVT Request</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
                 <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-hvt-issuance" class="internal xref">HVT Issuance</a></p>
@@ -1187,10 +1187,10 @@ svg {
                 <p id="section-toc.1-1.3.2.6.1"><a href="#section-3.6" class="auto internal xref">3.6</a>.  <a href="#name-kb-creation" class="internal xref">KB Creation</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.7">
-                <p id="section-toc.1-1.3.2.7.1"><a href="#section-3.7" class="auto internal xref">3.7</a>.  <a href="#name-token-presentation" class="internal xref">Token Presentation</a></p>
+                <p id="section-toc.1-1.3.2.7.1"><a href="#section-3.7" class="auto internal xref">3.7</a>.  <a href="#name-hvtkb-presentation" class="internal xref">HVT+KB Presentation</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.8">
-                <p id="section-toc.1-1.3.2.8.1"><a href="#section-3.8" class="auto internal xref">3.8</a>.  <a href="#name-token-verification" class="internal xref">Token Verification</a></p>
+                <p id="section-toc.1-1.3.2.8.1"><a href="#section-3.8" class="auto internal xref">3.8</a>.  <a href="#name-hvtkb-verification" class="internal xref">HVT+KB Verification</a></p>
 </li>
             </ul>
 </li>
@@ -1250,197 +1250,199 @@ svg {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
                 <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-issuer-metadata" class="internal xref">Issuer Metadata</a></p>
 </li>
-            </ul>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-token-request-details" class="internal xref">Token Request Details</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-handle-verification-token-h" class="internal xref">Handle Verification Token (HVT)</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-hvt-request-2" class="internal xref">HVT Request</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
-                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-hvt-structure" class="internal xref">HVT Structure</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1.2.1">
-                    <p id="section-toc.1-1.8.2.1.2.1.1"><a href="#section-8.1.1" class="auto internal xref">8.1.1</a>.  <a href="#name-header" class="internal xref">Header</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1.2.2">
-                    <p id="section-toc.1-1.8.2.1.2.2.1"><a href="#section-8.1.2" class="auto internal xref">8.1.2</a>.  <a href="#name-payload" class="internal xref">Payload</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1.2.3">
-                    <p id="section-toc.1-1.8.2.1.2.3.1"><a href="#section-8.1.3" class="auto internal xref">8.1.3</a>.  <a href="#name-format" class="internal xref">Format</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.1">
+                    <p id="section-toc.1-1.6.2.3.2.1.1"><a href="#section-6.3.1" class="auto internal xref">6.3.1</a>.  <a href="#name-error-responses" class="internal xref">Error Responses</a></p>
 </li>
                 </ul>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
-                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-hvt-creation" class="internal xref">HVT Creation</a></p>
+            </ul>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
-                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-hvt-verification" class="internal xref">HVT Verification</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-handle-verification-token-h" class="internal xref">Handle Verification Token (HVT)</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-hvt-structure" class="internal xref">HVT Structure</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.1">
+                    <p id="section-toc.1-1.7.2.1.2.1.1"><a href="#section-7.1.1" class="auto internal xref">7.1.1</a>.  <a href="#name-header" class="internal xref">Header</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.2">
+                    <p id="section-toc.1-1.7.2.1.2.2.1"><a href="#section-7.1.2" class="auto internal xref">7.1.2</a>.  <a href="#name-payload" class="internal xref">Payload</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.3">
+                    <p id="section-toc.1-1.7.2.1.2.3.1"><a href="#section-7.1.3" class="auto internal xref">7.1.3</a>.  <a href="#name-format" class="internal xref">Format</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-hvt-creation" class="internal xref">HVT Creation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-hvt-verification" class="internal xref">HVT Verification</a></p>
 </li>
             </ul>
 </li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-key-binding-hvtkb" class="internal xref">Key Binding (HVT+KB)</a></p>
+</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-key-binding-hvtkb" class="internal xref">Key Binding (HVT+KB)</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-hvtkb-verification-2" class="internal xref">HVT+KB Verification</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-token-verification-details" class="internal xref">Token Verification Details</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-three-party-model" class="internal xref">Three-Party Model</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-handles-are-public-identifi" class="internal xref">Handles Are Public Identifiers</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="auto internal xref">10.3</a>.  <a href="#name-resolution-traffic" class="internal xref">Resolution Traffic</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-error-responses" class="internal xref">Error Responses</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-resolution-is-not-authentic" class="internal xref">Resolution Is Not Authentication</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-dns-spoofing" class="internal xref">DNS Spoofing</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-domain-control-is-handle-co" class="internal xref">Domain Control Is Handle Control</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-conflicting-records" class="internal xref">Conflicting Records</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
+                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-unique-user-identifiers-of-" class="internal xref">Unique User Identifiers of Username Handles</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.6">
+                <p id="section-toc.1-1.11.2.6.1"><a href="#section-11.6" class="auto internal xref">11.6</a>.  <a href="#name-handle-reassignment" class="internal xref">Handle Reassignment</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.7">
+                <p id="section-toc.1-1.11.2.7.1"><a href="#section-11.7" class="auto internal xref">11.7</a>.  <a href="#name-trust-in-the-plc-directory" class="internal xref">Trust in the PLC Directory</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.8">
+                <p id="section-toc.1-1.11.2.8.1"><a href="#section-11.8" class="auto internal xref">11.8</a>.  <a href="#name-server-side-request-forgery" class="internal xref">Server-Side Request Forgery</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.9">
+                <p id="section-toc.1-1.11.2.9.1"><a href="#section-11.9" class="auto internal xref">11.9</a>.  <a href="#name-token-confusion" class="internal xref">Token Confusion</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
-                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-three-party-model" class="internal xref">Three-Party Model</a></p>
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-well-known-uris" class="internal xref">Well-Known URIs</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
-                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-handles-are-public-identifi" class="internal xref">Handles Are Public Identifiers</a></p>
+                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-underscored-and-globally-sc" class="internal xref">Underscored and Globally Scoped DNS Node Names</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.3">
-                <p id="section-toc.1-1.12.2.3.1"><a href="#section-12.3" class="auto internal xref">12.3</a>.  <a href="#name-resolution-traffic" class="internal xref">Resolution Traffic</a></p>
+                <p id="section-toc.1-1.12.2.3.1"><a href="#section-12.3" class="auto internal xref">12.3</a>.  <a href="#name-link-relation-types" class="internal xref">Link Relation Types</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.4">
+                <p id="section-toc.1-1.12.2.4.1"><a href="#section-12.4" class="auto internal xref">12.4</a>.  <a href="#name-json-web-token-claims" class="internal xref">JSON Web Token Claims</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.5">
+                <p id="section-toc.1-1.12.2.5.1"><a href="#section-12.5" class="auto internal xref">12.5</a>.  <a href="#name-media-types" class="internal xref">Media Types</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-design-rationale" class="internal xref">Design Rationale</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
-                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-resolution-is-not-authentic" class="internal xref">Resolution Is Not Authentication</a></p>
+                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-why-two-resolution-mechanis" class="internal xref">Why Two Resolution Mechanisms?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
-                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-dns-spoofing" class="internal xref">DNS Spoofing</a></p>
+                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-why-resolve-domain-handles-" class="internal xref">Why Resolve Domain Handles to a DID?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.3">
-                <p id="section-toc.1-1.13.2.3.1"><a href="#section-13.3" class="auto internal xref">13.3</a>.  <a href="#name-domain-control-is-handle-co" class="internal xref">Domain Control Is Handle Control</a></p>
+                <p id="section-toc.1-1.13.2.3.1"><a href="#section-13.3" class="auto internal xref">13.3</a>.  <a href="#name-why-the-same-origin-shortcu" class="internal xref">Why the Same-Origin Shortcut?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.4">
-                <p id="section-toc.1-1.13.2.4.1"><a href="#section-13.4" class="auto internal xref">13.4</a>.  <a href="#name-conflicting-records" class="internal xref">Conflicting Records</a></p>
+                <p id="section-toc.1-1.13.2.4.1"><a href="#section-13.4" class="auto internal xref">13.4</a>.  <a href="#name-why-new-names-for-the-handl" class="internal xref">Why New Names for the Handle Records?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.5">
-                <p id="section-toc.1-1.13.2.5.1"><a href="#section-13.5" class="auto internal xref">13.5</a>.  <a href="#name-unique-user-identifiers-of-" class="internal xref">Unique User Identifiers of Username Handles</a></p>
+                <p id="section-toc.1-1.13.2.5.1"><a href="#section-13.5" class="auto internal xref">13.5</a>.  <a href="#name-why-not-oauth" class="internal xref">Why Not OAuth?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.6">
-                <p id="section-toc.1-1.13.2.6.1"><a href="#section-13.6" class="auto internal xref">13.6</a>.  <a href="#name-handle-reassignment" class="internal xref">Handle Reassignment</a></p>
+                <p id="section-toc.1-1.13.2.6.1"><a href="#section-13.6" class="auto internal xref">13.6</a>.  <a href="#name-why-generalize-evp" class="internal xref">Why Generalize EVP?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.7">
-                <p id="section-toc.1-1.13.2.7.1"><a href="#section-13.7" class="auto internal xref">13.7</a>.  <a href="#name-trust-in-the-plc-directory" class="internal xref">Trust in the PLC Directory</a></p>
+                <p id="section-toc.1-1.13.2.7.1"><a href="#section-13.7" class="auto internal xref">13.7</a>.  <a href="#name-why-does-the-verifier-resol" class="internal xref">Why Does the Verifier Resolve the Handle?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.8">
-                <p id="section-toc.1-1.13.2.8.1"><a href="#section-13.8" class="auto internal xref">13.8</a>.  <a href="#name-server-side-request-forgery" class="internal xref">Server-Side Request Forgery</a></p>
+                <p id="section-toc.1-1.13.2.8.1"><a href="#section-13.8" class="auto internal xref">13.8</a>.  <a href="#name-why-require-an-explicit-han" class="internal xref">Why Require an Explicit HandleIssuer Service?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.9">
-                <p id="section-toc.1-1.13.2.9.1"><a href="#section-13.9" class="auto internal xref">13.9</a>.  <a href="#name-token-confusion" class="internal xref">Token Confusion</a></p>
+                <p id="section-toc.1-1.13.2.9.1"><a href="#section-13.9" class="auto internal xref">13.9</a>.  <a href="#name-why-define-handle-resolutio" class="internal xref">Why Define Handle Resolution Here?</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.10">
+                <p id="section-toc.1-1.13.2.10.1"><a href="#section-13.10" class="auto internal xref">13.10</a>. <a href="#name-why-are-email-addresses-out" class="internal xref">Why Are Email Addresses Out of Scope?</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.1">
-                <p id="section-toc.1-1.14.2.1.1"><a href="#section-14.1" class="auto internal xref">14.1</a>.  <a href="#name-well-known-uris" class="internal xref">Well-Known URIs</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.2">
-                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="auto internal xref">14.2</a>.  <a href="#name-underscored-and-globally-sc" class="internal xref">Underscored and Globally Scoped DNS Node Names</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.3">
-                <p id="section-toc.1-1.14.2.3.1"><a href="#section-14.3" class="auto internal xref">14.3</a>.  <a href="#name-link-relation-types" class="internal xref">Link Relation Types</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.4">
-                <p id="section-toc.1-1.14.2.4.1"><a href="#section-14.4" class="auto internal xref">14.4</a>.  <a href="#name-json-web-token-claims" class="internal xref">JSON Web Token Claims</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.5">
-                <p id="section-toc.1-1.14.2.5.1"><a href="#section-14.5" class="auto internal xref">14.5</a>.  <a href="#name-media-types" class="internal xref">Media Types</a></p>
-</li>
-            </ul>
+            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-design-rationale" class="internal xref">Design Rationale</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.1">
-                <p id="section-toc.1-1.15.2.1.1"><a href="#section-15.1" class="auto internal xref">15.1</a>.  <a href="#name-why-two-resolution-mechanis" class="internal xref">Why Two Resolution Mechanisms?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.2">
-                <p id="section-toc.1-1.15.2.2.1"><a href="#section-15.2" class="auto internal xref">15.2</a>.  <a href="#name-why-resolve-domain-handles-" class="internal xref">Why Resolve Domain Handles to a DID?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.3">
-                <p id="section-toc.1-1.15.2.3.1"><a href="#section-15.3" class="auto internal xref">15.3</a>.  <a href="#name-why-the-same-origin-shortcu" class="internal xref">Why the Same-Origin Shortcut?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.4">
-                <p id="section-toc.1-1.15.2.4.1"><a href="#section-15.4" class="auto internal xref">15.4</a>.  <a href="#name-why-new-names-for-the-handl" class="internal xref">Why New Names for the Handle Records?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.5">
-                <p id="section-toc.1-1.15.2.5.1"><a href="#section-15.5" class="auto internal xref">15.5</a>.  <a href="#name-why-not-oauth" class="internal xref">Why Not OAuth?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.6">
-                <p id="section-toc.1-1.15.2.6.1"><a href="#section-15.6" class="auto internal xref">15.6</a>.  <a href="#name-why-generalize-evp" class="internal xref">Why Generalize EVP?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.7">
-                <p id="section-toc.1-1.15.2.7.1"><a href="#section-15.7" class="auto internal xref">15.7</a>.  <a href="#name-why-does-the-verifier-resol" class="internal xref">Why Does the Verifier Resolve the Handle?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.8">
-                <p id="section-toc.1-1.15.2.8.1"><a href="#section-15.8" class="auto internal xref">15.8</a>.  <a href="#name-why-require-an-explicit-han" class="internal xref">Why Require an Explicit HandleIssuer Service?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.9">
-                <p id="section-toc.1-1.15.2.9.1"><a href="#section-15.9" class="auto internal xref">15.9</a>.  <a href="#name-why-define-handle-resolutio" class="internal xref">Why Define Handle Resolution Here?</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.10">
-                <p id="section-toc.1-1.15.2.10.1"><a href="#section-15.10" class="auto internal xref">15.10</a>. <a href="#name-why-are-email-addresses-out" class="internal xref">Why Are Email Addresses Out of Scope?</a></p>
-</li>
-            </ul>
+            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
-            <p id="section-toc.1-1.16.1"><a href="#section-16" class="auto internal xref">16</a>. <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
+            <p id="section-toc.1-1.16.1"><a href="#section-16" class="auto internal xref">16</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.1">
+                <p id="section-toc.1-1.16.2.1.1"><a href="#section-16.1" class="auto internal xref">16.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.2">
+                <p id="section-toc.1-1.16.2.2.1"><a href="#section-16.2" class="auto internal xref">16.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17">
-            <p id="section-toc.1-1.17.1"><a href="#section-17" class="auto internal xref">17</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
+            <p id="section-toc.1-1.17.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.1">
+                <p id="section-toc.1-1.17.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-at-protocol-handle-on-a-sel" class="internal xref">AT Protocol Handle on a Self-Hosted PDS</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.2">
+                <p id="section-toc.1-1.17.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-at-protocol-handle-on-a-hos" class="internal xref">AT Protocol Handle on a Hosted PDS</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.3">
+                <p id="section-toc.1-1.17.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-activitypub-domain-handle" class="internal xref">ActivityPub Domain Handle</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.4">
+                <p id="section-toc.1-1.17.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-username-handle-on-a-split-" class="internal xref">Username Handle on a Split Domain</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.5">
+                <p id="section-toc.1-1.17.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-username-handle-hosted-by-a" class="internal xref">Username Handle Hosted by a Bridge</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.6">
+                <p id="section-toc.1-1.17.2.6.1"><a href="#appendix-A.6" class="auto internal xref">A.6</a>.  <a href="#name-username-handle-whose-issue" class="internal xref">Username Handle Whose Issuer Is on Another Origin</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.7">
+                <p id="section-toc.1-1.17.2.7.1"><a href="#appendix-A.7" class="auto internal xref">A.7</a>.  <a href="#name-discovery-alias-that-is-not" class="internal xref">Discovery Alias That Is Not a Handle</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18">
-            <p id="section-toc.1-1.18.1"><a href="#section-18" class="auto internal xref">18</a>. <a href="#name-references" class="internal xref">References</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.1">
-                <p id="section-toc.1-1.18.2.1.1"><a href="#section-18.1" class="auto internal xref">18.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.2">
-                <p id="section-toc.1-1.18.2.2.1"><a href="#section-18.2" class="auto internal xref">18.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
-</li>
-            </ul>
+            <p id="section-toc.1-1.18.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-relationship-to-idp-registr" class="internal xref">Relationship to IdP Registration</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19">
-            <p id="section-toc.1-1.19.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19.2.1">
-                <p id="section-toc.1-1.19.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-at-protocol-handle-on-a-sel" class="internal xref">AT Protocol Handle on a Self-Hosted PDS</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19.2.2">
-                <p id="section-toc.1-1.19.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-at-protocol-handle-on-a-hos" class="internal xref">AT Protocol Handle on a Hosted PDS</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19.2.3">
-                <p id="section-toc.1-1.19.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-activitypub-domain-handle" class="internal xref">ActivityPub Domain Handle</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19.2.4">
-                <p id="section-toc.1-1.19.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-username-handle-on-a-split-" class="internal xref">Username Handle on a Split Domain</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19.2.5">
-                <p id="section-toc.1-1.19.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-username-handle-hosted-by-a" class="internal xref">Username Handle Hosted by a Bridge</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19.2.6">
-                <p id="section-toc.1-1.19.2.6.1"><a href="#appendix-A.6" class="auto internal xref">A.6</a>.  <a href="#name-username-handle-whose-issue" class="internal xref">Username Handle Whose Issuer Is on Another Origin</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19.2.7">
-                <p id="section-toc.1-1.19.2.7.1"><a href="#appendix-A.7" class="auto internal xref">A.7</a>.  <a href="#name-discovery-alias-that-is-not" class="internal xref">Discovery Alias That Is Not a Handle</a></p>
-</li>
-            </ul>
+            <p id="section-toc.1-1.19.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.20">
-            <p id="section-toc.1-1.20.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-relationship-to-idp-registr" class="internal xref">Relationship to IdP Registration</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21">
-            <p id="section-toc.1-1.21.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22">
-            <p id="section-toc.1-1.22.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.20.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1497,8 +1499,8 @@ svg {
         <h3 id="name-scope">
 <a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-scope" class="section-name selfRef">Scope</a>
         </h3>
-<p id="section-1.3-1">This document covers two forms of handle: domain handles, which consist of a DNS name alone, and username handles, which combine a user name and a domain. The two forms are resolved differently, each with the mechanism that is already deployed for it, and are verified the same way. See <a href="#why-two" class="auto internal xref">Section 15.1</a>. Email addresses are out of scope: they are verified with <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
-<p id="section-1.3-2">HVP provides verified identification, for example to sign a user in: it tells the verifier that the user controls a handle, and which unique user identifier that handle resolves to. It does not provide authorization: an HVT grants no access to the user's account, and cannot be used to read or publish content or to act on the user's behalf. A verifier that needs such access continues to use the ecosystem's authorization protocol, such as AT Protocol OAuth (<span>[<a href="#ATPROTO-OAUTH" class="cite xref">ATPROTO-OAUTH</a>]</span>), and can use HVP and that protocol together, for example by signing the user in with HVP and requesting authorization later, only when it needs it. See <a href="#why-not-oauth" class="auto internal xref">Section 15.5</a>.<a href="#section-1.3-2" class="pilcrow">¶</a></p>
+<p id="section-1.3-1">This document covers two forms of handle: domain handles, which consist of a DNS name alone, and username handles, which combine a user name and a domain. The two forms are resolved differently, each with the mechanism that is already deployed for it, and are verified the same way. See <a href="#why-two" class="auto internal xref">Section 13.1</a>. Email addresses are out of scope: they are verified with <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<p id="section-1.3-2">HVP provides verified identification, for example to sign a user in: it tells the verifier that the user controls a handle, and which unique user identifier that handle resolves to. It does not provide authorization: an HVT grants no access to the user's account, and cannot be used to read or publish content or to act on the user's behalf. A verifier that needs such access continues to use the ecosystem's authorization protocol, such as AT Protocol OAuth (<span>[<a href="#ATPROTO-OAUTH" class="cite xref">ATPROTO-OAUTH</a>]</span>), and can use HVP and that protocol together, for example by signing the user in with HVP and requesting authorization later, only when it needs it. See <a href="#why-not-oauth" class="auto internal xref">Section 13.5</a>.<a href="#section-1.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="relationship-to-evp">
@@ -1560,11 +1562,11 @@ svg {
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.17">Handle Verification Token (HVT):</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.18">A JWT (<span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>) issued by an issuer that contains a handle, the unique user identifier it resolves to, and the browser's public key. See <a href="#hvt" class="auto internal xref">Section 8</a>.<a href="#section-2-3.18" class="pilcrow">¶</a>
+        <dd style="margin-left: 1.5em" id="section-2-3.18">A JWT (<span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>) issued by an issuer that contains a handle, the unique user identifier it resolves to, and the browser's public key. See <a href="#hvt" class="auto internal xref">Section 7</a>.<a href="#section-2-3.18" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.19">HVT+KB:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.20">An HVT combined with a Key Binding JWT that binds it to a verifier and a session. See <a href="#kb" class="auto internal xref">Section 9</a>.<a href="#section-2-3.20" class="pilcrow">¶</a>
+        <dd style="margin-left: 1.5em" id="section-2-3.20">An HVT combined with a Key Binding JWT that binds it to a verifier and a session. See <a href="#kb" class="auto internal xref">Section 8</a>.<a href="#section-2-3.20" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.21">Verifier:</dt>
@@ -1590,16 +1592,16 @@ svg {
 3.3 Handle Resolution          |   [resolve handle: subject      |
                                |    identifier, issuer]          |
                                |            |                    |
-3.4 Token Request              |            |-- POST /issuance -&gt;|
+3.4 HVT Request                |            |-- POST /issuance -&gt;|
                                |            |   (handle, did/url)|
                                |            |                    |
 3.5 HVT Issuance               |            |&lt;------- HVT -------|
                                |            |                    |
 3.6 KB Creation                |        [create KB-JWT]          |
                                |            |                    |
-3.7 Token Presentation         |&lt;-- HVT+KB -|                    |
+3.7 HVT+KB Presentation        |&lt;-- HVT+KB -|                    |
                                |            |                    |
-3.8 Token Verification  [resolve handle;    |                    |
+3.8 HVT+KB Verification [resolve handle;    |                    |
                          verify HVT+KB]     |                    |
 </pre><a href="#section-3-2" class="pilcrow">¶</a>
 </div>
@@ -1625,15 +1627,15 @@ svg {
         <h3 id="name-handle-resolution">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-handle-resolution" class="section-name selfRef">Handle Resolution</a>
         </h3>
-<p id="section-3.3-1">The browser resolves the handle as described in <a href="#resolution" class="auto internal xref">Section 5</a>. Resolution produces the unique user identifier and the authorized issuer. The browser fetches the issuer's metadata (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>). From this point onward, the handle and the unique user identifier are never altered: they are sent byte-for-byte in the token request, and returned byte-for-byte in the <code>handle</code> and <code>sub</code> claims.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">The browser resolves the handle as described in <a href="#resolution" class="auto internal xref">Section 5</a>. Resolution produces the unique user identifier and the authorized issuer. The browser fetches the issuer's metadata (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>). From this point onward, the handle and the unique user identifier are never altered: they are sent byte-for-byte in the HVT request, and returned byte-for-byte in the <code>handle</code> and <code>sub</code> claims.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="token-request">
 <section id="section-3.4">
-        <h3 id="name-token-request">
-<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-token-request" class="section-name selfRef">Token Request</a>
+        <h3 id="name-hvt-request">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-hvt-request" class="section-name selfRef">HVT Request</a>
         </h3>
-<p id="section-3.4-1">The browser sends a token request to the issuer's <code>issuance_endpoint</code>. The request is the token request of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the substitutions listed in <a href="#token-request-details" class="auto internal xref">Section 7</a>.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-1">The browser sends an HVT request to the issuer's <code>issuance_endpoint</code>. The request is the token request of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the substitutions listed in <a href="#token-request-details" class="auto internal xref">Section 6.3</a>.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hvt-issuance">
@@ -1641,7 +1643,7 @@ svg {
         <h3 id="name-hvt-issuance">
 <a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-hvt-issuance" class="section-name selfRef">HVT Issuance</a>
         </h3>
-<p id="section-3.5-1">The issuer verifies the request, checks that the browser's cookies represent a signed-in user who controls the handle, and returns an HVT (<a href="#hvt" class="auto internal xref">Section 8</a>) as the value of <code>issuance_token</code> in an <code>application/json</code> response, as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
+<p id="section-3.5-1">The issuer verifies the request, checks that the browser's cookies represent a signed-in user who controls the handle, and returns an HVT (<a href="#hvt" class="auto internal xref">Section 7</a>) as the value of <code>issuance_token</code> in an <code>application/json</code> response, as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="kb-creation">
@@ -1649,23 +1651,23 @@ svg {
         <h3 id="name-kb-creation">
 <a href="#section-3.6" class="section-number selfRef">3.6. </a><a href="#name-kb-creation" class="section-name selfRef">KB Creation</a>
         </h3>
-<p id="section-3.6-1">The browser verifies the HVT (<a href="#hvt-verification" class="auto internal xref">Section 8.3</a>), additionally confirming that the <code>handle</code> and <code>sub</code> claims are byte-for-byte identical to the handle and unique user identifier it requested and that the <code>cnf.jwk</code> claim matches the public key it generated. It then creates a KB-JWT and combines it with the HVT as described in <a href="#kb" class="auto internal xref">Section 9</a>.<a href="#section-3.6-1" class="pilcrow">¶</a></p>
+<p id="section-3.6-1">The browser verifies the HVT (<a href="#hvt-verification" class="auto internal xref">Section 7.3</a>), additionally confirming that the <code>handle</code> and <code>sub</code> claims are byte-for-byte identical to the handle and unique user identifier it requested and that the <code>cnf.jwk</code> claim matches the public key it generated. It then creates a KB-JWT and combines it with the HVT as described in <a href="#kb" class="auto internal xref">Section 8</a>.<a href="#section-3.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="token-presentation">
 <section id="section-3.7">
-        <h3 id="name-token-presentation">
-<a href="#section-3.7" class="section-number selfRef">3.7. </a><a href="#name-token-presentation" class="section-name selfRef">Token Presentation</a>
+        <h3 id="name-hvtkb-presentation">
+<a href="#section-3.7" class="section-number selfRef">3.7. </a><a href="#name-hvtkb-presentation" class="section-name selfRef">HVT+KB Presentation</a>
         </h3>
 <p id="section-3.7-1">The browser provides the HVT+KB to the verifier. This mechanism is defined by the browser API.<a href="#section-3.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="token-verification">
 <section id="section-3.8">
-        <h3 id="name-token-verification">
-<a href="#section-3.8" class="section-number selfRef">3.8. </a><a href="#name-token-verification" class="section-name selfRef">Token Verification</a>
+        <h3 id="name-hvtkb-verification">
+<a href="#section-3.8" class="section-number selfRef">3.8. </a><a href="#name-hvtkb-verification" class="section-name selfRef">HVT+KB Verification</a>
         </h3>
-<p id="section-3.8-1">The verifier verifies the HVT+KB as described in <a href="#verification" class="auto internal xref">Section 10</a>. The verifier resolves the handle itself, and does not rely on the browser's resolution. If verification succeeds, the verifier has verified that the user controls the handle in the <code>handle</code> claim, and has learned the user's unique user identifier in the <code>sub</code> claim.<a href="#section-3.8-1" class="pilcrow">¶</a></p>
+<p id="section-3.8-1">The verifier verifies the HVT+KB as described in <a href="#verification" class="auto internal xref">Section 9</a>. The verifier resolves the handle itself, and does not rely on the browser's resolution. If verification succeeds, the verifier has verified that the user controls the handle in the <code>handle</code> claim, and has learned the user's unique user identifier in the <code>sub</code> claim.<a href="#section-3.8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1814,16 +1816,16 @@ userpart    = unreserved / sub-delims
 </li>
       </ul>
 <p id="section-5-3">Username handles are resolved through WebFinger (<span>[<a href="#RFC7033" class="cite xref">RFC7033</a>]</span>) (<a href="#resolve-user" class="auto internal xref">Section 5.2</a>), and domain handles through a DID (<a href="#resolution-steps" class="auto internal xref">Section 5.1</a>), or, as proposed for ActivityPub, a username handle (<a href="#activitypub" class="auto internal xref">Section 5.2.2</a>). In both cases, resolution checks that the handle and the unique user identifier refer to each other, so that a handle cannot claim an account that does not agree to it, and finds the issuer that the user has explicitly authorized.<a href="#section-5-3" class="pilcrow">¶</a></p>
-<p id="section-5-4">Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for a token; the verifier does it to check that the token was issued by an issuer that is authorized for the handle (<a href="#verification" class="auto internal xref">Section 10</a>).<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-4">Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for an HVT; the verifier does it to check that the HVT was issued by an issuer that is authorized for the handle (<a href="#verification" class="auto internal xref">Section 9</a>).<a href="#section-5-4" class="pilcrow">¶</a></p>
 <p id="section-5-5">The following rules apply to every resolution step:<a href="#section-5-5" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-5-6.1">DNS queries use the resolving party's DNS resolver. DNSSEC is not required, but see <a href="#dns-security" class="auto internal xref">Section 13.2</a>.<a href="#section-5-6.1" class="pilcrow">¶</a>
+<li class="compact" id="section-5-6.1">DNS queries use the resolving party's DNS resolver. DNSSEC is not required, but see <a href="#dns-security" class="auto internal xref">Section 11.2</a>.<a href="#section-5-6.1" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="section-5-6.2">HTTP requests use the <code>https</code> scheme, MUST NOT include credentials (cookies or HTTP authentication), and SHOULD NOT include a <code>Referer</code> header. When the browser makes them, they SHOULD be made from an opaque origin, so that the servers involved do not learn which verifier the user is visiting.<a href="#section-5-6.2" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="section-5-6.3">Redirects are followed only to <code>https</code> URLs, and at most 5 times for a single request.<a href="#section-5-6.3" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-5-6.4">Responses are subject to reasonable limits on size and time, and resolving parties take the precautions of <a href="#ssrf" class="auto internal xref">Section 13.8</a>.<a href="#section-5-6.4" class="pilcrow">¶</a>
+        <li class="compact" id="section-5-6.4">Responses are subject to reasonable limits on size and time, and resolving parties take the precautions of <a href="#ssrf" class="auto internal xref">Section 11.8</a>.<a href="#section-5-6.4" class="pilcrow">¶</a>
 </li>
       </ul>
 <div id="resolution-steps">
@@ -1890,7 +1892,7 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
 <p id="section-5.1.1-3">The service is identified by its <code>id</code>, which can also be written as the DID followed by <code>#handle_issuer</code>, in the same way that the AT Protocol identifies the account's PDS by the <code>id</code> <code>#atproto_pds</code> (<span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>). Service <code>id</code>s are unique within a DID document (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>), and in <code>did:plc</code> services are stored as a map keyed by <code>id</code> (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>), so a DID document names at most one issuer.<a href="#section-5.1.1-3" class="pilcrow">¶</a></p>
 <p id="section-5.1.1-4">If the DID document has no service whose <code>id</code> is <code>#handle_issuer</code>, or that service's <code>type</code> is not <code>HandleIssuer</code>, or its <code>serviceEndpoint</code> is not an issuer identifier, that is, not an <code>https</code> origin with no path, query, or fragment, the handle has no authorized issuer, and HVP cannot be used with it.<a href="#section-5.1.1-4" class="pilcrow">¶</a></p>
 <p id="section-5.1.1-5">Because a handle has a single authorized issuer, a change of issuer takes effect at once: as soon as the DID document names a new issuer, HVTs from the previous one no longer verify. This is the same as when a user moves their account to another server.<a href="#section-5.1.1-5" class="pilcrow">¶</a></p>
-<p id="section-5.1.1-6">Authorization is always explicit: resolution does not infer an issuer from the account's existing services, such as its AT Protocol PDS (the <code>#atproto_pds</code> service), the PDS's authorization server, or its ActivityPub server. An issuer has to deploy HVP anyway, and requiring the DID document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See <a href="#why-opt-in" class="auto internal xref">Section 15.8</a>.<a href="#section-5.1.1-6" class="pilcrow">¶</a></p>
+<p id="section-5.1.1-6">Authorization is always explicit: resolution does not infer an issuer from the account's existing services, such as its AT Protocol PDS (the <code>#atproto_pds</code> service), the PDS's authorization server, or its ActivityPub server. An issuer has to deploy HVP anyway, and requiring the DID document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See <a href="#why-opt-in" class="auto internal xref">Section 13.8</a>.<a href="#section-5.1.1-6" class="pilcrow">¶</a></p>
 <p id="section-5.1.1-7">A user who moves their account to another server, and whose issuer is that server, updates their <code>HandleIssuer</code> service as part of the move.<a href="#section-5.1.1-7" class="pilcrow">¶</a></p>
 <blockquote id="section-5.1.1-8">
             <p id="section-5.1.1-8.1">Open Issue: The name of the DID service type, and whether it should be registered in the W3C DID Extensions registry.<a href="#section-5.1.1-8.1" class="pilcrow">¶</a></p>
@@ -1950,7 +1952,7 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
             <p id="section-5.2-2.4.1"><strong>Issuer.</strong> The authorized issuer is the <code>href</code> of the link whose <code>rel</code> is <code>handle-issuer</code> (<a href="#handle-issuer-link" class="auto internal xref">Section 5.2.1</a>). If there is none, or more than one, fail.<a href="#section-5.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.2-2.5">
-            <p id="section-5.2-2.5.1"><strong>Back-link.</strong> Check that the server that hosts the account that the unique user identifier refers to agrees that the account has the handle (<a href="#same-origin" class="auto internal xref">Section 13.5</a>). This check ensures that a username handle cannot claim an account that did not agree to it:<a href="#section-5.2-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-5.2-2.5.1"><strong>Back-link.</strong> Check that the server that hosts the account that the unique user identifier refers to agrees that the account has the handle (<a href="#same-origin" class="auto internal xref">Section 11.5</a>). This check ensures that a username handle cannot claim an account that did not agree to it:<a href="#section-5.2-2.5.1" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-5.2-2.5.2.1">If the origin of the unique user identifier is identical to the authorized issuer, the check succeeds without any further request: the issuer is the server that hosts the account.<a href="#section-5.2-2.5.2.1" class="pilcrow">¶</a>
 </li>
@@ -1984,7 +1986,7 @@ Issuer:             https://social.example.com    (same origin)
 </pre><a href="#section-5.2.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-5.2.1-3">A resource descriptor names at most one issuer. If it has no <code>handle-issuer</code> link, or its <code>href</code> is not an issuer identifier, the handle has no authorized issuer, and HVP cannot be used with it. The issuer is usually the server that hosts the account, in which case the back-link request is skipped (<a href="#resolve-user" class="auto internal xref">Section 5.2</a>), but it can be another origin, for example when a server's website and sign-in have moved to a new domain while its accounts keep their original URLs.<a href="#section-5.2.1-3" class="pilcrow">¶</a></p>
-<p id="section-5.2.1-4">As with the <code>HandleIssuer</code> service, authorization is explicit: resolution does not infer an issuer from the <code>self</code> link or from any other link. See <a href="#why-opt-in" class="auto internal xref">Section 15.8</a>.<a href="#section-5.2.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.2.1-4">As with the <code>HandleIssuer</code> service, authorization is explicit: resolution does not infer an issuer from the <code>self</code> link or from any other link. See <a href="#why-opt-in" class="auto internal xref">Section 13.8</a>.<a href="#section-5.2.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="activitypub">
@@ -2025,7 +2027,7 @@ Content-Type: application/json
         <h3 id="name-caching">
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-caching" class="section-name selfRef">Caching</a>
         </h3>
-<p id="section-5.3-1">A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying a token, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-1">A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying an HVT+KB, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2056,7 +2058,7 @@ Content-Type: application/json
             <code>issuer</code> (REQUIRED): The issuer identifier. It MUST be identical to the issuer identifier that the document was fetched under, and a party that fetches the document MUST reject it if it is not (as in Section 3.3 of <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span>).<a href="#section-6.2-3.1" class="pilcrow">¶</a>
 </li>
           <li class="compact" id="section-6.2-3.2">
-            <code>issuance_endpoint</code> (REQUIRED): The URL that the browser sends token requests to. It MUST be an <code>https</code> URL that is same site (<span>[<a href="#WHATWG.HTML" class="cite xref">WHATWG.HTML</a>]</span>) with the issuer identifier, so that the token request carries the cookies of the issuer's site; a party that fetches the metadata MUST reject it otherwise.<a href="#section-6.2-3.2" class="pilcrow">¶</a>
+            <code>issuance_endpoint</code> (REQUIRED): The URL that the browser sends HVT requests to. It MUST be an <code>https</code> URL that is same site (<span>[<a href="#WHATWG.HTML" class="cite xref">WHATWG.HTML</a>]</span>) with the issuer identifier, so that the HVT request carries the cookies of the issuer's site; a party that fetches the metadata MUST reject it otherwise.<a href="#section-6.2-3.2" class="pilcrow">¶</a>
 </li>
           <li class="compact" id="section-6.2-3.3">
             <code>jwks_uri</code> (REQUIRED): The URL of the issuer's JSON Web Key Set (<span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>), used to verify HVTs.<a href="#section-6.2-3.3" class="pilcrow">¶</a>
@@ -2082,36 +2084,34 @@ Content-Type: application/json
 </blockquote>
 </section>
 </div>
-</section>
-</div>
 <div id="token-request-details">
-<section id="section-7">
-      <h2 id="name-token-request-details">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-token-request-details" class="section-name selfRef">Token Request Details</a>
-      </h2>
-<p id="section-7-1">The token request is the token request of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, including its use of HTTP Message Signatures (<span>[<a href="#RFC9421" class="cite xref">RFC9421</a>]</span>) and the <code>hwk</code> key scheme, with the following substitutions:<a href="#section-7-1" class="pilcrow">¶</a></p>
+<section id="section-6.3">
+        <h3 id="name-hvt-request-2">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-hvt-request-2" class="section-name selfRef">HVT Request</a>
+        </h3>
+<p id="section-6.3-1">The HVT request is the token request of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, including its use of HTTP Message Signatures (<span>[<a href="#RFC9421" class="cite xref">RFC9421</a>]</span>) and the <code>hwk</code> key scheme, with the following substitutions:<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-7-2.1">The browser performs <a href="#resolution" class="auto internal xref">Section 5</a>, not EVP's issuer discovery, to obtain the issuer and its metadata, and sends the request to the <code>issuance_endpoint</code> of the HVP metadata.<a href="#section-7-2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-6.3-2.1">The browser performs <a href="#resolution" class="auto internal xref">Section 5</a>, not EVP's issuer discovery, to obtain the issuer and its metadata, and sends the request to the <code>issuance_endpoint</code> of the HVP metadata.<a href="#section-6.3-2.1" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-7-2.2">
-          <p id="section-7-2.2.1">The request body is a JSON object with the member <code>handle</code>, and exactly one of the members <code>did</code> and <code>url</code>:<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
+          <li class="compact" id="section-6.3-2.2">
+            <p id="section-6.3-2.2.1">The request body is a JSON object with the member <code>handle</code>, and exactly one of the members <code>did</code> and <code>url</code>:<a href="#section-6.3-2.2.1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-7-2.2.2.1">
-              <code>handle</code> (REQUIRED): The handle that the user selected, in normalized form (<a href="#normalization" class="auto internal xref">Section 4.3</a>).<a href="#section-7-2.2.2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-6.3-2.2.2.1">
+                <code>handle</code> (REQUIRED): The handle that the user selected, in normalized form (<a href="#normalization" class="auto internal xref">Section 4.3</a>).<a href="#section-6.3-2.2.2.1" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-7-2.2.2.2">
-              <code>did</code>: The unique user identifier that the handle resolves to, byte-for-byte as resolution produced it, when it is a DID.<a href="#section-7-2.2.2.2" class="pilcrow">¶</a>
+              <li class="compact" id="section-6.3-2.2.2.2">
+                <code>did</code>: The unique user identifier that the handle resolves to, byte-for-byte as resolution produced it, when it is a DID.<a href="#section-6.3-2.2.2.2" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-7-2.2.2.3">
-              <code>url</code>: The unique user identifier that the handle resolves to, byte-for-byte as resolution produced it, when it is the <code>self</code> link of a username handle.<a href="#section-7-2.2.2.3" class="pilcrow">¶</a>
+              <li class="compact" id="section-6.3-2.2.2.3">
+                <code>url</code>: The unique user identifier that the handle resolves to, byte-for-byte as resolution produced it, when it is the <code>self</code> link of a username handle.<a href="#section-6.3-2.2.2.3" class="pilcrow">¶</a>
 </li>
-          </ul>
+            </ul>
 </li>
-        <li class="compact" id="section-7-2.3">The <code>Sec-Fetch-Dest</code> header has the value <code>handle-verification</code>.<a href="#section-7-2.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-6.3-2.3">The <code>Sec-Fetch-Dest</code> header has the value <code>handle-verification</code>.<a href="#section-6.3-2.3" class="pilcrow">¶</a>
 </li>
-      </ul>
-<p id="section-7-3">Example:<a href="#section-7-3" class="pilcrow">¶</a></p>
-<div class="lang-http sourcecode" id="section-7-4">
+        </ul>
+<p id="section-6.3-3">Example:<a href="#section-6.3-3" class="pilcrow">¶</a></p>
+<div class="lang-http sourcecode" id="section-6.3-4">
 <pre>POST /hvp/issuance HTTP/1.1
 Host: accounts.issuer.example
 Cookie: session=...
@@ -2127,76 +2127,86 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 
 {"handle":"samuelgoto.bsky.social",
  "did":"did:plc:bftbdgcbe4zclvpkboe4hleq"}
-</pre><a href="#section-7-4" class="pilcrow">¶</a>
+</pre><a href="#section-6.3-4" class="pilcrow">¶</a>
 </div>
-<p id="section-7-5">On receipt of a token request, the issuer:<a href="#section-7-5" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="compact type-1" id="section-7-6">
-<li id="section-7-6.1">Verifies the request headers, the HTTP Message Signature, and the <code>Content-Digest</code>, as in the request verification of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with <code>handle-verification</code> in place of <code>email-verification</code> as the expected <code>Sec-Fetch-Dest</code>.<a href="#section-7-6.1" class="pilcrow">¶</a>
+<p id="section-6.3-5">On receipt of an HVT request, the issuer:<a href="#section-6.3-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="compact type-1" id="section-6.3-6">
+<li id="section-6.3-6.1">Verifies the request headers, the HTTP Message Signature, and the <code>Content-Digest</code>, as in the request verification of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with <code>handle-verification</code> in place of <code>email-verification</code> as the expected <code>Sec-Fetch-Dest</code>.<a href="#section-6.3-6.1" class="pilcrow">¶</a>
 </li>
-        <li id="section-7-6.2">Verifies that <code>handle</code> satisfies <a href="#handle-syntax" class="auto internal xref">Section 4.1</a> or <a href="#username-handle-syntax" class="auto internal xref">Section 4.2</a> and is in normalized form, that the body has exactly one of <code>did</code> and <code>url</code>, that a <code>did</code> is a syntactically valid <code>did:plc</code> or <code>did:web</code> DID, and that a <code>url</code> is an <code>https</code> URL. If it does not, the issuer returns an <code>invalid_request</code> error (<a href="#errors" class="auto internal xref">Section 11</a>).<a href="#section-7-6.2" class="pilcrow">¶</a>
+          <li id="section-6.3-6.2">Verifies that <code>handle</code> satisfies <a href="#handle-syntax" class="auto internal xref">Section 4.1</a> or <a href="#username-handle-syntax" class="auto internal xref">Section 4.2</a> and is in normalized form, that the body has exactly one of <code>did</code> and <code>url</code>, that a <code>did</code> is a syntactically valid <code>did:plc</code> or <code>did:web</code> DID, and that a <code>url</code> is an <code>https</code> URL. If it does not, the issuer returns an <code>invalid_request</code> error (<a href="#errors" class="auto internal xref">Section 6.3.1</a>).<a href="#section-6.3-6.2" class="pilcrow">¶</a>
 </li>
-        <li id="section-7-6.3">Checks that the cookies represent a signed-in user who controls <code>handle</code>, and whose account is the <code>did</code> or <code>url</code>. If they do not, the issuer returns an <code>authentication_required</code> error.<a href="#section-7-6.3" class="pilcrow">¶</a>
+          <li id="section-6.3-6.3">Checks that the cookies represent a signed-in user who controls <code>handle</code>, and whose account is the <code>did</code> or <code>url</code>. If they do not, the issuer returns an <code>authentication_required</code> error.<a href="#section-6.3-6.3" class="pilcrow">¶</a>
 </li>
-        <li id="section-7-6.4">SHOULD resolve <code>handle</code> (<a href="#resolution" class="auto internal xref">Section 5</a>) and check that it is the authorized issuer and that resolution yields the <code>did</code> or <code>url</code>. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing tokens that will fail.<a href="#section-7-6.4" class="pilcrow">¶</a>
+          <li id="section-6.3-6.4">SHOULD resolve <code>handle</code> (<a href="#resolution" class="auto internal xref">Section 5</a>) and check that it is the authorized issuer and that resolution yields the <code>did</code> or <code>url</code>. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing HVTs that will fail.<a href="#section-6.3-6.4" class="pilcrow">¶</a>
 </li>
-        <li id="section-7-6.5">Creates an HVT (<a href="#hvt-creation" class="auto internal xref">Section 8.2</a>) and returns it as the value of <code>issuance_token</code> in an <code>application/json</code> response, as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-7-6.5" class="pilcrow">¶</a>
+          <li id="section-6.3-6.5">Creates an HVT (<a href="#hvt-creation" class="auto internal xref">Section 7.2</a>) and returns it as the value of <code>issuance_token</code> in an <code>application/json</code> response, as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-6.3-6.5" class="pilcrow">¶</a>
 </li>
-      </ol>
+        </ol>
+<div id="errors">
+<section id="section-6.3.1">
+          <h4 id="name-error-responses">
+<a href="#section-6.3.1" class="section-number selfRef">6.3.1. </a><a href="#name-error-responses" class="section-name selfRef">Error Responses</a>
+          </h4>
+<p id="section-6.3.1-1">The issuer returns the error responses of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> (<code>invalid_request</code>, <code>invalid_signature</code>, <code>authentication_required</code>, and server errors), with the <code>handle</code> member in place of the <code>email</code> member.<a href="#section-6.3.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
 </section>
 </div>
 <div id="hvt">
-<section id="section-8">
+<section id="section-7">
       <h2 id="name-handle-verification-token-h">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-handle-verification-token-h" class="section-name selfRef">Handle Verification Token (HVT)</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-handle-verification-token-h" class="section-name selfRef">Handle Verification Token (HVT)</a>
       </h2>
-<p id="section-8-1">The Handle Verification Token (HVT) is a JWT (<span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>) issued by an issuer. It contains a handle, the unique user identifier that the handle resolves to, and the browser's public key.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">The Handle Verification Token (HVT) is a JWT (<span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>) issued by an issuer. It contains a handle, the unique user identifier that the handle resolves to, and the browser's public key.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <div id="hvt-structure">
-<section id="section-8.1">
+<section id="section-7.1">
         <h3 id="name-hvt-structure">
-<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-hvt-structure" class="section-name selfRef">HVT Structure</a>
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-hvt-structure" class="section-name selfRef">HVT Structure</a>
         </h3>
 <div id="header">
-<section id="section-8.1.1">
+<section id="section-7.1.1">
           <h4 id="name-header">
-<a href="#section-8.1.1" class="section-number selfRef">8.1.1. </a><a href="#name-header" class="section-name selfRef">Header</a>
+<a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-header" class="section-name selfRef">Header</a>
           </h4>
 <ul class="compact">
-<li class="compact" id="section-8.1.1-1.1">
-              <code>alg</code> (REQUIRED): The signing algorithm, with the same requirements as the <code>alg</code> of the EVT in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>: a fully-specified identifier, and not <code>none</code>, a symmetric MAC algorithm, or the polymorphic <code>EdDSA</code>.<a href="#section-8.1.1-1.1" class="pilcrow">¶</a>
+<li class="compact" id="section-7.1.1-1.1">
+              <code>alg</code> (REQUIRED): The signing algorithm, with the same requirements as the <code>alg</code> of the EVT in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>: a fully-specified identifier, and not <code>none</code>, a symmetric MAC algorithm, or the polymorphic <code>EdDSA</code>.<a href="#section-7.1.1-1.1" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-8.1.1-1.2">
-              <code>kid</code> (REQUIRED): The identifier of the signing key in the issuer's JWKS.<a href="#section-8.1.1-1.2" class="pilcrow">¶</a>
+            <li class="compact" id="section-7.1.1-1.2">
+              <code>kid</code> (REQUIRED): The identifier of the signing key in the issuer's JWKS.<a href="#section-7.1.1-1.2" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-8.1.1-1.3">
-              <code>typ</code> (REQUIRED): <code>hvt+jwt</code>.<a href="#section-8.1.1-1.3" class="pilcrow">¶</a>
+            <li class="compact" id="section-7.1.1-1.3">
+              <code>typ</code> (REQUIRED): <code>hvt+jwt</code>.<a href="#section-7.1.1-1.3" class="pilcrow">¶</a>
 </li>
           </ul>
 </section>
 </div>
 <div id="payload">
-<section id="section-8.1.2">
+<section id="section-7.1.2">
           <h4 id="name-payload">
-<a href="#section-8.1.2" class="section-number selfRef">8.1.2. </a><a href="#name-payload" class="section-name selfRef">Payload</a>
+<a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-payload" class="section-name selfRef">Payload</a>
           </h4>
 <ul class="compact">
-<li class="compact" id="section-8.1.2-1.1">
-              <code>iss</code> (REQUIRED): The issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 6.1</a>).<a href="#section-8.1.2-1.1" class="pilcrow">¶</a>
+<li class="compact" id="section-7.1.2-1.1">
+              <code>iss</code> (REQUIRED): The issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 6.1</a>).<a href="#section-7.1.2-1.1" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-8.1.2-1.2">
-              <code>iat</code> (REQUIRED): The time the HVT was issued.<a href="#section-8.1.2-1.2" class="pilcrow">¶</a>
+            <li class="compact" id="section-7.1.2-1.2">
+              <code>iat</code> (REQUIRED): The time the HVT was issued.<a href="#section-7.1.2-1.2" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-8.1.2-1.3">
-              <code>cnf</code> (REQUIRED): A confirmation claim (<span>[<a href="#RFC7800" class="cite xref">RFC7800</a>]</span>) containing the browser's public key as a <code>jwk</code>, reproduced from the <code>Signature-Key</code> header of the token request with the same members, including its <code>alg</code>.<a href="#section-8.1.2-1.3" class="pilcrow">¶</a>
+            <li class="compact" id="section-7.1.2-1.3">
+              <code>cnf</code> (REQUIRED): A confirmation claim (<span>[<a href="#RFC7800" class="cite xref">RFC7800</a>]</span>) containing the browser's public key as a <code>jwk</code>, reproduced from the <code>Signature-Key</code> header of the HVT request with the same members, including its <code>alg</code>.<a href="#section-7.1.2-1.3" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-8.1.2-1.4">
-              <code>handle</code> (REQUIRED): The handle that the user controls, byte-for-byte as it appeared in the token request.<a href="#section-8.1.2-1.4" class="pilcrow">¶</a>
+            <li class="compact" id="section-7.1.2-1.4">
+              <code>handle</code> (REQUIRED): The handle that the user controls, byte-for-byte as it appeared in the HVT request.<a href="#section-7.1.2-1.4" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-8.1.2-1.5">
-              <code>sub</code> (REQUIRED): The unique user identifier that the handle resolves to (<a href="#resolution" class="auto internal xref">Section 5</a>), byte-for-byte as it appeared in the <code>did</code> or <code>url</code> member of the token request.<a href="#section-8.1.2-1.5" class="pilcrow">¶</a>
+            <li class="compact" id="section-7.1.2-1.5">
+              <code>sub</code> (REQUIRED): The unique user identifier that the handle resolves to (<a href="#resolution" class="auto internal xref">Section 5</a>), byte-for-byte as it appeared in the <code>did</code> or <code>url</code> member of the HVT request.<a href="#section-7.1.2-1.5" class="pilcrow">¶</a>
 </li>
           </ul>
-<p id="section-8.1.2-2">Example:<a href="#section-8.1.2-2" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-8.1.2-3">
+<p id="section-7.1.2-2">Example:<a href="#section-7.1.2-2" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-7.1.2-3">
 <pre>{
   "iss": "https://bsky.social",
   "iat": 1792620000,
@@ -2211,157 +2221,149 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
   "handle": "samuelgoto.bsky.social",
   "sub": "did:plc:bftbdgcbe4zclvpkboe4hleq"
 }
-</pre><a href="#section-8.1.2-3" class="pilcrow">¶</a>
+</pre><a href="#section-7.1.2-3" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="format">
-<section id="section-8.1.3">
+<section id="section-7.1.3">
           <h4 id="name-format">
-<a href="#section-8.1.3" class="section-number selfRef">8.1.3. </a><a href="#name-format" class="section-name selfRef">Format</a>
+<a href="#section-7.1.3" class="section-number selfRef">7.1.3. </a><a href="#name-format" class="section-name selfRef">Format</a>
           </h4>
-<p id="section-8.1.3-1">As with the EVT, the HVT has a <code>~</code> appended to it for compatibility with SD-JWT with Key Binding (<span>[<a href="#I-D.ietf-oauth-selective-disclosure-jwt" class="cite xref">I-D.ietf-oauth-selective-disclosure-jwt</a>]</span>).<a href="#section-8.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.1.3-1">As with the EVT, the HVT has a <code>~</code> appended to it for compatibility with SD-JWT with Key Binding (<span>[<a href="#I-D.ietf-oauth-selective-disclosure-jwt" class="cite xref">I-D.ietf-oauth-selective-disclosure-jwt</a>]</span>).<a href="#section-7.1.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="hvt-creation">
-<section id="section-8.2">
+<section id="section-7.2">
         <h3 id="name-hvt-creation">
-<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-hvt-creation" class="section-name selfRef">HVT Creation</a>
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-hvt-creation" class="section-name selfRef">HVT Creation</a>
         </h3>
-<p id="section-8.2-1">After verifying the request and authenticating the user, the issuer:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="compact type-1" id="section-8.2-2">
-<li id="section-8.2-2.1">Constructs the header with <code>alg</code>, <code>kid</code>, and <code>typ</code>.<a href="#section-8.2-2.1" class="pilcrow">¶</a>
+<p id="section-7.2-1">After verifying the request and authenticating the user, the issuer:<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="compact type-1" id="section-7.2-2">
+<li id="section-7.2-2.1">Constructs the header with <code>alg</code>, <code>kid</code>, and <code>typ</code>.<a href="#section-7.2-2.1" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.2-2.2">Constructs the payload with <code>iss</code>, <code>iat</code>, <code>cnf</code> (containing the public key from the <code>Signature-Key</code> header, including its <code>alg</code> member), <code>handle</code>, and <code>sub</code>.<a href="#section-8.2-2.2" class="pilcrow">¶</a>
+          <li id="section-7.2-2.2">Constructs the payload with <code>iss</code>, <code>iat</code>, <code>cnf</code> (containing the public key from the <code>Signature-Key</code> header, including its <code>alg</code> member), <code>handle</code>, and <code>sub</code>.<a href="#section-7.2-2.2" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.2-2.3">Signs the JWT with the private key identified by <code>kid</code>.<a href="#section-8.2-2.3" class="pilcrow">¶</a>
+          <li id="section-7.2-2.3">Signs the JWT with the private key identified by <code>kid</code>.<a href="#section-7.2-2.3" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.2-2.4">Appends <code>~</code> to the signed JWT.<a href="#section-8.2-2.4" class="pilcrow">¶</a>
+          <li id="section-7.2-2.4">Appends <code>~</code> to the signed JWT.<a href="#section-7.2-2.4" class="pilcrow">¶</a>
 </li>
         </ol>
 </section>
 </div>
 <div id="hvt-verification">
-<section id="section-8.3">
+<section id="section-7.3">
         <h3 id="name-hvt-verification">
-<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-hvt-verification" class="section-name selfRef">HVT Verification</a>
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-hvt-verification" class="section-name selfRef">HVT Verification</a>
         </h3>
-<p id="section-8.3-1">Both the browser and the verifier verify the HVT:<a href="#section-8.3-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="compact type-1" id="section-8.3-2">
-<li id="section-8.3-2.1">Parse the HVT into its header, payload, and signature.<a href="#section-8.3-2.1" class="pilcrow">¶</a>
+<p id="section-7.3-1">Both the browser and the verifier verify the HVT:<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="compact type-1" id="section-7.3-2">
+<li id="section-7.3-2.1">Parse the HVT into its header, payload, and signature.<a href="#section-7.3-2.1" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.3-2.2">Verify that <code>typ</code> is <code>hvt+jwt</code>, and validate <code>alg</code> and <code>kid</code> as for the EVT in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-8.3-2.2" class="pilcrow">¶</a>
+          <li id="section-7.3-2.2">Verify that <code>typ</code> is <code>hvt+jwt</code>, and validate <code>alg</code> and <code>kid</code> as for the EVT in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-7.3-2.2" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.3-2.3">Extract the <code>iss</code>, <code>iat</code>, <code>cnf</code>, <code>handle</code>, and <code>sub</code> claims. Verify that <code>handle</code> satisfies <a href="#handle-syntax" class="auto internal xref">Section 4.1</a> or <a href="#username-handle-syntax" class="auto internal xref">Section 4.2</a> and is in normalized form.<a href="#section-8.3-2.3" class="pilcrow">¶</a>
+          <li id="section-7.3-2.3">Extract the <code>iss</code>, <code>iat</code>, <code>cnf</code>, <code>handle</code>, and <code>sub</code> claims. Verify that <code>handle</code> satisfies <a href="#handle-syntax" class="auto internal xref">Section 4.1</a> or <a href="#username-handle-syntax" class="auto internal xref">Section 4.2</a> and is in normalized form.<a href="#section-7.3-2.3" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.3-2.4">
-            <p id="section-8.3-2.4.1">Resolve <code>handle</code> (<a href="#resolution" class="auto internal xref">Section 5</a>), and verify that:<a href="#section-8.3-2.4.1" class="pilcrow">¶</a></p>
+          <li id="section-7.3-2.4">
+            <p id="section-7.3-2.4.1">Resolve <code>handle</code> (<a href="#resolution" class="auto internal xref">Section 5</a>), and verify that:<a href="#section-7.3-2.4.1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-8.3-2.4.2.1">the unique user identifier that resolution produces is byte-for-byte identical to <code>sub</code>; and<a href="#section-8.3-2.4.2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-7.3-2.4.2.1">the unique user identifier that resolution produces is byte-for-byte identical to <code>sub</code>; and<a href="#section-7.3-2.4.2.1" class="pilcrow">¶</a>
 </li>
-              <li class="compact" id="section-8.3-2.4.2.2">
-                <code>iss</code> is byte-for-byte identical to the authorized issuer.<a href="#section-8.3-2.4.2.2" class="pilcrow">¶</a>
+              <li class="compact" id="section-7.3-2.4.2.2">
+                <code>iss</code> is byte-for-byte identical to the authorized issuer.<a href="#section-7.3-2.4.2.2" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
-          <li id="section-8.3-2.5">Fetch the issuer metadata from <code>iss</code> (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>).<a href="#section-8.3-2.5" class="pilcrow">¶</a>
+          <li id="section-7.3-2.5">Fetch the issuer metadata from <code>iss</code> (<a href="#issuer-metadata" class="auto internal xref">Section 6.2</a>).<a href="#section-7.3-2.5" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.3-2.6">Fetch the issuer's public keys from its <code>jwks_uri</code>, and verify the HVT's signature with the key identified by <code>kid</code>.<a href="#section-8.3-2.6" class="pilcrow">¶</a>
+          <li id="section-7.3-2.6">Fetch the issuer's public keys from its <code>jwks_uri</code>, and verify the HVT's signature with the key identified by <code>kid</code>.<a href="#section-7.3-2.6" class="pilcrow">¶</a>
 </li>
-          <li id="section-8.3-2.7">Verify that <code>iat</code> is within an acceptable time window.<a href="#section-8.3-2.7" class="pilcrow">¶</a>
+          <li id="section-7.3-2.7">Verify that <code>iat</code> is within an acceptable time window.<a href="#section-7.3-2.7" class="pilcrow">¶</a>
 </li>
         </ol>
-<p id="section-8.3-3">The browser additionally verifies that <code>handle</code> and <code>sub</code> are byte-for-byte identical to the handle and unique user identifier it requested, and that <code>cnf.jwk</code> matches the public key it generated. The browser MAY reuse the results of the resolution it performed before the token request for step 4.<a href="#section-8.3-3" class="pilcrow">¶</a></p>
+<p id="section-7.3-3">The browser additionally verifies that <code>handle</code> and <code>sub</code> are byte-for-byte identical to the handle and unique user identifier it requested, and that <code>cnf.jwk</code> matches the public key it generated. The browser MAY reuse the results of the resolution it performed before the HVT request for step 4.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="kb">
-<section id="section-9">
+<section id="section-8">
       <h2 id="name-key-binding-hvtkb">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-key-binding-hvtkb" class="section-name selfRef">Key Binding (HVT+KB)</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-key-binding-hvtkb" class="section-name selfRef">Key Binding (HVT+KB)</a>
       </h2>
-<p id="section-9-1">Key binding is the key binding of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the HVT in place of the EVT. The browser creates a KB-JWT whose <code>aud</code> is the verifier's origin, whose <code>nonce</code> is the verifier's session nonce, and whose <code>sd_hash</code> is the hash of the HVT (including its trailing <code>~</code>), and signs it with its private key. The HVT+KB is:<a href="#section-9-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-9-2">
+<p id="section-8-1">Key binding is the key binding of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the HVT in place of the EVT. The browser creates a KB-JWT whose <code>aud</code> is the verifier's origin, whose <code>nonce</code> is the verifier's session nonce, and whose <code>sd_hash</code> is the hash of the HVT (including its trailing <code>~</code>), and signs it with its private key. The HVT+KB is:<a href="#section-8-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-8-2">
 <pre>&lt;HVT&gt;~&lt;KB-JWT&gt;
-</pre><a href="#section-9-2" class="pilcrow">¶</a>
+</pre><a href="#section-8-2" class="pilcrow">¶</a>
 </div>
-<p id="section-9-3">The HVT+KB is compatible with SD-JWT with Key Binding (<span>[<a href="#I-D.ietf-oauth-selective-disclosure-jwt" class="cite xref">I-D.ietf-oauth-selective-disclosure-jwt</a>]</span>), in the same way as the EVT+KB.<a href="#section-9-3" class="pilcrow">¶</a></p>
+<p id="section-8-3">The HVT+KB is compatible with SD-JWT with Key Binding (<span>[<a href="#I-D.ietf-oauth-selective-disclosure-jwt" class="cite xref">I-D.ietf-oauth-selective-disclosure-jwt</a>]</span>), in the same way as the EVT+KB.<a href="#section-8-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="verification">
-<section id="section-10">
-      <h2 id="name-token-verification-details">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-token-verification-details" class="section-name selfRef">Token Verification Details</a>
+<section id="section-9">
+      <h2 id="name-hvtkb-verification-2">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-hvtkb-verification-2" class="section-name selfRef">HVT+KB Verification</a>
       </h2>
-<p id="section-10-1">The verifier receives the HVT+KB, and verifies it by:<a href="#section-10-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="compact type-1" id="section-10-2">
-<li id="section-10-2.1">Verifying the KB-JWT as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the HVT in place of the EVT: its <code>alg</code> matches the <code>alg</code> of the HVT's <code>cnf.jwk</code>, its <code>aud</code> is the verifier's origin, its <code>nonce</code> is the session's nonce, its <code>iat</code> is recent, and its <code>sd_hash</code> is the hash of the HVT.<a href="#section-10-2.1" class="pilcrow">¶</a>
+<p id="section-9-1">The verifier receives the HVT+KB, and verifies it by:<a href="#section-9-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="compact type-1" id="section-9-2">
+<li id="section-9-2.1">Verifying the KB-JWT as in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, with the HVT in place of the EVT: its <code>alg</code> matches the <code>alg</code> of the HVT's <code>cnf.jwk</code>, its <code>aud</code> is the verifier's origin, its <code>nonce</code> is the session's nonce, its <code>iat</code> is recent, and its <code>sd_hash</code> is the hash of the HVT.<a href="#section-9-2.1" class="pilcrow">¶</a>
 </li>
-        <li id="section-10-2.2">Verifying the HVT as described in <a href="#hvt-verification" class="auto internal xref">Section 8.3</a>, including resolving the handle itself.<a href="#section-10-2.2" class="pilcrow">¶</a>
+        <li id="section-9-2.2">Verifying the HVT as described in <a href="#hvt-verification" class="auto internal xref">Section 7.3</a>, including resolving the handle itself.<a href="#section-9-2.2" class="pilcrow">¶</a>
 </li>
-        <li id="section-10-2.3">Verifying the KB-JWT's signature with the public key in the HVT's <code>cnf.jwk</code>.<a href="#section-10-2.3" class="pilcrow">¶</a>
+        <li id="section-9-2.3">Verifying the KB-JWT's signature with the public key in the HVT's <code>cnf.jwk</code>.<a href="#section-9-2.3" class="pilcrow">¶</a>
 </li>
       </ol>
-<p id="section-10-3">If all verification steps pass, the verifier has verified that the user controls the handle in the <code>handle</code> claim. The verifier SHOULD identify the user's account by the unique user identifier in the <code>sub</code> claim, and treat the <code>handle</code> as a mutable attribute of the account (<a href="#reassignment" class="auto internal xref">Section 13.6</a>).<a href="#section-10-3" class="pilcrow">¶</a></p>
-<p id="section-10-4">The verifier MUST perform its own resolution in step 2, and MUST NOT rely on resolution results provided by the browser. The verifier's resolution is what establishes that the issuer is authorized for the handle.<a href="#section-10-4" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="errors">
-<section id="section-11">
-      <h2 id="name-error-responses">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-error-responses" class="section-name selfRef">Error Responses</a>
-      </h2>
-<p id="section-11-1">The issuer returns the error responses of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> (<code>invalid_request</code>, <code>invalid_signature</code>, <code>authentication_required</code>, and server errors), with the <code>handle</code> member in place of the <code>email</code> member.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-9-3">If all verification steps pass, the verifier has verified that the user controls the handle in the <code>handle</code> claim. The verifier SHOULD identify the user's account by the unique user identifier in the <code>sub</code> claim, and treat the <code>handle</code> as a mutable attribute of the account (<a href="#reassignment" class="auto internal xref">Section 11.6</a>).<a href="#section-9-3" class="pilcrow">¶</a></p>
+<p id="section-9-4">The verifier MUST perform its own resolution in step 2, and MUST NOT rely on resolution results provided by the browser. The verifier's resolution is what establishes that the issuer is authorized for the handle.<a href="#section-9-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="privacy-considerations">
-<section id="section-12">
+<section id="section-10">
       <h2 id="name-privacy-considerations">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
 <div id="three-party-model">
-<section id="section-12.1">
+<section id="section-10.1">
         <h3 id="name-three-party-model">
-<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-three-party-model" class="section-name selfRef">Three-Party Model</a>
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-three-party-model" class="section-name selfRef">Three-Party Model</a>
         </h3>
-<p id="section-12.1-1">As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, the browser intermediates between the verifier and the issuer. The issuer learns which handle the user is verifying, but not which verifier the user is signing in to, and the verifier learns the handle only after the user has chosen to share it.<a href="#section-12.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.1-1">As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, the browser intermediates between the verifier and the issuer. The issuer learns which handle the user is verifying, but not which verifier the user is signing in to, and the verifier learns the handle only after the user has chosen to share it.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="handles-are-public-identifiers">
-<section id="section-12.2">
+<section id="section-10.2">
         <h3 id="name-handles-are-public-identifi">
-<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-handles-are-public-identifi" class="section-name selfRef">Handles Are Public Identifiers</a>
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-handles-are-public-identifi" class="section-name selfRef">Handles Are Public Identifiers</a>
         </h3>
-<p id="section-12.2-1">Handles and unique user identifiers are public by design: they are meant to be shared, are the same at every site, and are linked to the user's public activity in the AT Protocol or ActivityPub. A verifier that receives a handle can correlate the user with other verifiers that receive the same handle, and with the user's public activity under that handle. HVP does not change this, and offers no equivalent of the private email addresses of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>. Browser APIs that use HVP should make clear to the user that the verifier will learn their handle and DID.<a href="#section-12.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-1">Handles and unique user identifiers are public by design: they are meant to be shared, are the same at every site, and are linked to the user's public activity in the AT Protocol or ActivityPub. A verifier that receives a handle can correlate the user with other verifiers that receive the same handle, and with the user's public activity under that handle. HVP does not change this, and offers no equivalent of the private email addresses of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>. Browser APIs that use HVP should make clear to the user that the verifier will learn their handle and DID.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="resolution-traffic">
-<section id="section-12.3">
+<section id="section-10.3">
         <h3 id="name-resolution-traffic">
-<a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-resolution-traffic" class="section-name selfRef">Resolution Traffic</a>
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-resolution-traffic" class="section-name selfRef">Resolution Traffic</a>
         </h3>
-<p id="section-12.3-1">Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: for a domain handle, the DNS name queried is the handle itself, and the DID document is the user's; for a username handle, the WebFinger request names the user. Any party that observes a resolution therefore learns which user is being resolved, and when.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
-<p id="section-12.3-2">When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, the host of a <code>did:web</code> DID document, the PLC directory for <code>did:plc</code>, the WebFinger server for a username handle, and, when the back-link request of step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a> is made, the server that hosts the account) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
-<p id="section-12.3-3">When the verifier resolves a handle to verify a token, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host, the host of the DID document, or the WebFinger server is also the user's issuer, as is common for handles under a server's domain and for username handles, the issuer can correlate the tokens it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.<a href="#section-12.3-3" class="pilcrow">¶</a></p>
-<p id="section-12.3-4">Verifiers can reduce this exposure by:<a href="#section-12.3-4" class="pilcrow">¶</a></p>
+<p id="section-10.3-1">Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: for a domain handle, the DNS name queried is the handle itself, and the DID document is the user's; for a username handle, the WebFinger request names the user. Any party that observes a resolution therefore learns which user is being resolved, and when.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-2">When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, the host of a <code>did:web</code> DID document, the PLC directory for <code>did:plc</code>, the WebFinger server for a username handle, and, when the back-link request of step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a> is made, the server that hosts the account) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.<a href="#section-10.3-2" class="pilcrow">¶</a></p>
+<p id="section-10.3-3">When the verifier resolves a handle to verify an HVT+KB, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host, the host of the DID document, or the WebFinger server is also the user's issuer, as is common for handles under a server's domain and for username handles, the issuer can correlate the HVTs it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.<a href="#section-10.3-3" class="pilcrow">¶</a></p>
+<p id="section-10.3-4">Verifiers can reduce this exposure by:<a href="#section-10.3-4" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-12.3-5.1">caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.3</a>, which helps for returning users but not for first sign-ins;<a href="#section-12.3-5.1" class="pilcrow">¶</a>
+<li class="compact" id="section-10.3-5.1">caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.3</a>, which helps for returning users but not for first sign-ins;<a href="#section-10.3-5.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-12.3-5.2">resolving through an intermediary shared by many verifiers, such as a resolution service reached over Oblivious HTTP (<span>[<a href="#RFC9458" class="cite xref">RFC9458</a>]</span>), so that the servers involved do not see the verifier's network address; and<a href="#section-12.3-5.2" class="pilcrow">¶</a>
+          <li class="compact" id="section-10.3-5.2">resolving through an intermediary shared by many verifiers, such as a resolution service reached over Oblivious HTTP (<span>[<a href="#RFC9458" class="cite xref">RFC9458</a>]</span>), so that the servers involved do not see the verifier's network address; and<a href="#section-10.3-5.2" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-12.3-5.3">for <code>did:plc</code> DIDs, maintaining a local copy of the PLC directory, as described below.<a href="#section-12.3-5.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-10.3-5.3">for <code>did:plc</code> DIDs, maintaining a local copy of the PLC directory, as described below.<a href="#section-10.3-5.3" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-12.3-6">A browser or verifier can remove the PLC directory from per-sign-in traffic entirely by maintaining a local copy of the directory, ingested through its bulk export endpoint and kept current through its streaming endpoint (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>), and verifying each operation's signatures as it is ingested. Resolving a <code>did:plc</code> DID then consults the local copy and sends no request that reveals which DID is being resolved. This has limits:<a href="#section-12.3-6" class="pilcrow">¶</a></p>
+<p id="section-10.3-6">A browser or verifier can remove the PLC directory from per-sign-in traffic entirely by maintaining a local copy of the directory, ingested through its bulk export endpoint and kept current through its streaming endpoint (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>), and verifying each operation's signatures as it is ingested. Resolving a <code>did:plc</code> DID then consults the local copy and sends no request that reveals which DID is being resolved. This has limits:<a href="#section-10.3-6" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-12.3-7.1">It applies only to the DID-to-DID-document step. The handle-to-DID step still queries DNS records and well-known URLs of the handle's host, which observe the resolution as described above.<a href="#section-12.3-7.1" class="pilcrow">¶</a>
+<li class="compact" id="section-10.3-7.1">It applies only to the DID-to-DID-document step. The handle-to-DID step still queries DNS records and well-known URLs of the handle's host, which observe the resolution as described above.<a href="#section-10.3-7.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-12.3-7.2">It does not change the trust placed in the PLC directory (<a href="#plc-trust" class="auto internal xref">Section 13.7</a>): the local copy contains only what the directory chose to publish, in the order it chose.<a href="#section-12.3-7.2" class="pilcrow">¶</a>
+          <li class="compact" id="section-10.3-7.2">It does not change the trust placed in the PLC directory (<a href="#plc-trust" class="auto internal xref">Section 11.7</a>): the local copy contains only what the directory chose to publish, in the order it chose.<a href="#section-10.3-7.2" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-12.3-7.3">It requires storing and continuously ingesting every operation for every DID, which is a significant cost, particularly for browsers on constrained devices and for small verifiers.<a href="#section-12.3-7.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-10.3-7.3">It requires storing and continuously ingesting every operation for every DID, which is a significant cost, particularly for browsers on constrained devices and for small verifiers.<a href="#section-10.3-7.3" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>
@@ -2369,158 +2371,158 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-13">
+<section id="section-11">
       <h2 id="name-security-considerations">
-<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
 <div id="resolution-is-not-authentication">
-<section id="section-13.1">
+<section id="section-11.1">
         <h3 id="name-resolution-is-not-authentic">
-<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-resolution-is-not-authentic" class="section-name selfRef">Resolution Is Not Authentication</a>
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-resolution-is-not-authentic" class="section-name selfRef">Resolution Is Not Authentication</a>
         </h3>
-<p id="section-13.1-1">Resolution establishes which issuer is authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the verifier accepts, because the verifier resolves the handle itself.<a href="#section-13.1-1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1">Resolution establishes which issuer is authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the verifier accepts, because the verifier resolves the handle itself.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="dns-security">
-<section id="section-13.2">
+<section id="section-11.2">
         <h3 id="name-dns-spoofing">
-<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-dns-spoofing" class="section-name selfRef">DNS Spoofing</a>
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-dns-spoofing" class="section-name selfRef">DNS Spoofing</a>
         </h3>
-<p id="section-13.2-1">Resolution of domain handles relies on DNS <code>TXT</code> records, which are not authenticated unless DNSSEC is used. As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, spoofing the browser's DNS resolution discloses the handle to the attacker but yields no token the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuer. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.<a href="#section-13.2-1" class="pilcrow">¶</a></p>
+<p id="section-11.2-1">Resolution of domain handles relies on DNS <code>TXT</code> records, which are not authenticated unless DNSSEC is used. As in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, spoofing the browser's DNS resolution discloses the handle to the attacker but yields no HVT that the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuer. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="domain-control-is-handle-control">
-<section id="section-13.3">
+<section id="section-11.3">
         <h3 id="name-domain-control-is-handle-co">
-<a href="#section-13.3" class="section-number selfRef">13.3. </a><a href="#name-domain-control-is-handle-co" class="section-name selfRef">Domain Control Is Handle Control</a>
+<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-domain-control-is-handle-co" class="section-name selfRef">Domain Control Is Handle Control</a>
         </h3>
-<p id="section-13.3-1">Every handle rests on control of a DNS name: whoever controls the handle's domain controls its <code>_handle</code> and <code>_atproto</code> records and its well-known URLs, and therefore which DID or username handle the handle resolves to. For a <code>did:web</code> DID on the handle's domain, the same party also controls the DID document, and therefore the authorized issuer. For a username handle, whoever controls the domain controls its WebFinger responses, and therefore which account and which issuer each username handle refers to, within the limits of step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a>: a handle can name an account on another server only if that account agrees (<a href="#same-origin" class="auto internal xref">Section 13.5</a>). This is by design: it is what lets users bring their own domain. It also means that when a domain changes hands, for example when it expires and is registered by someone else, its handle changes hands too. The back-link check means the new owner cannot claim the previous owner's DID, but can point the handle at a DID of their own.<a href="#section-13.3-1" class="pilcrow">¶</a></p>
+<p id="section-11.3-1">Every handle rests on control of a DNS name: whoever controls the handle's domain controls its <code>_handle</code> and <code>_atproto</code> records and its well-known URLs, and therefore which DID or username handle the handle resolves to. For a <code>did:web</code> DID on the handle's domain, the same party also controls the DID document, and therefore the authorized issuer. For a username handle, whoever controls the domain controls its WebFinger responses, and therefore which account and which issuer each username handle refers to, within the limits of step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a>: a handle can name an account on another server only if that account agrees (<a href="#same-origin" class="auto internal xref">Section 11.5</a>). This is by design: it is what lets users bring their own domain. It also means that when a domain changes hands, for example when it expires and is registered by someone else, its handle changes hands too. The back-link check means the new owner cannot claim the previous owner's DID, but can point the handle at a DID of their own.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conflicting-records">
-<section id="section-13.4">
+<section id="section-11.4">
         <h3 id="name-conflicting-records">
-<a href="#section-13.4" class="section-number selfRef">13.4. </a><a href="#name-conflicting-records" class="section-name selfRef">Conflicting Records</a>
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-conflicting-records" class="section-name selfRef">Conflicting Records</a>
         </h3>
-<p id="section-13.4-1">A domain handle can be mapped to a DID or a username handle by up to four records (<a href="#resolution-steps" class="auto internal xref">Section 5.1</a>): two with the new names, and two with the AT Protocol names, which are used only as a fallback (<a href="#atproto-compat" class="auto internal xref">Section 5.1.2</a>). Resolution is designed so that the browser and the verifier cannot reach different results for the same handle, and so that an attacker who can block or delay some lookups cannot choose between them:<a href="#section-13.4-1" class="pilcrow">¶</a></p>
+<p id="section-11.4-1">A domain handle can be mapped to a DID or a username handle by up to four records (<a href="#resolution-steps" class="auto internal xref">Section 5.1</a>): two with the new names, and two with the AT Protocol names, which are used only as a fallback (<a href="#atproto-compat" class="auto internal xref">Section 5.1.2</a>). Resolution is designed so that the browser and the verifier cannot reach different results for the same handle, and so that an attacker who can block or delay some lookups cannot choose between them:<a href="#section-11.4-1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-13.4-2.1">Two records with the same names that name different DIDs or username handles cause resolution to fail, rather than letting the result depend on which record a resolving party happened to read.<a href="#section-13.4-2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-11.4-2.1">Two records with the same names that name different DIDs or username handles cause resolution to fail, rather than letting the result depend on which record a resolving party happened to read.<a href="#section-11.4-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-13.4-2.2">The AT Protocol names are used only when the new names have positively established that the handle names nothing. If a lookup with the new names fails for any other reason, resolution fails, rather than falling back. Otherwise, an attacker who can make that lookup fail, for one party but not the other, could make the two parties resolve the handle through different records.<a href="#section-13.4-2.2" class="pilcrow">¶</a>
+          <li class="compact" id="section-11.4-2.2">The AT Protocol names are used only when the new names have positively established that the handle names nothing. If a lookup with the new names fails for any other reason, resolution fails, rather than falling back. Otherwise, an attacker who can make that lookup fail, for one party but not the other, could make the two parties resolve the handle through different records.<a href="#section-11.4-2.2" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-13.4-3">An attacker who can block lookups can still cause resolution to fail, but cannot cause it to succeed with a different result. Only the owner of the handle's domain can create records that disagree.<a href="#section-13.4-3" class="pilcrow">¶</a></p>
+<p id="section-11.4-3">An attacker who can block lookups can still cause resolution to fail, but cannot cause it to succeed with a different result. Only the owner of the handle's domain can create records that disagree.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="same-origin">
-<section id="section-13.5">
+<section id="section-11.5">
         <h3 id="name-unique-user-identifiers-of-">
-<a href="#section-13.5" class="section-number selfRef">13.5. </a><a href="#name-unique-user-identifiers-of-" class="section-name selfRef">Unique User Identifiers of Username Handles</a>
+<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-unique-user-identifiers-of-" class="section-name selfRef">Unique User Identifiers of Username Handles</a>
         </h3>
-<p id="section-13.5-1">The WebFinger response of a username handle is controlled by the owner of the handle's domain, and names both the unique user identifier and the issuer. Without a further check, a malicious domain could name another user's account as the unique user identifier, and an issuer of its own choosing:<a href="#section-13.5-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-13.5-2">
+<p id="section-11.5-1">The WebFinger response of a username handle is controlled by the owner of the handle's domain, and names both the unique user identifier and the issuer. Without a further check, a malicious domain could name another user's account as the unique user identifier, and an issuer of its own choosing:<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-11.5-2">
 <pre>acct:x@evil.example -&gt; self:          https://social.example/users/bob
                        handle-issuer: https://evil.example
-</pre><a href="#section-13.5-2" class="pilcrow">¶</a>
+</pre><a href="#section-11.5-2" class="pilcrow">¶</a>
 </div>
-<p id="section-13.5-3">Its issuer could then issue an HVT whose <code>sub</code> is Bob's account, and a verifier that identifies accounts by <code>sub</code> would sign the attacker in as Bob. For domain handles, the back-link checks of <a href="#resolution-steps" class="auto internal xref">Section 5.1</a> and <a href="#activitypub" class="auto internal xref">Section 5.2.2</a> prevent the equivalent attack, in which a domain handle claims another user's DID or username handle. For username handles, step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a> prevents it, in one of two ways:<a href="#section-13.5-3" class="pilcrow">¶</a></p>
+<p id="section-11.5-3">Its issuer could then issue an HVT whose <code>sub</code> is Bob's account, and a verifier that identifies accounts by <code>sub</code> would sign the attacker in as Bob. For domain handles, the back-link checks of <a href="#resolution-steps" class="auto internal xref">Section 5.1</a> and <a href="#activitypub" class="auto internal xref">Section 5.2.2</a> prevent the equivalent attack, in which a domain handle claims another user's DID or username handle. For username handles, step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a> prevents it, in one of two ways:<a href="#section-11.5-3" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-13.5-4.1">If the unique user identifier is on the origin of the authorized issuer, the issuer is the server that hosts the account, and a server that issues an HVT for one of its accounts has authenticated that account's user (step 3 of <a href="#token-request-details" class="auto internal xref">Section 7</a>). A domain can at most give its own handles to accounts on that server.<a href="#section-13.5-4.1" class="pilcrow">¶</a>
+<li class="compact" id="section-11.5-4.1">If the unique user identifier is on the origin of the authorized issuer, the issuer is the server that hosts the account, and a server that issues an HVT for one of its accounts has authenticated that account's user (step 3 of <a href="#token-request-details" class="auto internal xref">Section 6.3</a>). A domain can at most give its own handles to accounts on that server.<a href="#section-11.5-4.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-13.5-4.2">Otherwise, the back-link check of step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a> requires the server that hosts the account to agree that it has the handle. Bob's account does not claim <code>x@evil.example</code>, so resolution fails.<a href="#section-13.5-4.2" class="pilcrow">¶</a>
+          <li class="compact" id="section-11.5-4.2">Otherwise, the back-link check of step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a> requires the server that hosts the account to agree that it has the handle. Bob's account does not claim <code>x@evil.example</code>, so resolution fails.<a href="#section-11.5-4.2" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>
 </div>
 <div id="reassignment">
-<section id="section-13.6">
+<section id="section-11.6">
         <h3 id="name-handle-reassignment">
-<a href="#section-13.6" class="section-number selfRef">13.6. </a><a href="#name-handle-reassignment" class="section-name selfRef">Handle Reassignment</a>
+<a href="#section-11.6" class="section-number selfRef">11.6. </a><a href="#name-handle-reassignment" class="section-name selfRef">Handle Reassignment</a>
         </h3>
-<p id="section-13.6-1">Handles can be reassigned: a domain can expire and be re-registered, and a hosting provider can let a new account take a handle that a deleted account used. Verifiers SHOULD identify accounts by the unique user identifier in the <code>sub</code> claim rather than by the <code>handle</code> claim. A DID survives changes of handle, so a verifier that keys accounts on it is not affected when a handle moves to another account. The unique user identifier of a username handle is the URL of the account on its server, which survives changes of handle that keep the account on the same server, but changes when the account moves to another server.<a href="#section-13.6-1" class="pilcrow">¶</a></p>
+<p id="section-11.6-1">Handles can be reassigned: a domain can expire and be re-registered, and a hosting provider can let a new account take a handle that a deleted account used. Verifiers SHOULD identify accounts by the unique user identifier in the <code>sub</code> claim rather than by the <code>handle</code> claim. A DID survives changes of handle, so a verifier that keys accounts on it is not affected when a handle moves to another account. The unique user identifier of a username handle is the URL of the account on its server, which survives changes of handle that keep the account on the same server, but changes when the account moves to another server.<a href="#section-11.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="plc-trust">
-<section id="section-13.7">
+<section id="section-11.7">
         <h3 id="name-trust-in-the-plc-directory">
-<a href="#section-13.7" class="section-number selfRef">13.7. </a><a href="#name-trust-in-the-plc-directory" class="section-name selfRef">Trust in the PLC Directory</a>
+<a href="#section-11.7" class="section-number selfRef">11.7. </a><a href="#name-trust-in-the-plc-directory" class="section-name selfRef">Trust in the PLC Directory</a>
         </h3>
-<p id="section-13.7-1">For <code>did:plc</code> DIDs, resolution trusts the PLC directory to return the current DID document, and therefore the current authorized issuer.<a href="#section-13.7-1" class="pilcrow">¶</a></p>
-<p id="section-13.7-2">Operations in the PLC directory are signed by the account's rotation keys, and the DID is derived from the hash of the signed genesis operation, so the operation log is self-certifying: a resolving party can fetch the log and verify it instead of trusting the directory's rendering of the DID document. Doing so prevents the directory from forging operations, and therefore from naming an issuer that the account's rotation keys did not authorize.<a href="#section-13.7-2" class="pilcrow">¶</a></p>
-<p id="section-13.7-3">Verifying the log does not remove all trust in the directory. As the "PLC Server Trust Model" section of <span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span> states, some trust in the directory is required, and its attacks are limited to:<a href="#section-13.7-3" class="pilcrow">¶</a></p>
+<p id="section-11.7-1">For <code>did:plc</code> DIDs, resolution trusts the PLC directory to return the current DID document, and therefore the current authorized issuer.<a href="#section-11.7-1" class="pilcrow">¶</a></p>
+<p id="section-11.7-2">Operations in the PLC directory are signed by the account's rotation keys, and the DID is derived from the hash of the signed genesis operation, so the operation log is self-certifying: a resolving party can fetch the log and verify it instead of trusting the directory's rendering of the DID document. Doing so prevents the directory from forging operations, and therefore from naming an issuer that the account's rotation keys did not authorize.<a href="#section-11.7-2" class="pilcrow">¶</a></p>
+<p id="section-11.7-3">Verifying the log does not remove all trust in the directory. As the "PLC Server Trust Model" section of <span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span> states, some trust in the directory is required, and its attacks are limited to:<a href="#section-11.7-3" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-13.7-4.1">
-            <strong>Denial of service:</strong> rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that changes or removes the <code>HandleIssuer</code> service, so that a resolving party keeps accepting tokens from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.<a href="#section-13.7-4.1" class="pilcrow">¶</a>
+<li class="compact" id="section-11.7-4.1">
+            <strong>Denial of service:</strong> rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that changes or removes the <code>HandleIssuer</code> service, so that a resolving party keeps accepting HVTs from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.<a href="#section-11.7-4.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-13.7-4.2">
-            <strong>Misordering:</strong> in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which <code>HandleIssuer</code> service is in effect.<a href="#section-13.7-4.2" class="pilcrow">¶</a>
+          <li class="compact" id="section-11.7-4.2">
+            <strong>Misordering:</strong> in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which <code>HandleIssuer</code> service is in effect.<a href="#section-11.7-4.2" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-13.7-5">Neither the browser nor the verifier can detect these attacks. Operations are submitted only to the PLC directory, and are not published anywhere else that a resolving party could observe independently: mirrors and replicas obtain their operations from the directory, and the timestamps that the directory assigns to operations, on which the resolution of forks depends, are not signed. Both the browser and the verifier therefore place this trust in the PLC directory, and HVP inherits it for every handle that resolves to a <code>did:plc</code> DID. Handles that resolve to a <code>did:web</code> DID instead rely on the security of the DID's domain, as described in <a href="#dns-security" class="auto internal xref">Section 13.2</a>.<a href="#section-13.7-5" class="pilcrow">¶</a></p>
+<p id="section-11.7-5">Neither the browser nor the verifier can detect these attacks. Operations are submitted only to the PLC directory, and are not published anywhere else that a resolving party could observe independently: mirrors and replicas obtain their operations from the directory, and the timestamps that the directory assigns to operations, on which the resolution of forks depends, are not signed. Both the browser and the verifier therefore place this trust in the PLC directory, and HVP inherits it for every handle that resolves to a <code>did:plc</code> DID. Handles that resolve to a <code>did:web</code> DID instead rely on the security of the DID's domain, as described in <a href="#dns-security" class="auto internal xref">Section 11.2</a>.<a href="#section-11.7-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ssrf">
-<section id="section-13.8">
+<section id="section-11.8">
         <h3 id="name-server-side-request-forgery">
-<a href="#section-13.8" class="section-number selfRef">13.8. </a><a href="#name-server-side-request-forgery" class="section-name selfRef">Server-Side Request Forgery</a>
+<a href="#section-11.8" class="section-number selfRef">11.8. </a><a href="#name-server-side-request-forgery" class="section-name selfRef">Server-Side Request Forgery</a>
         </h3>
-<p id="section-13.8-1">Resolution makes a verifier fetch URLs derived from user-controlled input. Verifiers MUST resolve only <code>https</code> URLs, MUST NOT fetch URLs whose host resolves to a loopback, link-local, or private IP address, and SHOULD apply limits on redirects, response size, and time.<a href="#section-13.8-1" class="pilcrow">¶</a></p>
+<p id="section-11.8-1">Resolution makes a verifier fetch URLs derived from user-controlled input. Verifiers MUST resolve only <code>https</code> URLs, MUST NOT fetch URLs whose host resolves to a loopback, link-local, or private IP address, and SHOULD apply limits on redirects, response size, and time.<a href="#section-11.8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="token-confusion">
-<section id="section-13.9">
+<section id="section-11.9">
         <h3 id="name-token-confusion">
-<a href="#section-13.9" class="section-number selfRef">13.9. </a><a href="#name-token-confusion" class="section-name selfRef">Token Confusion</a>
+<a href="#section-11.9" class="section-number selfRef">11.9. </a><a href="#name-token-confusion" class="section-name selfRef">Token Confusion</a>
         </h3>
-<p id="section-13.9-1">The <code>typ</code> of the HVT (<code>hvt+jwt</code>) is distinct from that of the EVT (<code>evt+jwt</code>), so an HVT cannot be presented as an EVT or the other way around.<a href="#section-13.9-1" class="pilcrow">¶</a></p>
+<p id="section-11.9-1">The <code>typ</code> of the HVT (<code>hvt+jwt</code>) is distinct from that of the EVT (<code>evt+jwt</code>), so an HVT cannot be presented as an EVT or the other way around.<a href="#section-11.9-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-14">
+<section id="section-12">
       <h2 id="name-iana-considerations">
-<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
 <div id="well-known-uris">
-<section id="section-14.1">
+<section id="section-12.1">
         <h3 id="name-well-known-uris">
-<a href="#section-14.1" class="section-number selfRef">14.1. </a><a href="#name-well-known-uris" class="section-name selfRef">Well-Known URIs</a>
+<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-well-known-uris" class="section-name selfRef">Well-Known URIs</a>
         </h3>
-<p id="section-14.1-1">This document registers the following well-known URIs in the "Well-Known URIs" registry (<span>[<a href="#RFC8615" class="cite xref">RFC8615</a>]</span>):<a href="#section-14.1-1" class="pilcrow">¶</a></p>
+<p id="section-12.1-1">This document registers the following well-known URIs in the "Well-Known URIs" registry (<span>[<a href="#RFC8615" class="cite xref">RFC8615</a>]</span>):<a href="#section-12.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-14.1-2.1">
-            <p id="section-14.1-2.1.1">URI suffix: <code>handle</code><a href="#section-14.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12.1-2.1">
+            <p id="section-12.1-2.1.1">URI suffix: <code>handle</code><a href="#section-12.1-2.1.1" class="pilcrow">¶</a></p>
 <ul class="compact normal">
-<li class="compact normal" id="section-14.1-2.1.2.1">Change controller: IETF<a href="#section-14.1-2.1.2.1" class="pilcrow">¶</a>
+<li class="compact normal" id="section-12.1-2.1.2.1">Change controller: IETF<a href="#section-12.1-2.1.2.1" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.1-2.1.2.2">Reference: <a href="#resolution-steps" class="auto internal xref">Section 5.1</a> of this document<a href="#section-14.1-2.1.2.2" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.1-2.1.2.2">Reference: <a href="#resolution-steps" class="auto internal xref">Section 5.1</a> of this document<a href="#section-12.1-2.1.2.2" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.1-2.1.2.3">Status: permanent<a href="#section-14.1-2.1.2.3" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.1-2.1.2.3">Status: permanent<a href="#section-12.1-2.1.2.3" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
-          <li class="normal" id="section-14.1-2.2">
-            <p id="section-14.1-2.2.1">URI suffix: <code>handle-verification</code><a href="#section-14.1-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-12.1-2.2">
+            <p id="section-12.1-2.2.1">URI suffix: <code>handle-verification</code><a href="#section-12.1-2.2.1" class="pilcrow">¶</a></p>
 <ul class="compact normal">
-<li class="compact normal" id="section-14.1-2.2.2.1">Change controller: IETF<a href="#section-14.1-2.2.2.1" class="pilcrow">¶</a>
+<li class="compact normal" id="section-12.1-2.2.2.1">Change controller: IETF<a href="#section-12.1-2.2.2.1" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.1-2.2.2.2">Reference: <a href="#issuer-metadata" class="auto internal xref">Section 6.2</a> of this document<a href="#section-14.1-2.2.2.2" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.1-2.2.2.2">Reference: <a href="#issuer-metadata" class="auto internal xref">Section 6.2</a> of this document<a href="#section-12.1-2.2.2.2" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.1-2.2.2.3">Status: permanent<a href="#section-14.1-2.2.2.3" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.1-2.2.2.3">Status: permanent<a href="#section-12.1-2.2.2.3" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
-          <li class="normal" id="section-14.1-2.3">
-            <p id="section-14.1-2.3.1">URI suffix: <code>atproto-did</code><a href="#section-14.1-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-12.1-2.3">
+            <p id="section-12.1-2.3.1">URI suffix: <code>atproto-did</code><a href="#section-12.1-2.3.1" class="pilcrow">¶</a></p>
 <ul class="compact normal">
-<li class="compact normal" id="section-14.1-2.3.2.1">Change controller: IETF<a href="#section-14.1-2.3.2.1" class="pilcrow">¶</a>
+<li class="compact normal" id="section-12.1-2.3.2.1">Change controller: IETF<a href="#section-12.1-2.3.2.1" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.1-2.3.2.2">Reference: <a href="#atproto-compat" class="auto internal xref">Section 5.1.2</a> of this document<a href="#section-14.1-2.3.2.2" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.1-2.3.2.2">Reference: <a href="#atproto-compat" class="auto internal xref">Section 5.1.2</a> of this document<a href="#section-12.1-2.3.2.2" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.1-2.3.2.3">Status: permanent<a href="#section-14.1-2.3.2.3" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.1-2.3.2.3">Status: permanent<a href="#section-12.1-2.3.2.3" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.1-2.3.2.4">Related information: Originally defined by the AT Protocol (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>).<a href="#section-14.1-2.3.2.4" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.1-2.3.2.4">Related information: Originally defined by the AT Protocol (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>).<a href="#section-12.1-2.3.2.4" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
@@ -2528,216 +2530,216 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 </section>
 </div>
 <div id="underscored-and-globally-scoped-dns-node-names">
-<section id="section-14.2">
+<section id="section-12.2">
         <h3 id="name-underscored-and-globally-sc">
-<a href="#section-14.2" class="section-number selfRef">14.2. </a><a href="#name-underscored-and-globally-sc" class="section-name selfRef">Underscored and Globally Scoped DNS Node Names</a>
+<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-underscored-and-globally-sc" class="section-name selfRef">Underscored and Globally Scoped DNS Node Names</a>
         </h3>
-<p id="section-14.2-1">This document registers the following entries in the "Underscored and Globally Scoped DNS Node Names" registry (<span>[<a href="#RFC8552" class="cite xref">RFC8552</a>]</span>):<a href="#section-14.2-1" class="pilcrow">¶</a></p>
+<p id="section-12.2-1">This document registers the following entries in the "Underscored and Globally Scoped DNS Node Names" registry (<span>[<a href="#RFC8552" class="cite xref">RFC8552</a>]</span>):<a href="#section-12.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-14.2-2.1">
-            <p id="section-14.2-2.1.1">RR Type: <code>TXT</code><a href="#section-14.2-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12.2-2.1">
+            <p id="section-12.2-2.1.1">RR Type: <code>TXT</code><a href="#section-12.2-2.1.1" class="pilcrow">¶</a></p>
 <ul class="compact normal">
-<li class="compact normal" id="section-14.2-2.1.2.1">
-                <code>_NODE NAME</code>: <code>_handle</code><a href="#section-14.2-2.1.2.1" class="pilcrow">¶</a>
+<li class="compact normal" id="section-12.2-2.1.2.1">
+                <code>_NODE NAME</code>: <code>_handle</code><a href="#section-12.2-2.1.2.1" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.2-2.1.2.2">Reference: <a href="#resolution-steps" class="auto internal xref">Section 5.1</a> of this document<a href="#section-14.2-2.1.2.2" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.2-2.1.2.2">Reference: <a href="#resolution-steps" class="auto internal xref">Section 5.1</a> of this document<a href="#section-12.2-2.1.2.2" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
-          <li class="normal" id="section-14.2-2.2">
-            <p id="section-14.2-2.2.1">RR Type: <code>TXT</code><a href="#section-14.2-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-12.2-2.2">
+            <p id="section-12.2-2.2.1">RR Type: <code>TXT</code><a href="#section-12.2-2.2.1" class="pilcrow">¶</a></p>
 <ul class="compact normal">
-<li class="compact normal" id="section-14.2-2.2.2.1">
-                <code>_NODE NAME</code>: <code>_atproto</code><a href="#section-14.2-2.2.2.1" class="pilcrow">¶</a>
+<li class="compact normal" id="section-12.2-2.2.2.1">
+                <code>_NODE NAME</code>: <code>_atproto</code><a href="#section-12.2-2.2.2.1" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-14.2-2.2.2.2">Reference: <a href="#atproto-compat" class="auto internal xref">Section 5.1.2</a> of this document<a href="#section-14.2-2.2.2.2" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-12.2-2.2.2.2">Reference: <a href="#atproto-compat" class="auto internal xref">Section 5.1.2</a> of this document<a href="#section-12.2-2.2.2.2" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
         </ul>
-<blockquote id="section-14.2-3">
-          <p id="section-14.2-3.1">Open Issue: The <code>atproto-did</code> well-known URI and the <code>_atproto</code> DNS node name are defined by the AT Protocol. Whether this document or a document of the IETF ATP working group should register them needs coordination with that working group.<a href="#section-14.2-3.1" class="pilcrow">¶</a></p>
+<blockquote id="section-12.2-3">
+          <p id="section-12.2-3.1">Open Issue: The <code>atproto-did</code> well-known URI and the <code>_atproto</code> DNS node name are defined by the AT Protocol. Whether this document or a document of the IETF ATP working group should register them needs coordination with that working group.<a href="#section-12.2-3.1" class="pilcrow">¶</a></p>
 </blockquote>
 </section>
 </div>
 <div id="link-relation-types">
-<section id="section-14.3">
+<section id="section-12.3">
         <h3 id="name-link-relation-types">
-<a href="#section-14.3" class="section-number selfRef">14.3. </a><a href="#name-link-relation-types" class="section-name selfRef">Link Relation Types</a>
+<a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-link-relation-types" class="section-name selfRef">Link Relation Types</a>
         </h3>
-<p id="section-14.3-1">This document registers the following link relation type in the "Link Relation Types" registry (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>):<a href="#section-14.3-1" class="pilcrow">¶</a></p>
+<p id="section-12.3-1">This document registers the following link relation type in the "Link Relation Types" registry (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>):<a href="#section-12.3-1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-14.3-2.1">Relation Name: <code>handle-issuer</code><a href="#section-14.3-2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-12.3-2.1">Relation Name: <code>handle-issuer</code><a href="#section-12.3-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-14.3-2.2">Description: Refers to the issuer that the context authorizes to issue Handle Verification Tokens for its handle.<a href="#section-14.3-2.2" class="pilcrow">¶</a>
+          <li class="compact" id="section-12.3-2.2">Description: Refers to the issuer that the context authorizes to issue Handle Verification Tokens for its handle.<a href="#section-12.3-2.2" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-14.3-2.3">Reference: <a href="#handle-issuer-link" class="auto internal xref">Section 5.2.1</a> of this document<a href="#section-14.3-2.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-12.3-2.3">Reference: <a href="#handle-issuer-link" class="auto internal xref">Section 5.2.1</a> of this document<a href="#section-12.3-2.3" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>
 </div>
 <div id="json-web-token-claims">
-<section id="section-14.4">
+<section id="section-12.4">
         <h3 id="name-json-web-token-claims">
-<a href="#section-14.4" class="section-number selfRef">14.4. </a><a href="#name-json-web-token-claims" class="section-name selfRef">JSON Web Token Claims</a>
+<a href="#section-12.4" class="section-number selfRef">12.4. </a><a href="#name-json-web-token-claims" class="section-name selfRef">JSON Web Token Claims</a>
         </h3>
-<p id="section-14.4-1">This document registers the following claim in the "JSON Web Token Claims" registry (<span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>):<a href="#section-14.4-1" class="pilcrow">¶</a></p>
+<p id="section-12.4-1">This document registers the following claim in the "JSON Web Token Claims" registry (<span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>):<a href="#section-12.4-1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-14.4-2.1">Claim Name: <code>handle</code><a href="#section-14.4-2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-12.4-2.1">Claim Name: <code>handle</code><a href="#section-12.4-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-14.4-2.2">Claim Description: A handle that the subject controls<a href="#section-14.4-2.2" class="pilcrow">¶</a>
+          <li class="compact" id="section-12.4-2.2">Claim Description: A handle that the subject controls<a href="#section-12.4-2.2" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-14.4-2.3">Change Controller: IETF<a href="#section-14.4-2.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-12.4-2.3">Change Controller: IETF<a href="#section-12.4-2.3" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-14.4-2.4">Specification Document(s): <a href="#hvt" class="auto internal xref">Section 8</a> of this document<a href="#section-14.4-2.4" class="pilcrow">¶</a>
+          <li class="compact" id="section-12.4-2.4">Specification Document(s): <a href="#hvt" class="auto internal xref">Section 7</a> of this document<a href="#section-12.4-2.4" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>
 </div>
 <div id="media-types">
-<section id="section-14.5">
+<section id="section-12.5">
         <h3 id="name-media-types">
-<a href="#section-14.5" class="section-number selfRef">14.5. </a><a href="#name-media-types" class="section-name selfRef">Media Types</a>
+<a href="#section-12.5" class="section-number selfRef">12.5. </a><a href="#name-media-types" class="section-name selfRef">Media Types</a>
         </h3>
-<p id="section-14.5-1">This document registers the <code>application/hvt+jwt</code> media type in the "Media Types" registry (<span>[<a href="#RFC6838" class="cite xref">RFC6838</a>]</span>), for the <code>typ</code> header of the HVT.<a href="#section-14.5-1" class="pilcrow">¶</a></p>
-<blockquote id="section-14.5-2">
-          <p id="section-14.5-2.1">Open Issue: Complete the media type registration template.<a href="#section-14.5-2.1" class="pilcrow">¶</a></p>
+<p id="section-12.5-1">This document registers the <code>application/hvt+jwt</code> media type in the "Media Types" registry (<span>[<a href="#RFC6838" class="cite xref">RFC6838</a>]</span>), for the <code>typ</code> header of the HVT.<a href="#section-12.5-1" class="pilcrow">¶</a></p>
+<blockquote id="section-12.5-2">
+          <p id="section-12.5-2.1">Open Issue: Complete the media type registration template.<a href="#section-12.5-2.1" class="pilcrow">¶</a></p>
 </blockquote>
 </section>
 </div>
 </section>
 </div>
 <div id="design-rationale">
-<section id="section-15">
+<section id="section-13">
       <h2 id="name-design-rationale">
-<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-design-rationale" class="section-name selfRef">Design Rationale</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-design-rationale" class="section-name selfRef">Design Rationale</a>
       </h2>
 <div id="why-two">
-<section id="section-15.1">
+<section id="section-13.1">
         <h3 id="name-why-two-resolution-mechanis">
-<a href="#section-15.1" class="section-number selfRef">15.1. </a><a href="#name-why-two-resolution-mechanis" class="section-name selfRef">Why Two Resolution Mechanisms?</a>
+<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-why-two-resolution-mechanis" class="section-name selfRef">Why Two Resolution Mechanisms?</a>
         </h3>
-<p id="section-15.1-1">Domain handles and username handles are resolved differently because each already has a resolution mechanism that is deployed. Domain handles are mapped to a DID through DNS or a well-known URL, as in the AT Protocol, which lets a user bring their own domain without running a server. Username handles are mapped to an account through WebFinger, which every ActivityPub server already implements; supporting HVP then requires updating server software, not asking each user to publish DNS records. Both mechanisms produce the same things, a unique user identifier and an explicitly authorized issuer, so issuance and verification are the same for both.<a href="#section-15.1-1" class="pilcrow">¶</a></p>
-<p id="section-15.1-2">For username handles, HVP could instead treat the handle's domain as the issuer, as <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> treats the email domain, and skip WebFinger. But in ActivityPub the server that hosts an account is not always at the handle's domain: in a split domain configuration, the handles are at <code>example.com</code> and the server at <code>social.example.com</code>, and a bridging service can host actors for handles at many domains (<a href="#examples" class="auto internal xref">Appendix A</a>). WebFinger is what tells the two apart, per user, at the cost of one request.<a href="#section-15.1-2" class="pilcrow">¶</a></p>
+<p id="section-13.1-1">Domain handles and username handles are resolved differently because each already has a resolution mechanism that is deployed. Domain handles are mapped to a DID through DNS or a well-known URL, as in the AT Protocol, which lets a user bring their own domain without running a server. Username handles are mapped to an account through WebFinger, which every ActivityPub server already implements; supporting HVP then requires updating server software, not asking each user to publish DNS records. Both mechanisms produce the same things, a unique user identifier and an explicitly authorized issuer, so issuance and verification are the same for both.<a href="#section-13.1-1" class="pilcrow">¶</a></p>
+<p id="section-13.1-2">For username handles, HVP could instead treat the handle's domain as the issuer, as <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> treats the email domain, and skip WebFinger. But in ActivityPub the server that hosts an account is not always at the handle's domain: in a split domain configuration, the handles are at <code>example.com</code> and the server at <code>social.example.com</code>, and a bridging service can host actors for handles at many domains (<a href="#examples" class="auto internal xref">Appendix A</a>). WebFinger is what tells the two apart, per user, at the cost of one request.<a href="#section-13.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-did">
-<section id="section-15.2">
+<section id="section-13.2">
         <h3 id="name-why-resolve-domain-handles-">
-<a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-why-resolve-domain-handles-" class="section-name selfRef">Why Resolve Domain Handles to a DID?</a>
+<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-why-resolve-domain-handles-" class="section-name selfRef">Why Resolve Domain Handles to a DID?</a>
         </h3>
-<p id="section-15.2-1">HVP needs three things from the target of a domain handle: a stable identifier for the account, a document that claims the handle back, and a place to name the issuer. A DID provides all three, through its DID document, in a form that is not specific to any ecosystem, and the AT Protocol already resolves domain handles to DIDs. As proposed for ActivityPub, a username handle provides them too, through its WebFinger resource descriptor, so a domain handle of an ActivityPub account can resolve to its username handle without adopting any new identifier (<a href="#activitypub" class="auto internal xref">Section 5.2.2</a>).<a href="#section-15.2-1" class="pilcrow">¶</a></p>
-<p id="section-15.2-2">The record names the kind of value in its key, <code>did=</code> as in the AT Protocol, or <code>webfinger=</code>, so that resolution does not have to infer it, and holds a single value rather than a list. Values of other kinds, such as domain handles or email addresses, can be added later with keys of their own, which resolving parties that do not support them ignore.<a href="#section-15.2-2" class="pilcrow">¶</a></p>
-<p id="section-15.2-3">Resolving a domain handle directly to an ActivityPub actor, as <span>[<a href="#HANDLES-TF" class="cite xref">HANDLES-TF</a>]</span> proposes for ActivityPub, would require a third resolution mechanism, with its own back-link and its own way to name the issuer.<a href="#section-15.2-3" class="pilcrow">¶</a></p>
-<p id="section-15.2-4">Only <code>did:plc</code> and <code>did:web</code> are supported, because they are the methods that the AT Protocol uses. Other methods can be added if an ecosystem needs them. A <code>did:key</code> DID, as used by <span>[<a href="#FEP-C390" class="cite xref">FEP-C390</a>]</span>, is not sufficient on its own: its DID document is derived from the key, and so has no <code>alsoKnownAs</code> to claim the handle back and no services to name the issuer.<a href="#section-15.2-4" class="pilcrow">¶</a></p>
+<p id="section-13.2-1">HVP needs three things from the target of a domain handle: a stable identifier for the account, a document that claims the handle back, and a place to name the issuer. A DID provides all three, through its DID document, in a form that is not specific to any ecosystem, and the AT Protocol already resolves domain handles to DIDs. As proposed for ActivityPub, a username handle provides them too, through its WebFinger resource descriptor, so a domain handle of an ActivityPub account can resolve to its username handle without adopting any new identifier (<a href="#activitypub" class="auto internal xref">Section 5.2.2</a>).<a href="#section-13.2-1" class="pilcrow">¶</a></p>
+<p id="section-13.2-2">The record names the kind of value in its key, <code>did=</code> as in the AT Protocol, or <code>webfinger=</code>, so that resolution does not have to infer it, and holds a single value rather than a list. Values of other kinds, such as domain handles or email addresses, can be added later with keys of their own, which resolving parties that do not support them ignore.<a href="#section-13.2-2" class="pilcrow">¶</a></p>
+<p id="section-13.2-3">Resolving a domain handle directly to an ActivityPub actor, as <span>[<a href="#HANDLES-TF" class="cite xref">HANDLES-TF</a>]</span> proposes for ActivityPub, would require a third resolution mechanism, with its own back-link and its own way to name the issuer.<a href="#section-13.2-3" class="pilcrow">¶</a></p>
+<p id="section-13.2-4">Only <code>did:plc</code> and <code>did:web</code> are supported, because they are the methods that the AT Protocol uses. Other methods can be added if an ecosystem needs them. A <code>did:key</code> DID, as used by <span>[<a href="#FEP-C390" class="cite xref">FEP-C390</a>]</span>, is not sufficient on its own: its DID document is derived from the key, and so has no <code>alsoKnownAs</code> to claim the handle back and no services to name the issuer.<a href="#section-13.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-same-origin">
-<section id="section-15.3">
+<section id="section-13.3">
         <h3 id="name-why-the-same-origin-shortcu">
-<a href="#section-15.3" class="section-number selfRef">15.3. </a><a href="#name-why-the-same-origin-shortcu" class="section-name selfRef">Why the Same-Origin Shortcut?</a>
+<a href="#section-13.3" class="section-number selfRef">13.3. </a><a href="#name-why-the-same-origin-shortcu" class="section-name selfRef">Why the Same-Origin Shortcut?</a>
         </h3>
-<p id="section-15.3-1">A username handle's WebFinger response is controlled by the handle's domain, which is not necessarily the server that hosts the account it names (<a href="#same-origin" class="auto internal xref">Section 13.5</a>). HVP checks the account back with a WebFinger request for its unique user identifier (step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a>), at the cost of one request. ActivityPub implementations perform an equivalent check by fetching the actor and reading its <code>webfinger</code> property or performing a reverse WebFinger lookup (<span>[<a href="#MASTODON-WEBFINGER" class="cite xref">MASTODON-WEBFINGER</a>]</span>, <span>[<a href="#FEP-2C59" class="cite xref">FEP-2C59</a>]</span>), which is specific to ActivityPub.<a href="#section-15.3-1" class="pilcrow">¶</a></p>
-<p id="section-15.3-2">In the common case, the issuer is the server that hosts the account, and the unique user identifier is on its origin. The issuer then authenticates the account's user itself, which gives the same protection for the purposes of HVP, so the back-link request is skipped. This covers split domains and bridges (<a href="#examples" class="auto internal xref">Appendix A</a>).<a href="#section-15.3-2" class="pilcrow">¶</a></p>
-<p id="section-15.3-3">The back-link request is still needed for issuers on another origin (for example, Threads (<span>[<a href="#THREADS" class="cite xref">THREADS</a>]</span>) gives its users handles such as <code>@zuck@threads.net</code>, whose actors are at <code>https://threads.net/ap/users/...</code>, while its website, where users sign in, has moved to <code>https://www.threads.com</code>; ActivityPub accounts cannot change their URLs without breaking federation, so the natural issuer is on a different site from the accounts it vouches for).<a href="#section-15.3-3" class="pilcrow">¶</a></p>
-<blockquote id="section-15.3-4">
-          <p id="section-15.3-4.1">Open Issue: At the time of writing, Threads does not answer WebFinger requests for the URLs of its accounts, which the back-link request requires when the issuer is on another origin, and the reference cited for its move to <code>threads.com</code> is its home page rather than an announcement. How Threads, and other services whose accounts are on a different site from where their users sign in, would deploy HVP needs to be investigated, and the reference replaced.<a href="#section-15.3-4.1" class="pilcrow">¶</a></p>
+<p id="section-13.3-1">A username handle's WebFinger response is controlled by the handle's domain, which is not necessarily the server that hosts the account it names (<a href="#same-origin" class="auto internal xref">Section 11.5</a>). HVP checks the account back with a WebFinger request for its unique user identifier (step 5 of <a href="#resolve-user" class="auto internal xref">Section 5.2</a>), at the cost of one request. ActivityPub implementations perform an equivalent check by fetching the actor and reading its <code>webfinger</code> property or performing a reverse WebFinger lookup (<span>[<a href="#MASTODON-WEBFINGER" class="cite xref">MASTODON-WEBFINGER</a>]</span>, <span>[<a href="#FEP-2C59" class="cite xref">FEP-2C59</a>]</span>), which is specific to ActivityPub.<a href="#section-13.3-1" class="pilcrow">¶</a></p>
+<p id="section-13.3-2">In the common case, the issuer is the server that hosts the account, and the unique user identifier is on its origin. The issuer then authenticates the account's user itself, which gives the same protection for the purposes of HVP, so the back-link request is skipped. This covers split domains and bridges (<a href="#examples" class="auto internal xref">Appendix A</a>).<a href="#section-13.3-2" class="pilcrow">¶</a></p>
+<p id="section-13.3-3">The back-link request is still needed for issuers on another origin (for example, Threads (<span>[<a href="#THREADS" class="cite xref">THREADS</a>]</span>) gives its users handles such as <code>@zuck@threads.net</code>, whose actors are at <code>https://threads.net/ap/users/...</code>, while its website, where users sign in, has moved to <code>https://www.threads.com</code>; ActivityPub accounts cannot change their URLs without breaking federation, so the natural issuer is on a different site from the accounts it vouches for).<a href="#section-13.3-3" class="pilcrow">¶</a></p>
+<blockquote id="section-13.3-4">
+          <p id="section-13.3-4.1">Open Issue: At the time of writing, Threads does not answer WebFinger requests for the URLs of its accounts, which the back-link request requires when the issuer is on another origin, and the reference cited for its move to <code>threads.com</code> is its home page rather than an announcement. How Threads, and other services whose accounts are on a different site from where their users sign in, would deploy HVP needs to be investigated, and the reference replaced.<a href="#section-13.3-4.1" class="pilcrow">¶</a></p>
 </blockquote>
 </section>
 </div>
 <div id="why-names">
-<section id="section-15.4">
+<section id="section-13.4">
         <h3 id="name-why-new-names-for-the-handl">
-<a href="#section-15.4" class="section-number selfRef">15.4. </a><a href="#name-why-new-names-for-the-handl" class="section-name selfRef">Why New Names for the Handle Records?</a>
+<a href="#section-13.4" class="section-number selfRef">13.4. </a><a href="#name-why-new-names-for-the-handl" class="section-name selfRef">Why New Names for the Handle Records?</a>
         </h3>
-<p id="section-15.4-1">The AT Protocol's <code>_atproto</code> record and <code>/.well-known/atproto-did</code> URL are specific to one ecosystem, and an ActivityPub account that published them would appear to be an AT Protocol account. Neutral names let any ecosystem use the same records. The names do not mention DIDs, because they refer to username handles as well as DIDs, and the well-known document is JSON, so that it can carry more information later. Resolving parties fall back to the AT Protocol names when the new ones are absent (<a href="#atproto-compat" class="auto internal xref">Section 5.1.2</a>), so that every existing AT Protocol handle keeps working, and the new names take precedence when present, so that a handle can move to the new names at its own pace.<a href="#section-15.4-1" class="pilcrow">¶</a></p>
+<p id="section-13.4-1">The AT Protocol's <code>_atproto</code> record and <code>/.well-known/atproto-did</code> URL are specific to one ecosystem, and an ActivityPub account that published them would appear to be an AT Protocol account. Neutral names let any ecosystem use the same records. The names do not mention DIDs, because they refer to username handles as well as DIDs, and the well-known document is JSON, so that it can carry more information later. Resolving parties fall back to the AT Protocol names when the new ones are absent (<a href="#atproto-compat" class="auto internal xref">Section 5.1.2</a>), so that every existing AT Protocol handle keeps working, and the new names take precedence when present, so that a handle can move to the new names at its own pace.<a href="#section-13.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-not-oauth">
-<section id="section-15.5">
+<section id="section-13.5">
         <h3 id="name-why-not-oauth">
-<a href="#section-15.5" class="section-number selfRef">15.5. </a><a href="#name-why-not-oauth" class="section-name selfRef">Why Not OAuth?</a>
+<a href="#section-13.5" class="section-number selfRef">13.5. </a><a href="#name-why-not-oauth" class="section-name selfRef">Why Not OAuth?</a>
         </h3>
-<p id="section-15.5-1">AT Protocol OAuth (<span>[<a href="#ATPROTO-OAUTH" class="cite xref">ATPROTO-OAUTH</a>]</span>) and the OAuth APIs of ActivityPub servers let a verifier sign a user in, and grant it access to the user's account. But they ask the verifier to present a text field for the user to type a handle, and they reveal the verifier to the user's authorization server. HVP lets the browser offer the user's handles without the user typing them, and keeps the verifier hidden from the issuer. A verifier that needs access to the user's account, and not only proof that the user controls a handle, still uses OAuth.<a href="#section-15.5-1" class="pilcrow">¶</a></p>
-<p id="section-15.5-2">HVP also changes how interoperability is achieved. In OAuth, the authorization server's response goes to the client, and nothing in between checks it: whether an authorization server interoperates with a given client is discovered by testing that pair, and ecosystems with many of each rely on conformance test suites and certification programs. In HVP, the browser verifies every HVT (<a href="#hvt-verification" class="auto internal xref">Section 8.3</a>) with the same checks that a verifier performs, before any verifier receives it, and does not deliver an HVT that fails. An issuer that develops against a browser therefore has an independent verifier in its development loop, and an HVT that the browser accepts is accepted by any verifier that implements <a href="#verification" class="auto internal xref">Section 10</a>, unless the handle's resolution changes in between. Each issuer and each verifier needs to interoperate only with the browser's verification, rather than each issuer with each verifier.<a href="#section-15.5-2" class="pilcrow">¶</a></p>
+<p id="section-13.5-1">AT Protocol OAuth (<span>[<a href="#ATPROTO-OAUTH" class="cite xref">ATPROTO-OAUTH</a>]</span>) and the OAuth APIs of ActivityPub servers let a verifier sign a user in, and grant it access to the user's account. But they ask the verifier to present a text field for the user to type a handle, and they reveal the verifier to the user's authorization server. HVP lets the browser offer the user's handles without the user typing them, and keeps the verifier hidden from the issuer. A verifier that needs access to the user's account, and not only proof that the user controls a handle, still uses OAuth.<a href="#section-13.5-1" class="pilcrow">¶</a></p>
+<p id="section-13.5-2">HVP also changes how interoperability is achieved. In OAuth, the authorization server's response goes to the client, and nothing in between checks it: whether an authorization server interoperates with a given client is discovered by testing that pair, and ecosystems with many of each rely on conformance test suites and certification programs. In HVP, the browser verifies every HVT (<a href="#hvt-verification" class="auto internal xref">Section 7.3</a>) with the same checks that a verifier performs, before any verifier receives it, and does not deliver an HVT that fails. An issuer that develops against a browser therefore has an independent verifier in its development loop, and an HVT that the browser accepts is accepted by any verifier that implements <a href="#verification" class="auto internal xref">Section 9</a>, unless the handle's resolution changes in between. Each issuer and each verifier needs to interoperate only with the browser's verification, rather than each issuer with each verifier.<a href="#section-13.5-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-generalize-evp">
-<section id="section-15.6">
+<section id="section-13.6">
         <h3 id="name-why-generalize-evp">
-<a href="#section-15.6" class="section-number selfRef">15.6. </a><a href="#name-why-generalize-evp" class="section-name selfRef">Why Generalize EVP?</a>
+<a href="#section-13.6" class="section-number selfRef">13.6. </a><a href="#name-why-generalize-evp" class="section-name selfRef">Why Generalize EVP?</a>
         </h3>
-<p id="section-15.6-1">EVP already solves the same problem for email addresses, with a three-party model, proof of possession of a browser key, and a token format compatible with SD-JWT. Reusing it lets verifiers and issuers share code and keys between the two, and keeps the privacy properties. An alternative would be to profile OpenID Connect, but OpenID Connect's redirect-based flow reveals the verifier to the provider.<a href="#section-15.6-1" class="pilcrow">¶</a></p>
+<p id="section-13.6-1">EVP already solves the same problem for email addresses, with a three-party model, proof of possession of a browser key, and a token format compatible with SD-JWT. Reusing it lets verifiers and issuers share code and keys between the two, and keeps the privacy properties. An alternative would be to profile OpenID Connect, but OpenID Connect's redirect-based flow reveals the verifier to the provider.<a href="#section-13.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-does-the-verifier-resolve-the-handle">
-<section id="section-15.7">
+<section id="section-13.7">
         <h3 id="name-why-does-the-verifier-resol">
-<a href="#section-15.7" class="section-number selfRef">15.7. </a><a href="#name-why-does-the-verifier-resol" class="section-name selfRef">Why Does the Verifier Resolve the Handle?</a>
+<a href="#section-13.7" class="section-number selfRef">13.7. </a><a href="#name-why-does-the-verifier-resol" class="section-name selfRef">Why Does the Verifier Resolve the Handle?</a>
         </h3>
-<p id="section-15.7-1">The verifier cannot trust the browser's resolution, which could be manipulated, and it cannot trust the issuer to say which handles it is authorized for. Resolving the handle itself is how the verifier checks that the issuer is authorized, in the same way that the verifier looks up the DNS delegation in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-15.7-1" class="pilcrow">¶</a></p>
+<p id="section-13.7-1">The verifier cannot trust the browser's resolution, which could be manipulated, and it cannot trust the issuer to say which handles it is authorized for. Resolving the handle itself is how the verifier checks that the issuer is authorized, in the same way that the verifier looks up the DNS delegation in <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>.<a href="#section-13.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-opt-in">
-<section id="section-15.8">
+<section id="section-13.8">
         <h3 id="name-why-require-an-explicit-han">
-<a href="#section-15.8" class="section-number selfRef">15.8. </a><a href="#name-why-require-an-explicit-han" class="section-name selfRef">Why Require an Explicit HandleIssuer Service?</a>
+<a href="#section-13.8" class="section-number selfRef">13.8. </a><a href="#name-why-require-an-explicit-han" class="section-name selfRef">Why Require an Explicit HandleIssuer Service?</a>
         </h3>
-<p id="section-15.8-1">An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a <code>HandleIssuer</code> service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document.<a href="#section-15.8-1" class="pilcrow">¶</a></p>
-<p id="section-15.8-2">An explicit service also lets a user choose an issuer that is not the server that hosts their account, and gives both ecosystems the same way to name it. The <code>handle-issuer</code> link of a username handle is explicit for the same reasons.<a href="#section-15.8-2" class="pilcrow">¶</a></p>
+<p id="section-13.8-1">An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a <code>HandleIssuer</code> service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document.<a href="#section-13.8-1" class="pilcrow">¶</a></p>
+<p id="section-13.8-2">An explicit service also lets a user choose an issuer that is not the server that hosts their account, and gives both ecosystems the same way to name it. The <code>handle-issuer</code> link of a username handle is explicit for the same reasons.<a href="#section-13.8-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-define-handle-resolution-here">
-<section id="section-15.9">
+<section id="section-13.9">
         <h3 id="name-why-define-handle-resolutio">
-<a href="#section-15.9" class="section-number selfRef">15.9. </a><a href="#name-why-define-handle-resolutio" class="section-name selfRef">Why Define Handle Resolution Here?</a>
+<a href="#section-13.9" class="section-number selfRef">13.9. </a><a href="#name-why-define-handle-resolutio" class="section-name selfRef">Why Define Handle Resolution Here?</a>
         </h3>
-<p id="section-15.9-1">Handle resolution is useful outside any one ecosystem. Defining it here, in a form that is shared by the AT Protocol and ActivityPub, makes HVP implementable from this document alone, by verifiers that implement neither protocol.<a href="#section-15.9-1" class="pilcrow">¶</a></p>
+<p id="section-13.9-1">Handle resolution is useful outside any one ecosystem. Defining it here, in a form that is shared by the AT Protocol and ActivityPub, makes HVP implementable from this document alone, by verifiers that implement neither protocol.<a href="#section-13.9-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-are-email-addresses-out-of-scope">
-<section id="section-15.10">
+<section id="section-13.10">
         <h3 id="name-why-are-email-addresses-out">
-<a href="#section-15.10" class="section-number selfRef">15.10. </a><a href="#name-why-are-email-addresses-out" class="section-name selfRef">Why Are Email Addresses Out of Scope?</a>
+<a href="#section-13.10" class="section-number selfRef">13.10. </a><a href="#name-why-are-email-addresses-out" class="section-name selfRef">Why Are Email Addresses Out of Scope?</a>
         </h3>
-<p id="section-15.10-1">Email addresses already have a protocol of their own, <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which is further along, has implementations, and has requirements specific to email, such as private email addresses. A browser API can use EVP for email addresses and HVP for handles side by side; the leading <code>@</code> of a username handle distinguishes it from an email address (<a href="#parsing" class="auto internal xref">Section 4.4</a>).<a href="#section-15.10-1" class="pilcrow">¶</a></p>
+<p id="section-13.10-1">Email addresses already have a protocol of their own, <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>, which is further along, has implementations, and has requirements specific to email, such as private email addresses. A browser API can use EVP for email addresses and HVP for handles side by side; the leading <code>@</code> of a username handle distinguishes it from an email address (<a href="#parsing" class="auto internal xref">Section 4.4</a>).<a href="#section-13.10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="implementation-status">
-<section id="section-16">
+<section id="section-14">
       <h2 id="name-implementation-status">
-<a href="#section-16" class="section-number selfRef">16. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
+<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
       </h2>
-<p id="section-16-1"><em>Note: This section is to be removed before publishing as an RFC.</em><a href="#section-16-1" class="pilcrow">¶</a></p>
-<p id="section-16-2">There are no implementations of this document yet. Prototypes of the related IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) exist in Chrome behind a flag.<a href="#section-16-2" class="pilcrow">¶</a></p>
+<p id="section-14-1"><em>Note: This section is to be removed before publishing as an RFC.</em><a href="#section-14-1" class="pilcrow">¶</a></p>
+<p id="section-14-2">There are no implementations of this document yet. Prototypes of the related IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) exist in Chrome behind a flag.<a href="#section-14-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="document-history">
-<section id="section-17">
+<section id="section-15">
       <h2 id="name-document-history">
-<a href="#section-17" class="section-number selfRef">17. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
+<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
       </h2>
-<p id="section-17-1"><em>Note: This section is to be removed before publishing as an RFC.</em><a href="#section-17-1" class="pilcrow">¶</a></p>
+<p id="section-15-1"><em>Note: This section is to be removed before publishing as an RFC.</em><a href="#section-15-1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-17-2.1">
-          <p id="section-17-2.1.1">draft-goto-handle-verification-00<a href="#section-17-2.1.1" class="pilcrow">¶</a></p>
+<li class="compact" id="section-15-2.1">
+          <p id="section-15-2.1.1">draft-goto-handle-verification-00<a href="#section-15-2.1.1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-17-2.1.2.1">Initial draft, covering domain handles in the AT Protocol and ActivityPub, and username handles in ActivityPub.<a href="#section-17-2.1.2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-15-2.1.2.1">Initial draft, covering domain handles in the AT Protocol and ActivityPub, and username handles in ActivityPub.<a href="#section-15-2.1.2.1" class="pilcrow">¶</a>
 </li>
           </ul>
 </li>
       </ul>
 </section>
 </div>
-<section id="section-18">
+<section id="section-16">
       <h2 id="name-references">
-<a href="#section-18" class="section-number selfRef">18. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-16" class="section-number selfRef">16. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
-<section id="section-18.1">
+<section id="section-16.1">
         <h3 id="name-normative-references">
-<a href="#section-18.1" class="section-number selfRef">18.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-16.1" class="section-number selfRef">16.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="EVP">[EVP]</dt>
@@ -2822,9 +2824,9 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <dd class="break"></dd>
 </dl>
 </section>
-<section id="section-18.2">
+<section id="section-16.2">
         <h3 id="name-informative-references">
-<a href="#section-18.2" class="section-number selfRef">18.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-16.2" class="section-number selfRef">16.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="ACTIVITYPUB">[ACTIVITYPUB]</dt>
@@ -3067,11 +3069,11 @@ Result:        not a handle; @shanselman@hachyderm.io is
 <p id="appendix-B-1"><em>This section is non-normative.</em><a href="#appendix-B-1" class="pilcrow">¶</a></p>
 <p id="appendix-B-2">The W3C IdP Registration API (<span>[<a href="#IDP-REGISTRATION" class="cite xref">IDP-REGISTRATION</a>]</span>) extends FedCM (<span>[<a href="#FEDCM" class="cite xref">FEDCM</a>]</span>) so that a verifier can request any identity provider in an open federation, and the browser keeps a registry of the user's handles. It relates to HVP the way the Email Verification API (<span>[<a href="#EMAIL-VERIFICATION-API" class="cite xref">EMAIL-VERIFICATION-API</a>]</span>) relates to EVP:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="appendix-B-3.1">The browser API decides which handles to offer, lets the user register and select them, and delivers the token to the verifier. HVP defines what a handle is, how it is resolved, and how the token is issued and verified.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
+<li class="compact" id="appendix-B-3.1">The browser API decides which handles to offer, lets the user register and select them, and delivers the HVT+KB to the verifier. HVP defines what a handle is, how it is resolved, and how the HVT is issued and the HVT+KB is verified.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="appendix-B-3.2">The IdP Registration API currently parses handles and resolves them to an identity provider through its own DNS record. It could instead use the syntax and resolution of this document, so that the identity provider of a handle is its authorized issuer.<a href="#appendix-B-3.2" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="appendix-B-3.3">A verifier request for a "federation" in that API could correspond to HVP, and the token that the verifier receives could be an HVT+KB.<a href="#appendix-B-3.3" class="pilcrow">¶</a>
+        <li class="compact" id="appendix-B-3.3">A verifier request for a "federation" in that API could correspond to HVP, and what the verifier receives could be an HVT+KB.<a href="#appendix-B-3.3" class="pilcrow">¶</a>
 </li>
       </ul>
 </section>

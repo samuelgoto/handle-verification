@@ -8,7 +8,7 @@
 <meta content="Sam Goto" name="author">
 <meta content="@bumblefudge.com" name="author">
 <meta content="
-       This document defines the URL Handle Verification Protocol (URL-HVP), which extends the Handle Verification Protocol ( ) to  URL handles : users who are identified by an  https  URL, such as a Solid WebID, an ActivityPub actor, or the URL of a personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a  handleIssuer  property of the document or by a  handle-issuer  link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as for a domain handle in HVP. The resolution is not specific to any ecosystem. 
+       This document defines the URL Handle Verification Protocol (URL-HVP), which extends the Handle Verification Protocol ( ) to  URL handles : users who are identified by an  https  URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a  handleIssuer  property of the document or by a  handle-issuer  link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as for a domain handle in HVP. The resolution is not specific to any ecosystem. 
     " name="description">
 <meta content="xml2rfc 3.31.0" name="generator">
 <meta content="handle" name="keyword">
@@ -1086,7 +1086,7 @@ svg {
 <h1 id="title">URL Handle Verification Protocol</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines the URL Handle Verification Protocol (URL-HVP), which extends the Handle Verification Protocol (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>) to <em>URL handles</em>: users who are identified by an <code>https</code> URL, such as a Solid WebID, an ActivityPub actor, or the URL of a personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a <code>handleIssuer</code> property of the document or by a <code>handle-issuer</code> link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as for a domain handle in HVP. The resolution is not specific to any ecosystem.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines the URL Handle Verification Protocol (URL-HVP), which extends the Handle Verification Protocol (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>) to <em>URL handles</em>: users who are identified by an <code>https</code> URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a <code>handleIssuer</code> property of the document or by a <code>handle-issuer</code> link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as for a domain handle in HVP. The resolution is not specific to any ecosystem.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1275,14 +1275,14 @@ svg {
 <p id="section-1-1">The Handle Verification Protocol (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP covers domain handles, such as <code>@alice.example</code>, and the Username Handle Verification Protocol (<span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>) extends it to username handles, such as <code>@alice@social.example</code>.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Several ecosystems identify users with an <code>https</code> URL instead:<a href="#section-1-2" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-1-3.1">Solid identifies users with a WebID (<span>[<a href="#WEBID" class="cite xref">WEBID</a>]</span>), such as <code>https://alice.solidcommunity.net/profile/card#me</code>, whose profile document describes the user (<span>[<a href="#SOLID-WEBID-PROFILE" class="cite xref">SOLID-WEBID-PROFILE</a>]</span>).<a href="#section-1-3.1" class="pilcrow">¶</a>
+<li class="compact" id="section-1-3.1">Solid identifies users with a WebID (<span>[<a href="#WEBID" class="cite xref">WEBID</a>]</span>), such as Tim Berners-Lee's <code>https://timbl.solidcommunity.net/profile/card#me</code>, whose profile document describes the user (<span>[<a href="#SOLID-WEBID-PROFILE" class="cite xref">SOLID-WEBID-PROFILE</a>]</span>).<a href="#section-1-3.1" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-1-3.2">ActivityPub (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>) identifies actors with the URL of their actor object, such as <code>https://social.example/users/alice</code>. Handles of the form <code>@alice@social.example</code> are a convention of some implementations, and are covered by <span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>; the actor URL is the identifier that ActivityPub itself defines.<a href="#section-1-3.2" class="pilcrow">¶</a>
+        <li class="compact" id="section-1-3.2">ActivityPub (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>) identifies actors with the URL of their actor object, such as <code>https://bumblefudge.com/</code>, which serves Bumblefudge's actor. Handles of the form <code>@alice@social.example</code> are a convention of some implementations, and are covered by <span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>; the actor URL is the identifier that ActivityPub itself defines.<a href="#section-1-3.2" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-1-3.3">IndieAuth (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>) identifies users with the URL of their personal website, such as <code>https://alice.example/</code>.<a href="#section-1-3.3" class="pilcrow">¶</a>
+        <li class="compact" id="section-1-3.3">IndieAuth (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>) identifies users with the URL of their personal website, such as Aaron Parecki's <code>https://aaronparecki.com/</code>.<a href="#section-1-3.3" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-1-4">In each, fetching the URL returns a document about the user: Solid and ActivityPub servers serve it as JSON-LD (<span>[<a href="#JSON-LD11" class="cite xref">JSON-LD11</a>]</span>) through content negotiation (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span>), and an IndieAuth website serves HTML with <code>Link</code> headers and <code>&lt;link&gt;</code> elements. This document calls such a URL a <em>URL handle</em>, and extends HVP so that it can be verified. It replaces HVP's resolution with one that fetches the URL, finds the canonical identifier of the account in the document, and reads the issuer that the user has authorized from a new <code>handleIssuer</code> property or a <code>handle-issuer</code> link. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP, with the identifier carried in a <code>url</code> member rather than a <code>did</code> member.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">In each, fetching the URL returns a document about the user: Solid and ActivityPub servers serve it as JSON-LD (<span>[<a href="#JSON-LD11" class="cite xref">JSON-LD11</a>]</span>) through content negotiation (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span>), and an IndieAuth website serves HTML with <code>Link</code> headers and <code>&lt;link&gt;</code> elements. This document calls such a URL a <em>URL handle</em>, and extends HVP so that it can be verified. It replaces HVP's resolution with one that fetches the URL, finds the canonical identifier of the account in the document, and reads the issuer that the user has authorized from a new <code>handleIssuer</code> property or a <code>handle-issuer</code> link. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP, except that the HVT request carries only the handle, which is also the unique user identifier.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">The resolution does not depend on the ecosystem: it reads the same property, with the same algorithm, from a Solid profile, an ActivityPub actor, or any other JSON-LD document, and the same link from any HTML page.<a href="#section-1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1320,7 +1320,7 @@ svg {
 </li>
         <li class="compact" id="section-3-2.2">The browser and the verifier resolve the handle as described in <a href="#resolution" class="auto internal xref">Section 5</a>, by fetching it, rather than through a DID.<a href="#section-3-2.2" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-3-2.3">The HVT request carries the unique user identifier in its <code>url</code> member, and the <code>sub</code> claim of the HVT is that URL (<a href="#issuance" class="auto internal xref">Section 6</a>).<a href="#section-3-2.3" class="pilcrow">¶</a>
+        <li class="compact" id="section-3-2.3">The HVT request carries only the handle, which is also the unique user identifier, and the <code>handle</code> and <code>sub</code> claims of the HVT are both that URL (<a href="#issuance" class="auto internal xref">Section 6</a>).<a href="#section-3-2.3" class="pilcrow">¶</a>
 </li>
       </ul>
 <div class="alignLeft art-text artwork" id="section-3-3">
@@ -1334,7 +1334,7 @@ Handle Resolution              |   [GET URL: unique user         |
                                |    identifier, issuer]          |
                                |            |                    |
 HVT Request                    |            |-- POST /issuance -&gt;|
-                               |            |   (handle, url)    |
+                               |            |   (handle)         |
                                |            |                    |
 HVT Issuance                   |            |&lt;------- HVT -------|
                                |            |                    |
@@ -1579,20 +1579,11 @@ Link: &lt;https://issuer.example&gt;; rel="handle-issuer"
 <ul class="compact">
 <li class="compact" id="section-6-2.1">Wherever <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> resolves a handle, the resolving party resolves a URL handle as described in <a href="#resolution" class="auto internal xref">Section 5</a>.<a href="#section-6-2.1" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-6-2.2">
-          <p id="section-6-2.2.1">The body of the HVT request carries the unique user identifier in a <code>url</code> member, in place of the <code>did</code> member, as in <span>[<a href="#UHVP" class="cite xref">UHVP</a>]</span>:<a href="#section-6-2.2.1" class="pilcrow">¶</a></p>
-<ul class="compact">
-<li class="compact" id="section-6-2.2.2.1">
-              <code>handle</code> (REQUIRED): The URL handle, which is the unique user identifier that resolution produced (<a href="#resolution" class="auto internal xref">Section 5</a>).<a href="#section-6-2.2.2.1" class="pilcrow">¶</a>
+        <li class="compact" id="section-6-2.2">The body of the HVT request has a single member, <code>handle</code> (REQUIRED): the URL handle, which is the unique user identifier that resolution produced (<a href="#resolution" class="auto internal xref">Section 5</a>), byte-for-byte. It has no <code>did</code> or <code>url</code> member: because resolution replaces the URL handle with the unique user identifier, the two are the same value, which is sent once.<a href="#section-6-2.2" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-6-2.2.2.2">
-              <code>url</code> (REQUIRED): The unique user identifier, byte-for-byte as resolution produced it.<a href="#section-6-2.2.2.2" class="pilcrow">¶</a>
+        <li class="compact" id="section-6-2.3">On receipt of an HVT request, the issuer verifies that <code>handle</code> satisfies <a href="#url-handle-syntax" class="auto internal xref">Section 4.1</a> and is in normalized form, and that the body has no <code>did</code> or <code>url</code> member; otherwise it returns an <code>invalid_request</code> error. It then checks that the cookies represent a signed-in user whose account is the <code>handle</code>.<a href="#section-6-2.3" class="pilcrow">¶</a>
 </li>
-          </ul>
-</li>
-        <li class="compact" id="section-6-2.3">On receipt of an HVT request, the issuer verifies that <code>handle</code> satisfies <a href="#url-handle-syntax" class="auto internal xref">Section 4.1</a> and is in normalized form, and that <code>url</code> is identical to it; otherwise it returns an <code>invalid_request</code> error. It then checks that the cookies represent a signed-in user whose account is the <code>url</code>.<a href="#section-6-2.3" class="pilcrow">¶</a>
-</li>
-        <li class="compact" id="section-6-2.4">The <code>handle</code> and <code>sub</code> claims of the HVT are both the unique user identifier, byte-for-byte as it appeared in the HVT request.<a href="#section-6-2.4" class="pilcrow">¶</a>
+        <li class="compact" id="section-6-2.4">The <code>handle</code> and <code>sub</code> claims of the HVT are both the unique user identifier, byte-for-byte as it appeared in the <code>handle</code> member of the HVT request.<a href="#section-6-2.4" class="pilcrow">¶</a>
 </li>
         <li class="compact" id="section-6-2.5">When verifying an HVT, the browser and the verifier accept a <code>handle</code> claim that satisfies <a href="#url-handle-syntax" class="auto internal xref">Section 4.1</a>, resolve it as described in <a href="#resolution" class="auto internal xref">Section 5</a>, and verify that the unique user identifier that resolution produces is identical to both <code>handle</code> and <code>sub</code>.<a href="#section-6-2.5" class="pilcrow">¶</a>
 </li>

@@ -143,9 +143,9 @@ organization = "Google"
   <refcontent>W3C Social Web Incubator Community Group</refcontent>
 </reference>
 
-<reference anchor="URL-HVP" target="https://samuelgoto.github.io/handle-verification/draft-goto-url-handle-verification.html">
+<reference anchor="URL-HANDLES" target="https://samuelgoto.github.io/handle-verification/draft-goto-url-handle-verification.html">
   <front>
-    <title>URL Handle Verification Protocol</title>
+    <title>URL Handles</title>
     <author initials="S." surname="Goto" fullname="Sam Goto">
       <organization>Google</organization>
     </author>
@@ -157,9 +157,9 @@ organization = "Google"
   <seriesInfo name="Internet-Draft" value="draft-goto-url-handle-verification-latest"/>
 </reference>
 
-<reference anchor="UHVP" target="https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html">
+<reference anchor="USERNAME-HANDLES" target="https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html">
   <front>
-    <title>Username Handle Verification Protocol</title>
+    <title>Username Handles</title>
     <author initials="S." surname="Goto" fullname="Sam Goto">
       <organization>Google</organization>
     </author>
@@ -212,9 +212,9 @@ organization = "Google"
 
 .# Abstract
 
-This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed Handle Verification Token (HVT) from an issuer attesting that the user controls a *handle*, and presents it to a verifier. This document covers *domain handles*, such as `@alice.example`, which are used by the AT Protocol and are being proposed for ActivityPub, and is designed to be extended to other forms of handle, such as the username handles of ActivityPub implementations. HVP uses the same three-party model as the Email Verification Protocol ([@!EVP]), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.
+This document defines the Handle Verification Protocol (HVP), the HTTP-level protocol by which a browser obtains a signed Handle Verification Token (HVT) from an issuer attesting that the user controls a *handle*, and presents it to a verifier. HVP uses the same three-party model as the Email Verification Protocol ([@!EVP]), in which the browser intermediates between the verifier and the issuer and hides the verifier's identity from the issuer.
 
-This document defines the syntax of domain handles, their resolution, through a DID document, to a unique user identifier and to the issuer authorized to vouch for them, in a way that is backwards compatible with the AT Protocol, the HVT request, the HVT, and the verification of the HVT and its key binding (HVT+KB). The browser API, that is, how the user selects a handle and how the HVT+KB is delivered to the verifier, is defined separately, for example by the W3C IdP Registration API ([@?IDP-REGISTRATION]).
+This document defines handles, handle types, handle normalization and resolution, issuers, the HVT request, the HVT, its key binding (HVT+KB), and the verification of the HVT+KB, which are the same for every handle type. It also defines one handle type: *domain handles*, such as `@alice.example`, which are used by the AT Protocol, and which are resolved through a DID document in a way that is backwards compatible with the AT Protocol. The browser API, which is defined separately (for example, by the W3C IdP Registration API ([@?IDP-REGISTRATION])), defines which handle types are supported, how the user selects a handle, and how the HVT+KB is delivered to the verifier.
 
 .# Discussion Venues
 
@@ -228,7 +228,7 @@ Source for this draft and an issue tracker can be found at https://github.com/sa
 
 Social networks built on open protocols let any server host a user's account, and let users bring their own domain name as their identity. The AT Protocol ([@?ATPROTO]) identifies every user with a *handle* that is a DNS name, such as `@alice.example`, which resolves to a stable decentralized identifier (DID). ActivityPub ([@?ACTIVITYPUB]) implementations identify users with handles of the form `@alice@social.example`, and the W3C Social Web Incubator Community Group is considering adding domain handles, such as `@alice.example`, as an alternative ([@?HANDLES-TF]). The result is an open federation: a website that wants to accept these users cannot know their providers in advance.
 
-Email shows that an open federation can still be verified. A verifier accepts an email address at any mail domain without a prior relationship with the domain, and the Email Verification Protocol ([@!EVP]) lets the verifier check such an address with a signed token. HVP applies that model to domain handles, in a way that does not depend on which ecosystem the user's account belongs to.
+Email shows that an open federation can still be verified. A verifier accepts an email address at any mail domain without a prior relationship with the domain, and the Email Verification Protocol ([@!EVP]) lets the verifier check such an address with a signed token. HVP applies that model to handles, in a way that does not depend on which ecosystem the user's account belongs to.
 
 ## The Problem
 
@@ -243,17 +243,17 @@ A website that wants to let users sign in with a handle today has to integrate w
 
 HVP separates the problem into three parts:
 
-1. **Syntax** ((#handles)): what a domain handle is, and how it is written and normalized.
-2. **Resolution** ((#resolution)): how a domain handle is resolved to a DID, checked against the handle, and turned into the issuer that the user has authorized to vouch for it, in a way that is backwards compatible with the AT Protocol ((#atproto-compat)).
-3. **Issuance and verification**: how a browser obtains a Handle Verification Token (HVT) from the authorized issuer, and how a verifier verifies it. This part reuses the token request, key binding, and token format of EVP.
+1. **Syntax** ((#handles)): what a handle is, and how it is written and normalized. Handles come in several handle types, which are syntactically distinct.
+2. **Resolution** ((#resolution)): how a handle is resolved to a unique user identifier, checked against the handle, and turned into the issuer that the user has authorized to vouch for it. Each handle type defines its own resolution.
+3. **Issuance and verification**: how a browser obtains a Handle Verification Token (HVT) from the authorized issuer, and how a verifier verifies it. This part reuses the token request, key binding, and token format of EVP, and is the same for every handle type.
 
-Nothing in issuance or verification depends on the ecosystem that the account belongs to. A verifier that implements HVP accepts domain handles of every ecosystem.
+This document defines one handle type, domain handles ((#domain-handles)), which are resolved to a DID in a way that is backwards compatible with the AT Protocol ((#atproto-compat)). Nothing in issuance or verification depends on the handle type, or on the ecosystem that the account belongs to.
 
 HVP keeps the privacy properties of EVP: the browser intermediates between the verifier and the issuer, so the issuer does not learn which verifier the user is signing in to.
 
 ## Scope
 
-This document covers domain handles, which consist of a DNS name alone. Two companion documents extend it: [@?URL-HVP] covers URL handles, that is, users identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or an IndieAuth personal website, and [@?UHVP] builds on it to cover username handles, which combine a user name and a domain, such as `@alice@social.example`, by mapping them to the URL of their account with WebFinger. Both reuse the issuance and verification defined here. HVP is designed so that other forms of handle can be added in this way, with a resolution of their own, without changing issuance or verification. Email addresses are out of scope: they are verified with [@!EVP].
+This document defines the protocol, which is the same for every handle type, and one handle type, domain handles, which consist of a DNS name alone. Other handle types are defined by other documents, which plug into the protocol: [@?URL-HANDLES] defines URL handles, that is, users identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or an IndieAuth personal website, and [@?USERNAME-HANDLES] builds on it to define username handles, which combine a user name and a domain, such as `@alice@social.example`, by mapping them to the URL of their account with WebFinger. More handle types can be added in the same way, without changing issuance or verification. Email addresses are out of scope: they are verified with [@!EVP].
 
 HVP provides verified identification, for example to sign a user in: it tells the verifier that the user controls a handle, and which unique user identifier that handle resolves to. It does not provide authorization: an HVT grants no access to the user's account, and cannot be used to read or publish content or to act on the user's behalf. A verifier that needs such access continues to use the ecosystem's authorization protocol, such as AT Protocol OAuth ([@?ATPROTO-OAUTH]), and can use HVP and that protocol together, for example by signing the user in with HVP and requesting authorization later, only when it needs it. See (#why-not-oauth).
 
@@ -272,13 +272,16 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 This document uses the following terms:
 
 Handle:
-: A human-readable identifier of a user, displayed with a leading `@`. In this document, a handle is a domain handle. A handle is not necessarily permanent: a user can change it. See (#handles).
+: A human-readable identifier of a user, such as `@alice.example`, of one of several handle types. A handle is not necessarily permanent: a user can change it. See (#handles).
+
+Handle type:
+: A syntactically distinct form of handle, with its own syntax, normalization, and resolution, such as domain handles. See (#handles).
 
 Domain handle:
-: A handle that consists of a DNS name, such as `alice.example`, displayed as `@alice.example`.
+: A handle that consists of a DNS name, such as `alice.example`, displayed as `@alice.example`. See (#domain-handles).
 
 Unique user identifier:
-: An identifier of the user's account that resolution produces, and that the HVT carries in its `sub` claim. In this document, it is the DID that the handle resolves to. Unlike a handle, which can change hands and point to different accounts over time, it identifies one account.
+: An identifier of the user's account that resolution produces, and that the HVT carries in its `sub` claim. Each handle type defines it: for a domain handle, it is the DID that the handle resolves to. Unlike a handle, which can change hands and point to different accounts over time, it identifies one account.
 
 DID:
 : A decentralized identifier ([@?DID-CORE]) that identifies a user's account more permanently than its handle, such as `did:plc:bftbdgcbe4zclvpkboe4hleq` or `did:web:alice.example`. A handle resolves to a DID.
@@ -287,7 +290,7 @@ DID document:
 : The document that a DID resolves to. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuer.
 
 Authorized issuer:
-: The issuer identifier that resolution yields for a handle: the one that its DID document names with its `HandleIssuer` service ((#handle-issuer)). Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.
+: The issuer identifier that resolution yields for a handle: for a domain handle, the one that its DID document names with its `HandleIssuer` service ((#handle-issuer)). Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.
 
 Issuer:
 : A service that verifies the user controls a handle and issues HVTs for it, typically the server that hosts the user's account, such as an AT Protocol personal data server (PDS) or an ActivityPub server. An issuer is identified by an issuer identifier ((#issuer-identifier)).
@@ -316,7 +319,7 @@ Step                       Verifier     Browser              Issuer
                                |    identifier, issuer]          |
                                |            |                    |
 3.4 HVT Request                |            |-- POST /issuance ->|
-                               |            |   (handle, did)    |
+                               |            |   (handle, sub)    |
                                |            |                    |
 3.5 HVT Issuance               |            |<------- HVT -------|
                                |            |                    |
@@ -364,11 +367,64 @@ The verifier verifies the HVT+KB as described in (#verification). The verifier r
 
 # Handles {#handles}
 
+A *handle* is a human-readable identifier of a user. Handles come in several *handle types*, whose syntaxes are mutually exclusive, so that any string is a handle of at most one type. Each handle type defines:
+
+- the syntax of its handles, how they are displayed, and how they are normalized;
+- how a handle of that type is parsed from what a user typed; and
+- how a handle of that type is resolved to a unique user identifier and an authorized issuer ((#resolution)).
+
+Everything else, that is, the issuers, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is the same for every handle type. This document defines one handle type, domain handles ((#domain-handles)).
+
+> Note: Other documents define other handle types: URL handles ([@?URL-HANDLES]), such as `https://social.example/users/alice`, and username handles ([@?USERNAME-HANDLES]), such as `@alice@social.example`.
+
+A browser, an issuer, or a verifier supports some set of handle types. A handle of a type that it does not support is not a handle for it.
+
+## Normalization {#normalization}
+
+Each handle type defines the *normalized* form of its handles. Every handle in this protocol (in the HVT request, in the `handle` claim, and in comparisons) is in normalized form, and every comparison of handles is a byte-for-byte comparison of normalized handles.
+
+## Parsing User Input {#parsing}
+
+To parse a handle that a user typed, parse it as a handle of each supported handle type. Because their syntaxes are mutually exclusive, at most one succeeds, and its result is the handle. If none succeeds, the input is not a handle.
+
+| Input | Handle |
+|-------|--------|
+| `@Alice.Example`, `alice.example` | `alice.example` (domain handle, (#domain-parsing)) |
+| `https://Social.Example/users/alice` | `https://social.example/users/alice` (URL handle, [@?URL-HANDLES]) |
+| `@Alice@Social.Example` | `alice@social.example` (username handle, [@?USERNAME-HANDLES]) |
+| `alice@mail.example` | not a handle |
+
+An email address, such as `alice@mail.example`, is not a handle of any type: a browser API can verify it with [@!EVP].
+
+# Handle Resolution {#resolution}
+
+*Resolution* takes a normalized handle and produces:
+
+- the user's *unique user identifier*, which is the subject of the HVT; and
+- the *authorized issuer* for the handle.
+
+Each handle type defines its resolution: domain handles are resolved through a DID ((#resolution-steps)). Resolution checks that the handle and the unique user identifier refer to each other, so that a handle cannot claim an account that does not agree to it, and finds the issuer that the user has explicitly authorized.
+
+Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for an HVT; the verifier does it to check that the HVT was issued by an issuer that is authorized for the handle ((#verification)).
+
+The following rules apply to every resolution step, of every handle type:
+
+- DNS queries use the resolving party's DNS resolver. DNSSEC is not required, but see (#dns-security).
+- HTTP requests use the `https` scheme, MUST NOT include credentials (cookies or HTTP authentication), and SHOULD NOT include a `Referer` header. When the browser makes them, they SHOULD be made from an opaque origin, so that the servers involved do not learn which verifier the user is visiting.
+- Redirects are followed only to `https` URLs, and at most 5 times for a single request.
+- Responses are subject to reasonable limits on size and time, and resolving parties take the precautions of (#ssrf).
+
+## Caching {#caching}
+
+A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying an HVT+KB, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.
+
+# Domain Handles {#domain-handles}
+
 A *domain handle* is a DNS name, such as `alice.example`. Domain handles are the handles of the AT Protocol ([@?ATPROTO-HANDLE]), and the domain-based handles proposed for ActivityPub ([@?HANDLES-TF]). In DID documents, a domain handle is written as an `at` URI ([@?ATPROTO-URI]), `at://` followed by the handle, such as `at://alice.example`, as in the AT Protocol. This document uses that form for domain handles of every ecosystem.
 
-A handle is displayed with a leading `@`, as in `@alice.example`, and is carried in the protocol without it.
+A domain handle is displayed with a leading `@`, as in `@alice.example`, and is carried in the protocol without it.
 
-## Domain Handle Syntax {#handle-syntax}
+## Syntax {#handle-syntax}
 
 A domain handle MUST satisfy the following rules, which are a synthesis of the hostname rules of [@!RFC1035], [@?RFC3696] and [@!RFC3986]:
 
@@ -401,49 +457,27 @@ The following top-level domains are syntactically valid in a handle, but a handl
 
 > Open Issue: How internationalized handles are displayed, and how homoglyph attacks are mitigated, in coordination with the internationalization work of [@?HANDLES-TF].
 
-## Normalization {#normalization}
+## Normalization {#domain-normalization}
 
-Handles are case-insensitive. The *normalized* form of a handle is the handle converted to ASCII lowercase. Every handle in this protocol (in the `handle` claim, and in comparisons) is in normalized form, and every comparison of handles is a byte-for-byte comparison of normalized handles.
+Domain handles are case-insensitive. The normalized form of a domain handle is the handle converted to ASCII lowercase.
 
-## Parsing User Input {#parsing}
+## Parsing User Input {#domain-parsing}
 
-To parse a handle that a user typed:
+To parse a domain handle that a user typed:
 
 1. Strip leading and trailing ASCII whitespace.
 2. If the input starts with `at://`, remove it, or else if it starts with `@`, remove it.
 3. If the input then ends with a single `/`, remove it.
-4. Normalize the rest ((#normalization)), and check that it satisfies (#handle-syntax).
+4. Normalize the rest ((#domain-normalization)), and check that it satisfies (#handle-syntax).
 
-If any step fails, the input is not a handle.
+If any step fails, the input is not a domain handle.
 
-| Input | Handle |
-|-------|--------|
+| Input | Domain handle |
+|-------|---------------|
 | `@Alice.Example`, `alice.example`, `at://alice.example` | `alice.example` |
-| `alice@mail.example`, `@alice@social.example` | not a domain handle |
-| `https://alice.example/` | not a domain handle (URL handle, see [@?URL-HVP]) |
-| `@192.0.2.1`, `@com` | not a handle |
+| `@192.0.2.1`, `@com` | not a domain handle |
 
-An input that contains `@` after its leading `@` is not a domain handle: `alice@mail.example` is an email address, which a browser API can verify with [@!EVP], and `@alice@social.example` is a username handle, which a browser API can verify with [@?UHVP].
-
-# Handle Resolution {#resolution}
-
-*Resolution* takes a normalized handle and produces:
-
-- the user's *unique user identifier*, which is the subject of the HVT; and
-- the *authorized issuer* for the handle.
-
-A domain handle is resolved through a DID ((#resolution-steps)). Resolution checks that the handle and the DID refer to each other, so that a handle cannot claim an account that does not agree to it, and finds the issuer that the user has explicitly authorized.
-
-Both the browser and the verifier perform resolution. The browser does it to find an issuer to ask for an HVT; the verifier does it to check that the HVT was issued by an issuer that is authorized for the handle ((#verification)).
-
-The following rules apply to every resolution step:
-
-- DNS queries use the resolving party's DNS resolver. DNSSEC is not required, but see (#dns-security).
-- HTTP requests use the `https` scheme, MUST NOT include credentials (cookies or HTTP authentication), and SHOULD NOT include a `Referer` header. When the browser makes them, they SHOULD be made from an opaque origin, so that the servers involved do not learn which verifier the user is visiting.
-- Redirects are followed only to `https` URLs, and at most 5 times for a single request.
-- Responses are subject to reasonable limits on size and time, and resolving parties take the precautions of (#ssrf).
-
-## Domain Handles {#resolution-steps}
+## Resolution {#resolution-steps}
 
 A domain handle resolves to a DID ([@?DID-CORE]), which is its unique user identifier, and whose DID document claims the handle back and names the authorized issuer. This generalizes the handle resolution of the AT Protocol ([@?ATPROTO-HANDLE], [@?ATPROTO-DID]): it uses ecosystem-neutral names for the records that map a handle to its DID, also accepts the names of the AT Protocol ((#atproto-compat)), and adds the extraction of the authorized issuer.
 
@@ -474,7 +508,7 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
 
 so its unique user identifier is the DID `did:plc:bftbdgcbe4zclvpkboe4hleq`. Its DID document has no `HandleIssuer` service yet, so it has no authorized issuer. See (#examples).
 
-Because records and members with other keys are ignored, other kinds of records can be added later without affecting resolving parties that do not support them. For example, [@?UHVP] defines the `me=` key and the `me` member, which let a domain handle name a username handle or a URL handle ([@?URL-HVP]) instead of a DID.
+Because records and members with other keys are ignored, other kinds of records can be added later without affecting resolving parties that do not support them. For example, [@?USERNAME-HANDLES] defines the `me=` key and the `me` member, which let a domain handle name a username handle or a URL handle ([@?URL-HANDLES]) instead of a DID.
 
 > Open Issue: Other kinds of records could be added later with keys of their own: for example, `domain=` for another domain handle, resolved recursively and failing when a loop is detected, or `email=` for an email address verified with [@!EVP]. A handle could also be allowed to name several identifiers, any one of which proves it; this would require a rule for which unique user identifier an HVT for the handle carries, because each resolves to a different one, and a verifier identifies accounts by it.
 
@@ -522,10 +556,6 @@ As a consequence:
 
 > Open Issue: Whether, and when, the AT Protocol adopts the new names, and whether resolving parties can eventually stop querying the AT Protocol names. This needs coordination with the AT Protocol community and the IETF ATP working group.
 
-## Caching {#caching}
-
-A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying an HVT+KB, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.
-
 # Issuers {#issuers}
 
 ## Issuer Identifier {#issuer-identifier}
@@ -569,7 +599,7 @@ The HVT request is the token request of [@!EVP], including its use of HTTP Messa
 - The browser performs (#resolution), not EVP's issuer discovery, to obtain the issuer and its metadata, and sends the request to the `issuance_endpoint` of the HVP metadata.
 - The request body is a JSON object with the following members:
   - `handle` (REQUIRED): The handle that the user selected, in normalized form ((#normalization)).
-  - `did` (REQUIRED): The DID that the handle resolves to, byte-for-byte as resolution produced it.
+  - `sub` (REQUIRED): The unique user identifier that the handle resolves to, byte-for-byte as resolution produced it: for a domain handle, its DID.
 - The `Sec-Fetch-Dest` header has the value `handle-verification`.
 
 Example:
@@ -589,15 +619,15 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
     x="JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs";alg="Ed25519"
 
 {"handle":"samuelgoto.bsky.social",
- "did":"did:plc:bftbdgcbe4zclvpkboe4hleq"}
+ "sub":"did:plc:bftbdgcbe4zclvpkboe4hleq"}
 ```
 
 On receipt of an HVT request, the issuer:
 
 1. Verifies the request headers, the HTTP Message Signature, and the `Content-Digest`, as in the request verification of [@!EVP], with `handle-verification` in place of `email-verification` as the expected `Sec-Fetch-Dest`.
-2. Verifies that `handle` satisfies (#handle-syntax) and is in normalized form, and that `did` is a syntactically valid `did:plc` or `did:web` DID. If it does not, the issuer returns an `invalid_request` error ((#errors)).
-3. Checks that the cookies represent a signed-in user who controls `handle`, and whose account is the `did`. If they do not, the issuer returns an `authentication_required` error.
-4. SHOULD resolve `handle` ((#resolution)) and check that it is the authorized issuer and that resolution yields the `did`. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing HVTs that will fail.
+2. Verifies that `handle` is a handle of a handle type that the issuer supports ((#handles)), in normalized form, and that `sub` is a valid unique user identifier for that handle type: for a domain handle, a syntactically valid `did:plc` or `did:web` DID. If it does not, the issuer returns an `invalid_request` error ((#errors)).
+3. Checks that the cookies represent a signed-in user who controls `handle`, and whose account is `sub`. If they do not, the issuer returns an `authentication_required` error.
+4. SHOULD resolve `handle` ((#resolution)) and check that it is the authorized issuer and that resolution yields `sub`. An HVT from an issuer that is not authorized is rejected by the verifier anyway, so this check is not needed for security, but it avoids issuing HVTs that will fail.
 5. Creates an HVT ((#hvt-creation)) and returns it as the value of `issuance_token` in an `application/json` response, as in [@!EVP].
 
 ### Error Responses {#errors}
@@ -622,7 +652,7 @@ The Handle Verification Token (HVT) is a JWT ([@!RFC7519]) issued by an issuer. 
 - `iat` (REQUIRED): The time the HVT was issued.
 - `cnf` (REQUIRED): A confirmation claim ([@!RFC7800]) containing the browser's public key as a `jwk`, reproduced from the `Signature-Key` header of the HVT request with the same members, including its `alg`.
 - `handle` (REQUIRED): The handle that the user controls, byte-for-byte as it appeared in the HVT request.
-- `sub` (REQUIRED): The unique user identifier that the handle resolves to ((#resolution)), byte-for-byte as it appeared in the `did` member of the HVT request.
+- `sub` (REQUIRED): The unique user identifier that the handle resolves to ((#resolution)), byte-for-byte as it appeared in the `sub` member of the HVT request.
 
 Example:
 
@@ -662,7 +692,7 @@ Both the browser and the verifier verify the HVT:
 
 1. Parse the HVT into its header, payload, and signature.
 2. Verify that `typ` is `hvt+jwt`, and validate `alg` and `kid` as for the EVT in [@!EVP].
-3. Extract the `iss`, `iat`, `cnf`, `handle`, and `sub` claims. Verify that `handle` satisfies (#handle-syntax) and is in normalized form.
+3. Extract the `iss`, `iat`, `cnf`, `handle`, and `sub` claims. Verify that `handle` is a handle of a handle type that the verifier supports ((#handles)), in normalized form.
 4. Resolve `handle` ((#resolution)), and verify that:
    - the unique user identifier that resolution produces is byte-for-byte identical to `sub`; and
    - `iss` is byte-for-byte identical to the authorized issuer.
@@ -702,15 +732,15 @@ As in [@!EVP], the browser intermediates between the verifier and the issuer. Th
 
 ## Handles Are Public Identifiers
 
-Handles and unique user identifiers are public by design: they are meant to be shared, are the same at every site, and are linked to the user's public activity in the AT Protocol or ActivityPub. A verifier that receives a handle can correlate the user with other verifiers that receive the same handle, and with the user's public activity under that handle. HVP does not change this, and offers no equivalent of the private email addresses of [@!EVP]. Browser APIs that use HVP should make clear to the user that the verifier will learn their handle and DID.
+Handles and unique user identifiers are public by design: they are meant to be shared, are the same at every site, and are linked to the user's public activity in the AT Protocol or ActivityPub. A verifier that receives a handle can correlate the user with other verifiers that receive the same handle, and with the user's public activity under that handle. HVP does not change this, and offers no equivalent of the private email addresses of [@!EVP]. Browser APIs that use HVP should make clear to the user that the verifier will learn their handle and unique user identifier.
 
 ## Resolution Traffic
 
-Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of [@!EVP], which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: the DNS name queried is the handle itself, and the DID document is the user's. Any party that observes a resolution therefore learns which user is being resolved, and when.
+Resolution consists of DNS queries and unauthenticated HTTPS requests. Unlike the lookup of [@!EVP], which queries only the email domain and is shared by every user of that domain, every resolution step of HVP is specific to one user: for a domain handle, for example, the DNS name queried is the handle itself, and the DID document is the user's. Any party that observes a resolution therefore learns which user is being resolved, and when.
 
-When the browser resolves a handle, the DNS resolver and the servers involved (the handle's host, the host of a `did:web` DID document, and the PLC directory for `did:plc`) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.
+When the browser resolves a handle, the DNS resolver and the servers involved (for a domain handle, the handle's host, the host of a `did:web` DID document, and the PLC directory for `did:plc`) can observe that the user's device is resolving that handle, but not which verifier is involved, because the requests carry no credentials or referrer.
 
-When the verifier resolves a handle to verify an HVT+KB, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When the handle's host or the host of the DID document is also the user's issuer, as is common for handles under a server's domain, the issuer can correlate the HVTs it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.
+When the verifier resolves a handle to verify an HVT+KB, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When a server involved in resolution, such as the host of a domain handle or of its DID document, is also the user's issuer, as is common for handles under a server's domain, the issuer can correlate the HVTs it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.
 
 Verifiers can reduce this exposure by:
 
@@ -730,15 +760,31 @@ A browser or verifier can remove the PLC directory from per-sign-in traffic enti
 
 Resolution establishes which issuer is authorized for a handle. It does not establish that the user controls the handle: that is established by the issuer's signature on an HVT, which the issuer produces only after authenticating the user. An attacker who manipulates the browser's resolution can cause the browser to send the user's handle to an issuer of the attacker's choosing, but cannot produce an HVT that the verifier accepts, because the verifier resolves the handle itself.
 
-## DNS Spoofing {#dns-security}
+## Handle Reassignment {#reassignment}
+
+Handles can be reassigned: a domain can expire and be re-registered, and a hosting provider can let a new account take a handle that a deleted account used. Verifiers SHOULD identify accounts by the unique user identifier in the `sub` claim rather than by the `handle` claim. For example, the DID of a domain handle survives changes of handle, so a verifier that keys accounts on it is not affected when a handle moves to another account.
+
+## Server-Side Request Forgery {#ssrf}
+
+Resolution makes a verifier fetch URLs derived from user-controlled input. Verifiers MUST resolve only `https` URLs, MUST NOT fetch URLs whose host resolves to a loopback, link-local, or private IP address, and SHOULD apply limits on redirects, response size, and time.
+
+## Token Confusion
+
+The `typ` of the HVT (`hvt+jwt`) is distinct from that of the EVT (`evt+jwt`), so an HVT cannot be presented as an EVT or the other way around.
+
+## Domain Handles {#domain-security}
+
+The following considerations are specific to domain handles.
+
+### DNS Spoofing {#dns-security}
 
 Resolution of domain handles relies on DNS `TXT` records, which are not authenticated unless DNSSEC is used. As in [@!EVP], spoofing the browser's DNS resolution discloses the handle to the attacker but yields no HVT that the verifier will accept, while spoofing the verifier's DNS resolution lets the attacker choose the DID, and therefore the authorized issuer. Verifiers SHOULD use a DNSSEC-validating resolver, and operators of handle domains SHOULD sign their zones. The other resolution steps rely on HTTPS and the Web PKI.
 
-## Domain Control Is Handle Control
+### Domain Control Is Handle Control
 
-Every handle rests on control of a DNS name: whoever controls the handle's domain controls its `_handle` and `_atproto` records and its well-known URLs, and therefore which DID the handle resolves to. For a `did:web` DID on the handle's domain, the same party also controls the DID document, and therefore the authorized issuer. This is by design: it is what lets users bring their own domain. It also means that when a domain changes hands, for example when it expires and is registered by someone else, its handle changes hands too. The back-link check means the new owner cannot claim the previous owner's DID, but can point the handle at a DID of their own.
+Every domain handle rests on control of a DNS name: whoever controls the handle's domain controls its `_handle` and `_atproto` records and its well-known URLs, and therefore which DID the handle resolves to. For a `did:web` DID on the handle's domain, the same party also controls the DID document, and therefore the authorized issuer. This is by design: it is what lets users bring their own domain. It also means that when a domain changes hands, for example when it expires and is registered by someone else, its handle changes hands too. The back-link check means the new owner cannot claim the previous owner's DID, but can point the handle at a DID of their own.
 
-## Conflicting Records
+### Conflicting Records
 
 A domain handle can be mapped to a DID by up to four records ((#resolution-steps)): two with the new names, and two with the AT Protocol names, which are used only as a fallback ((#atproto-compat)). Resolution is designed so that the browser and the verifier cannot reach different results for the same handle, and so that an attacker who can block or delay some lookups cannot choose between them:
 
@@ -747,11 +793,7 @@ A domain handle can be mapped to a DID by up to four records ((#resolution-steps
 
 An attacker who can block lookups can still cause resolution to fail, but cannot cause it to succeed with a different result. Only the owner of the handle's domain can create records that disagree.
 
-## Handle Reassignment {#reassignment}
-
-Handles can be reassigned: a domain can expire and be re-registered, and a hosting provider can let a new account take a handle that a deleted account used. Verifiers SHOULD identify accounts by the unique user identifier in the `sub` claim rather than by the `handle` claim. A DID survives changes of handle, so a verifier that keys accounts on it is not affected when a handle moves to another account.
-
-## Trust in the PLC Directory {#plc-trust}
+### Trust in the PLC Directory {#plc-trust}
 
 For `did:plc` DIDs, resolution trusts the PLC directory to return the current DID document, and therefore the current authorized issuer.
 
@@ -763,14 +805,6 @@ Verifying the log does not remove all trust in the directory. As the "PLC Server
 - **Misordering:** in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which `HandleIssuer` service is in effect.
 
 Neither the browser nor the verifier can detect these attacks. Operations are submitted only to the PLC directory, and are not published anywhere else that a resolving party could observe independently: mirrors and replicas obtain their operations from the directory, and the timestamps that the directory assigns to operations, on which the resolution of forks depends, are not signed. Both the browser and the verifier therefore place this trust in the PLC directory, and HVP inherits it for every handle that resolves to a `did:plc` DID. Handles that resolve to a `did:web` DID instead rely on the security of the DID's domain, as described in (#dns-security).
-
-## Server-Side Request Forgery {#ssrf}
-
-Resolution makes a verifier fetch URLs derived from user-controlled input. Verifiers MUST resolve only `https` URLs, MUST NOT fetch URLs whose host resolves to a loopback, link-local, or private IP address, and SHOULD apply limits on redirects, response size, and time.
-
-## Token Confusion
-
-The `typ` of the HVT (`hvt+jwt`) is distinct from that of the EVT (`evt+jwt`), so an HVT cannot be presented as an EVT or the other way around.
 
 # IANA Considerations
 
@@ -826,11 +860,15 @@ This document registers the `application/hvt+jwt` media type in the "Media Types
 
 # Design Rationale
 
+## Why Handle Types?
+
+Users are identified in different ways in different ecosystems: by a domain name in the AT Protocol, by a URL in Solid and ActivityPub, and by a user name and a domain in ActivityPub implementations. Each of these already has a resolution mechanism that is deployed, and that the others do not use. Rather than choosing one, HVP lets each be defined as a handle type, with its own syntax and resolution, and shares everything that does not depend on how a handle is resolved: the issuers, the tokens, and their verification. Requiring the syntaxes to be mutually exclusive means that a browser, an issuer, and a verifier always agree on how a handle is resolved, from the handle alone.
+
 ## Why Resolve Domain Handles to a DID? {#why-did}
 
 HVP needs three things from the target of a domain handle: a stable identifier for the account, a document that claims the handle back, and a place to name the issuer. A DID provides all three, through its DID document, in a form that is not specific to any ecosystem, and the AT Protocol already resolves domain handles to DIDs.
 
-The record names the kind of value in its key, `did=` as in the AT Protocol, so that resolution does not have to infer it, and holds a single value rather than a list. Values of other kinds, such as username handles ([@?UHVP]), domain handles, or email addresses, can be added later with keys of their own, which resolving parties that do not support them ignore.
+The record names the kind of value in its key, `did=` as in the AT Protocol, so that resolution does not have to infer it, and holds a single value rather than a list. Values of other kinds, such as username handles ([@?USERNAME-HANDLES]), domain handles, or email addresses, can be added later with keys of their own, which resolving parties that do not support them ignore.
 
 Only `did:plc` and `did:web` are supported, because they are the methods that the AT Protocol uses. Other methods can be added if an ecosystem needs them. A `did:key` DID is not sufficient on its own: its DID document is derived from the key, and so has no `alsoKnownAs` to claim the handle back and no services to name the issuer.
 
@@ -877,7 +915,7 @@ There are no implementations of this document yet. Prototypes of the related IdP
 *Note: This section is to be removed before publishing as an RFC.*
 
 - draft-goto-handle-verification-00
-  - Initial draft, covering domain handles in the AT Protocol and ActivityPub. URL handles and username handles are covered by companion documents, [@?URL-HVP] and [@?UHVP].
+  - Initial draft, defining the protocol and the domain handle type, which covers domain handles in the AT Protocol and ActivityPub. URL handles and username handles are defined as handle types by companion documents, [@?URL-HANDLES] and [@?USERNAME-HANDLES].
 
 {backmatter}
 

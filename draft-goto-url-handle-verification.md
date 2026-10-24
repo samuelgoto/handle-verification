@@ -1,6 +1,6 @@
 %%%
-title = "URL Handle Verification Protocol"
-abbrev = "URL-HVP"
+title = "URL Handles"
+abbrev = "URL Handles"
 ipr = "trust200902"
 area = "Security"
 workgroup = "TBD"
@@ -38,9 +38,9 @@ fullname = "@bumblefudge.com"
   <seriesInfo name="Internet-Draft" value="draft-goto-handle-verification-latest"/>
 </reference>
 
-<reference anchor="UHVP" target="https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html">
+<reference anchor="USERNAME-HANDLES" target="https://samuelgoto.github.io/handle-verification/draft-goto-username-handle-verification.html">
   <front>
-    <title>Username Handle Verification Protocol</title>
+    <title>Username Handles</title>
     <author initials="S." surname="Goto" fullname="Sam Goto">
       <organization>Google</organization>
     </author>
@@ -156,7 +156,7 @@ fullname = "@bumblefudge.com"
 
 .# Abstract
 
-This document defines the URL Handle Verification Protocol (URL-HVP), which extends the Handle Verification Protocol ([@!HVP]) to *URL handles*: users who are identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a `handleIssuer` property of the document or by a `handle-issuer` link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, exactly as for a domain handle in HVP. The resolution is not specific to any ecosystem.
+This document defines *URL handles*, a handle type of the Handle Verification Protocol ([@!HVP]), for users who are identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a `handleIssuer` property of the document or by a `handle-issuer` link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, as for any handle type of HVP. The resolution is not specific to any ecosystem.
 
 .# Discussion Venues
 
@@ -168,15 +168,15 @@ Source for this draft and an issue tracker can be found at https://github.com/sa
 
 # Introduction
 
-The Handle Verification Protocol ([@!HVP]) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP covers domain handles, such as `@alice.example`. This document extends it to URL handles, and the Username Handle Verification Protocol ([@?UHVP]) builds on this document to cover username handles, such as `@alice@social.example`, by mapping them to the URL of their account with WebFinger.
+The Handle Verification Protocol ([@!HVP]) lets a browser obtain a signed Handle Verification Token (HVT) attesting that the user controls a handle, and present it to a verifier, without the user typing the handle and without revealing the verifier to the issuer. HVP is a framework for several handle types, and defines one, domain handles, such as `@alice.example`. This document defines another handle type, URL handles, and [@?USERNAME-HANDLES] builds on this document to define username handles, such as `@alice@social.example`, by mapping them to the URL of their account with WebFinger.
 
 Several ecosystems identify users with an `https` URL instead:
 
 - Solid identifies users with a WebID ([@?WEBID]), such as Tim Berners-Lee's `https://timbl.solidcommunity.net/profile/card#me`, whose profile document describes the user ([@?SOLID-WEBID-PROFILE]).
-- ActivityPub ([@?ACTIVITYPUB]) identifies actors with the URL of their actor object, such as `https://bumblefudge.com/`, which serves Bumblefudge's actor. Handles of the form `@alice@social.example` are a convention of some implementations, and are covered by [@?UHVP]; the actor URL is the identifier that ActivityPub itself defines.
+- ActivityPub ([@?ACTIVITYPUB]) identifies actors with the URL of their actor object, such as `https://bumblefudge.com/`, which serves Bumblefudge's actor. Handles of the form `@alice@social.example` are a convention of some implementations, and are covered by [@?USERNAME-HANDLES]; the actor URL is the identifier that ActivityPub itself defines.
 - IndieAuth ([@?INDIEAUTH]) identifies users with the URL of their personal website, such as Aaron Parecki's `https://aaronparecki.com/`.
 
-In each, fetching the URL returns a document about the user: Solid and ActivityPub servers serve it as JSON-LD ([@?JSON-LD11]) through content negotiation ([@!RFC9110]), and an IndieAuth website serves HTML with `Link` headers and `<link>` elements. This document calls such a URL a *URL handle*, and extends HVP so that it can be verified. It replaces HVP's resolution with one that fetches the URL, finds the canonical identifier of the account in the document, and reads the issuer that the user has authorized from a new `handleIssuer` property or a `handle-issuer` link. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP, except that the HVT request carries only the handle, which is also the unique user identifier.
+In each, fetching the URL returns a document about the user: Solid and ActivityPub servers serve it as JSON-LD ([@?JSON-LD11]) through content negotiation ([@!RFC9110]), and an IndieAuth website serves HTML with `Link` headers and `<link>` elements. This document calls such a URL a *URL handle*, and defines URL handles as a handle type of HVP, whose resolution fetches the URL, finds the canonical identifier of the account in the document, and reads the issuer that the user has authorized from a new `handleIssuer` property or a `handle-issuer` link. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP.
 
 The resolution does not depend on the ecosystem: it reads the same property, with the same algorithm, from a Solid profile, an ActivityPub actor, or any other JSON-LD document, and the same link from any HTML page.
 
@@ -197,11 +197,11 @@ Unique user identifier:
 
 # Protocol Flow {#protocol-flow}
 
-The protocol flow is the flow of [@!HVP], with the following differences:
+The protocol flow is the flow of [@!HVP], with the following particulars:
 
 - The handle is a URL handle ((#url-handles)).
 - The browser and the verifier resolve the handle as described in (#resolution), by fetching it, rather than through a DID.
-- The HVT request carries only the handle, which is also the unique user identifier, and the `handle` and `sub` claims of the HVT are both that URL ((#issuance)).
+- The `handle` and `sub` of the HVT request and of the HVT are both the unique user identifier ((#issuance)).
 
 ```
 Step                       Verifier     Browser              Issuer
@@ -214,7 +214,7 @@ Handle Resolution              |   [GET URL: unique user         |
                                |    identifier, issuer]          |
                                |            |                    |
 HVT Request                    |            |-- POST /issuance ->|
-                               |            |   (handle)         |
+                               |            |   (handle, sub)    |
                                |            |                    |
 HVT Issuance                   |            |<------- HVT -------|
                                |            |                    |
@@ -247,7 +247,7 @@ The *normalized* form of a URL handle is the result of parsing it and serializin
 To parse a URL handle that a user typed:
 
 1. Strip leading and trailing ASCII whitespace.
-2. If the input does not start with `https://`, compared ASCII case-insensitively, it is not a URL handle; it can still be a domain handle, parsed as described in [@!HVP], or a username handle, parsed as described in [@?UHVP].
+2. If the input does not start with `https://`, compared ASCII case-insensitively, it is not a URL handle; it can still be a domain handle, parsed as described in [@!HVP], or a username handle, parsed as described in [@?USERNAME-HANDLES].
 3. Normalize the input ((#normalization)), and check that it satisfies (#url-handle-syntax).
 
 If any step fails, the input is not a URL handle.
@@ -381,13 +381,9 @@ This is how IndieAuth websites already name their authorization endpoints ([@?IN
 
 # Issuance and Verification {#issuance}
 
-Issuance and verification are those of [@!HVP]: the issuer metadata, the HVT request, its error responses, the HVT, the key binding, and the verification of the HVT+KB, with the following substitutions:
+Issuance and verification are those of [@!HVP], for which a URL handle is a handle of the URL handle type, with the syntax and normalization of (#url-handles) and the resolution of (#resolution). Its unique user identifier is an `https` URL.
 
-- Wherever [@!HVP] resolves a handle, the resolving party resolves a URL handle as described in (#resolution).
-- The body of the HVT request has a single member, `handle` (REQUIRED): the URL handle, which is the unique user identifier that resolution produced ((#resolution)), byte-for-byte. It has no `did` or `url` member: because resolution replaces the URL handle with the unique user identifier, the two are the same value, which is sent once.
-- On receipt of an HVT request, the issuer verifies that `handle` satisfies (#url-handle-syntax) and is in normalized form, and that the body has no `did` or `url` member; otherwise it returns an `invalid_request` error. It then checks that the cookies represent a signed-in user whose account is the `handle`.
-- The `handle` and `sub` claims of the HVT are both the unique user identifier, byte-for-byte as it appeared in the `handle` member of the HVT request.
-- When verifying an HVT, the browser and the verifier accept a `handle` claim that satisfies (#url-handle-syntax), resolve it as described in (#resolution), and verify that the unique user identifier that resolution produces is identical to both `handle` and `sub`.
+Because resolution replaces a URL handle with its unique user identifier, the `handle` and `sub` members of the HVT request, and the `handle` and `sub` claims of the HVT, are all the unique user identifier. An issuer MUST return an `invalid_request` error for an HVT request for a URL handle whose `handle` and `sub` differ, and a browser or verifier MUST reject an HVT for a URL handle whose `handle` and `sub` claims differ.
 
 For example, the payload of an HVT for an ActivityPub actor is:
 
@@ -408,7 +404,7 @@ For example, the payload of an HVT for an ActivityPub actor is:
 }
 ```
 
-A verifier distinguishes the unique user identifiers of URL handles from DIDs by their form, and from the unique user identifiers of username handles ([@?UHVP]) by the `handle` claim, which is a URL only for a URL handle.
+As for every handle type, a verifier recognizes a URL handle by the form of its `handle` claim ([@!HVP]).
 
 # Privacy Considerations
 

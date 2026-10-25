@@ -121,6 +121,28 @@ fullname = "@bumblefudge.com"
   <refcontent>IndieWeb Living Standard</refcontent>
 </reference>
 
+<reference anchor="CID-1.0" target="https://www.w3.org/TR/cid-1.0/">
+  <front>
+    <title>Controlled Identifiers v1.0</title>
+    <author>
+      <organization>W3C</organization>
+    </author>
+    <date year="2025" month="May"/>
+  </front>
+  <refcontent>W3C Recommendation</refcontent>
+</reference>
+
+<reference anchor="LWS-AUTHN-OPENID" target="https://w3c.github.io/lws-protocol/lws10-authn-openid/">
+  <front>
+    <title>Linked Web Storage: OpenID Connect Authentication Suite</title>
+    <author>
+      <organization>W3C Linked Web Storage Working Group</organization>
+    </author>
+    <date year="2026"/>
+  </front>
+  <refcontent>Editor's Draft</refcontent>
+</reference>
+
 <reference anchor="JSON-LD11" target="https://www.w3.org/TR/json-ld11/">
   <front>
     <title>JSON-LD 1.1</title>
@@ -156,7 +178,7 @@ fullname = "@bumblefudge.com"
 
 .# Abstract
 
-This document defines *URL handles*, a handle type of the Handle Verification Protocol ([@!HVP]), for users who are identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it, with content negotiation, and reading the canonical identifier of the account and the issuer that the user has authorized to vouch for it, named by a `handleIssuer` property of the document or by a `handle-issuer` link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, as for any handle type of HVP. The resolution is not specific to any ecosystem.
+This document defines *URL handles*, a handle type of the Handle Verification Protocol ([@!HVP]), for users who are identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it as a controlled identifier document ([@!CID-1.0]), which gives the canonical identifier of the account and names the issuer that the user has authorized to vouch for it with the `HandleIssuer` service of HVP, the same service that domain handles use, or by fetching it as an HTML page that names the issuer with a `handle-issuer` link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, as for any handle type of HVP. The resolution is not specific to any ecosystem.
 
 .# Discussion Venues
 
@@ -176,9 +198,9 @@ Several ecosystems identify users with an `https` URL instead:
 - ActivityPub ([@?ACTIVITYPUB]) identifies actors with the URL of their actor object, such as `https://bumblefudge.com/`, which serves Bumblefudge's actor. Handles of the form `@alice@social.example` are a convention of some implementations, and are covered by [@?USERNAME-HANDLES]; the actor URL is the identifier that ActivityPub itself defines.
 - IndieAuth ([@?INDIEAUTH]) identifies users with the URL of their personal website, such as Aaron Parecki's `https://aaronparecki.com/`.
 
-In each, fetching the URL returns a document about the user: Solid and ActivityPub servers serve it as JSON-LD ([@?JSON-LD11]) through content negotiation ([@!RFC9110]), and an IndieAuth website serves HTML with `Link` headers and `<link>` elements. This document calls such a URL a *URL handle*, and defines URL handles as a handle type of HVP, whose resolution fetches the URL, finds the canonical identifier of the account in the document, and reads the issuer that the user has authorized from a new `handleIssuer` property or a `handle-issuer` link. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP.
+In each, fetching the URL returns a document about the user. Controlled Identifiers ([@!CID-1.0]) defines a JSON format for such documents, which generalizes DID documents to any URL, and which the Linked Web Storage protocol, the successor of Solid, uses to identify its users ([@?LWS-AUTHN-OPENID]). This document calls such a URL a *URL handle*, and defines URL handles as a handle type of HVP, whose resolution fetches the URL as a controlled identifier document, checks that its `id` is the URL, and reads the issuer that the user has authorized from its `HandleIssuer` service ([@!HVP]), the same service that the DID documents of domain handles use. A website that serves HTML, such as an IndieAuth website, can name its issuer with a `handle-issuer` link instead. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP.
 
-The resolution does not depend on the ecosystem: it reads the same property, with the same algorithm, from a Solid profile, an ActivityPub actor, or any other JSON-LD document, and the same link from any HTML page.
+The resolution does not depend on the ecosystem: it requests a controlled identifier document, or generic JSON-LD, and reads it as plain JSON, with the same algorithm, whether it is served by a Linked Web Storage server, an ActivityPub server, or any other server, and reads the same link from any HTML page.
 
 # Conventions and Definitions
 
@@ -187,10 +209,13 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 This document uses the terms issuer, issuer identifier, authorized issuer, Handle Verification Token (HVT), HVT+KB, and verifier as defined in [@!HVP], and the following terms:
 
 URL handle:
-: A handle that is an `https` URL, such as `https://alice.solidcommunity.net/profile/card#me` or `https://social.example/users/alice`. Unlike domain handles and username handles, it is displayed as is, without a leading `@`. See (#url-handles).
+: A handle that is an `https` URL, such as `https://alice.solidcommunity.net/profile/card` or `https://social.example/users/alice`. Unlike domain handles and username handles, it is displayed as is, without a leading `@`. See (#url-handles).
+
+Controlled identifier document:
+: As in [@!HVP], a JSON document that describes the subject of an identifier ([@!CID-1.0]).
 
 Identity document:
-: The document that is served at a URL handle, which describes the user. See (#resolution).
+: The document that is served at a URL handle, which describes the user: a controlled identifier document, or an HTML page. See (#resolution).
 
 Unique user identifier:
 : As in [@!HVP], an identifier of the user's account that resolution produces, and that the HVT carries in its `sub` claim. For a URL handle, it is the canonical URL of the account, as named by its identity document. Resolution replaces the URL handle with it ((#why-canonical)).
@@ -235,8 +260,9 @@ A URL handle is an absolute URL ([@!WHATWG.URL]) that satisfies the following ru
 - Its scheme is `https`.
 - It has no username or password.
 - Its host is a domain that satisfies the domain handle syntax of [@!HVP], and does not end in one of the top-level domains that [@!HVP] excludes from resolution. As a consequence, IP addresses are not URL handles.
+- It has no fragment.
 
-A URL handle can have a path, a query, and a fragment. The fragment is part of the handle, as in a WebID such as `https://alice.solidcommunity.net/profile/card#me`, which identifies a person rather than the document that describes them ([@?WEBID]), but is not sent when the handle is fetched.
+A URL handle can have a path and a query. Because the `id` of a controlled identifier document is the URL from which it is fetched ([@!CID-1.0]), a URL handle identifies the user by the URL of their identity document, rather than by a fragment within it: for example, the URL handle of a Solid user whose WebID ([@?WEBID]) is `https://alice.solidcommunity.net/profile/card#me` is `https://alice.solidcommunity.net/profile/card`.
 
 ## Normalization {#normalization}
 
@@ -248,7 +274,7 @@ To parse a URL handle that a user typed:
 
 1. Strip leading and trailing ASCII whitespace.
 2. If the input does not start with `https://`, compared ASCII case-insensitively, it is not a URL handle; it can still be a domain handle, parsed as described in [@!HVP], or a username handle, parsed as described in [@?USERNAME-HANDLES].
-3. Normalize the input ((#normalization)), and check that it satisfies (#url-handle-syntax).
+3. Remove the fragment, if any, so that a user can type a WebID, normalize the input ((#normalization)), and check that it satisfies (#url-handle-syntax).
 
 If any step fails, the input is not a URL handle.
 
@@ -256,6 +282,7 @@ If any step fails, the input is not a URL handle.
 |-------|--------|
 | `https://Social.Example/users/alice` | `https://social.example/users/alice` |
 | `https://alice.example` | `https://alice.example/` |
+| `https://alice.solidcommunity.net/profile/card#me` | `https://alice.solidcommunity.net/profile/card` |
 | `alice.example`, `@alice.example` | not a URL handle (domain handle, see [@!HVP]) |
 | `http://alice.example/`, `https://192.0.2.1/` | not a handle |
 
@@ -267,102 +294,49 @@ A URL handle is always typed with its scheme, which distinguishes it from a doma
 
 Given a normalized URL handle *handle*:
 
-1. **Fetch.** `GET` *handle*, without its fragment, with the following `Accept` header. The response MUST have a 2xx status code. The *final URL* is the URL of the response, after any redirects.
+1. **Fetch.** `GET` *handle* with the following `Accept` header ([@!RFC9110]). The response MUST have a 2xx status code. The *final URL* is the URL of the response, after any redirects.
 
     ```
-    Accept: application/ld+json;
-              profile="https://www.w3.org/ns/activitystreams",
-            application/ld+json;
-              profile="http://www.w3.org/ns/json-ld#expanded";q=0.9,
-            application/ld+json;q=0.8,
+    Accept: application/cid,
+            application/ld+json;q=0.9,
             text/html;q=0.5
     ```
 
-2. **Parse.** If the media type of the response is `application/json`, `application/ld+json`, `application/activity+json`, or another media type with the `+json` structured syntax suffix ([@!RFC6839]), parse it as JSON, and find its subject node for *handle* ((#subject-node)); if there is none, fail. If the media type is `text/html`, parse it as HTML ([@!WHATWG.HTML]). Otherwise fail.
+2. **Parse.** If the media type of the response is `application/cid`, `application/json`, `application/ld+json`, or another media type with the `+json` structured syntax suffix ([@!RFC6839]), such as `application/activity+json`, read it as a controlled identifier document, as described in [@!HVP]; if it is not one, fail. If the media type is `text/html`, parse it as HTML ([@!WHATWG.HTML]). Otherwise fail.
 
-3. **Unique user identifier.** For a JSON document, the unique user identifier is the `id` of the subject node ((#subject-node)), normalized ((#normalization)); if it does not satisfy (#url-handle-syntax), fail. For an HTML document, it is the final URL, with the fragment of *handle*, if any.
+3. **Unique user identifier.** For a controlled identifier document, the unique user identifier is its `id`, normalized ((#normalization)); if it does not satisfy (#url-handle-syntax), fail. For an HTML document, it is the final URL.
 
-4. **Identity document.** If the unique user identifier, without its fragment, is identical to the final URL, the response of step 1 is the identity document. Otherwise, the document names an account at another URL: `GET` the unique user identifier, as in step 1, and parse it, as in step 2. The final URL of this response MUST be same origin with the unique user identifier, the response MUST be a JSON document, and the `id` of its subject node for the unique user identifier MUST be identical to the unique user identifier. Otherwise fail. This response is the identity document. This step is not repeated: an identity document that names yet another account fails.
+4. **Identity document.** If the unique user identifier is identical to the final URL, the response of step 1 is the identity document, whose `id` is the URL from which it was fetched, as [@!CID-1.0] requires. Otherwise, the document names an account at another URL: `GET` the unique user identifier, as in step 1, and parse it, as in step 2. The final URL of this response MUST be same origin with the unique user identifier, the response MUST be a controlled identifier document, and its `id` MUST be identical to the unique user identifier. Otherwise fail. This response is the identity document. This step is not repeated: an identity document that names yet another account fails.
 
-5. **Issuer.** Collect the issuer identifiers that the identity document names: from its `Link` header fields ([@!RFC8288]) whose relation type is `handle-issuer` ((#handle-issuer-link)); for a JSON document, from the `handleIssuer` property of its subject node ((#handle-issuer-property)); and for an HTML document, from its `<link>` elements whose relation type is `handle-issuer` ((#handle-issuer-link)). If there are none, or they are not all identical, or they are not an issuer identifier ([@!HVP]), fail. Otherwise, it is the authorized issuer.
+5. **Issuer.** Collect the issuer identifiers that the identity document names: from its `Link` header fields ([@!RFC8288]) whose relation type is `handle-issuer` ((#handle-issuer-link)); for a controlled identifier document, from its `HandleIssuer` service ([@!HVP]); and for an HTML document, from its `<link>` elements whose relation type is `handle-issuer` ((#handle-issuer-link)). If there are none, or they are not all identical, or they are not an issuer identifier ([@!HVP]), fail. Otherwise, it is the authorized issuer.
 
 If any step fails, resolution fails.
 
 Resolution replaces the URL handle with the unique user identifier: from this point on, the unique user identifier is the handle, in the HVT request, in the HVT, and in what the browser displays. In most cases, the two are identical; they differ when the URL that the user typed serves a document about an account at another URL, or redirects to it. See (#why-canonical).
 
-For example, an ActivityPub actor resolves as follows:
+A document is read as a controlled identifier document if it is a JSON object with an `id` member, whatever its media type: an ActivityPub actor, for example, is one, and can name its issuer by adding the `HandleIssuer` service to its `service` member, which [@!CID-1.0] defines. The `service` member is unrelated to the `Service` actor type of ActivityStreams, and to the `endpoints` member of ActivityPub ([@?ACTIVITYPUB]). For example, an ActivityPub actor resolves as follows:
 
 ```
 GET https://social.example/users/alice
-Accept: application/ld+json; profile="...activitystreams", ...
+Accept: application/cid, application/ld+json;q=0.9, ...
   -> Content-Type: application/activity+json
-     { "id": "https://social.example/users/alice",
+     { "@context": ["https://www.w3.org/ns/activitystreams",
+                    "https://www.w3.org/ns/cid/v1"],
+       "id": "https://social.example/users/alice",
        "type": "Person",
-       "handleIssuer": "https://social.example", ... }
+       "service": [{ "id": "#handle_issuer",
+                     "type": "HandleIssuer",
+                     "serviceEndpoint": "https://social.example" }],
+       ... }
 User identifier: https://social.example/users/alice
 Issuer:          https://social.example
 ```
 
+> Open Issue: Some ActivityPub servers serve actors only for the media types of ActivityPub ([@?ACTIVITYPUB]), and not for `application/ld+json` without a profile, so that resolution does not reach their actors. Such servers would need to serve their actors for `application/cid` or `application/ld+json`.
+
 > Open Issue: Some ActivityPub servers, such as Mastodon servers with "authorized fetch" enabled, serve actors only to requests that are signed with the key of another server's actor, and respond to the unsigned requests of resolution with a 401 (Unauthorized) response, so that resolution of their actors fails. Resolving parties cannot sign their requests, because they have no actor, and because a signature would identify them. Such servers would need to serve their actors, or at least the `handle-issuer` link of their responses ((#handle-issuer-link)), to unsigned requests. This needs to be discussed with Mastodon as an implementation detail.
 
-## The Subject Node {#subject-node}
-
-Resolving parties do not perform JSON-LD processing ([@?JSON-LD11]): they read JSON documents in the forms that Solid and ActivityPub servers serve, as follows. The *subject node* of a JSON document for a URL *url* is:
-
-- If the document is a JSON object that has no `@graph` member, and that has an `id` or `@id` member whose value is a string, that object. Its `id` is the value of that member. This is the compacted form, which ActivityPub servers serve ([@?ACTIVITYPUB]).
-- Otherwise, if the document is a JSON array, or a JSON object whose `@graph` member is a JSON array, the element of that array that is a JSON object whose `@id` member, normalized ((#normalization)), is identical to *url*. Its `id` is the value of that member. This is the expanded or flattened form, which Solid servers serve ([@?SOLID-PROTOCOL]).
-- Otherwise, the document has no subject node.
-
-The *value* of a property of the subject node, whose short name is *name* and whose IRI is *iri*, is read from the member *name*, or else from the member *iri*, of the subject node. Its value MUST be a string, a JSON object whose `@id` or `@value` member is a string, or a JSON array of exactly one of these, and the property's value is that string. A property whose member is present with any other value is invalid, and resolution fails.
-
-> Open Issue: Reading JSON-LD without JSON-LD processing means that a document whose `@context` gives `handleIssuer` another meaning, or that uses another term or a compact IRI for the property, is read differently by a resolving party than by a JSON-LD processor. Resolving parties all read it the same way, so this does not let the browser and the verifier disagree, but whether this is acceptable to the JSON-LD community, or whether the `@context` should be checked, needs to be discussed.
-
-> Open Issue: A user who types the URL of their Solid profile document, such as `https://alice.solidcommunity.net/profile/card`, rather than their WebID, which ends in `#me`, gets the document's node as the subject node, which has no `handleIssuer` property. Whether resolution should follow the `foaf:primaryTopic` of the document to the WebID needs to be investigated.
-
-## The handleIssuer Property {#handle-issuer-property}
-
-An identity document names the issuer authorized to vouch for its handle with the `handleIssuer` property of its subject node, whose IRI is `https://w3id.org/handle-verification#handleIssuer`, and whose value is an issuer identifier ([@!HVP]). A subject node names at most one issuer.
-
-In an ActivityPub actor, which is served in compacted form, the property is defined in the actor's `@context`:
-
-```json
-{
-  "@context": [
-    "https://www.w3.org/ns/activitystreams",
-    { "handleIssuer": {
-        "@id": "https://w3id.org/handle-verification#handleIssuer",
-        "@type": "@id" } }
-  ],
-  "id": "https://social.example/users/alice",
-  "type": "Person",
-  "inbox": "https://social.example/users/alice/inbox",
-  "outbox": "https://social.example/users/alice/outbox",
-  "handleIssuer": "https://social.example"
-}
-```
-
-In a Solid WebID profile, which is authored in Turtle, the property is added to the WebID:
-
-```
-@prefix hvp: <https://w3id.org/handle-verification#> .
-<#me> hvp:handleIssuer <https://solidcommunity.net> .
-```
-
-and the Solid server serves it, in expanded JSON-LD, as:
-
-```json
-[{
-  "@id": "https://alice.solidcommunity.net/profile/card#me",
-  "https://w3id.org/handle-verification#handleIssuer":
-    [{ "@id": "https://solidcommunity.net" }]
-}]
-```
-
-Resolving parties do not parse Turtle: Solid servers serve every RDF document as JSON-LD on request ([@?SOLID-PROTOCOL]).
-
-As in [@!HVP], authorization is explicit: resolution does not infer an issuer from the identity document's other properties, such as the `solid:oidcIssuer` of a Solid WebID ([@?SOLID-OIDC]), the origin of an ActivityPub actor, or the `authorization_endpoint` of an IndieAuth website. See (#why-new-term).
-
-> Open Issue: The IRI of the property, the namespace it belongs to, and whether a JSON-LD context document should be published for it.
+> Open Issue: Solid servers serve JSON-LD in expanded form, which has no `id` member, and so is not read as a controlled identifier document. Such servers would need to serve the profile documents of their users as controlled identifier documents, as the Linked Web Storage protocol does ([@?LWS-AUTHN-OPENID]).
 
 ## The handle-issuer Link {#handle-issuer-link}
 
@@ -423,8 +397,8 @@ The security considerations of [@!HVP] apply, with the following additions.
 An identity document is controlled by the server that hosts its URL, and names both the unique user identifier and the issuer. A document at one URL could name another user's account as its `id`, and an issuer of its own choosing:
 
 ```
-https://evil.example/ -> id:           https://social.example/users/bob
-                         handleIssuer: https://evil.example
+https://evil.example/ -> id:            https://social.example/users/bob
+                         HandleIssuer:  https://evil.example
 ```
 
 Step 4 of (#resolution) prevents this: when the `id` of a document is not its own URL, resolution fetches the `id`, and reads the issuer from the document that the server that hosts the account serves, rather than from the document that named it. Bob's actor names his own issuer, or none, so the issuer of `evil.example` is never authorized for Bob's account. The URL that the user typed is replaced by Bob's account ((#why-canonical)), and so `evil.example` cannot give Bob a handle that Bob did not agree to.
@@ -455,17 +429,15 @@ This document registers the following link relation type in the "Link Relation T
 
 # Design Rationale
 
-## Why a New Property, Rather Than solid:oidcIssuer? {#why-new-term}
+## Why the HandleIssuer Service? {#why-new-term}
 
-A Solid WebID profile already names the OpenID Connect issuers that can authenticate the user with `solid:oidcIssuer` ([@?SOLID-OIDC]). But an HVT is not an OpenID Connect token: OpenID Connect is a two-party protocol, in which the issuer issues tokens to the relying party, and learns who it is, while HVP is a three-party protocol, in which the browser obtains the token and hides the verifier from the issuer. A user who authorized an issuer to sign them in with OpenID Connect has not necessarily authorized it to make statements that the browser presents to verifiers that the issuer does not know. A profile can also list several OpenID Connect issuers, while a handle has a single authorized issuer in HVP. A new property, which is the same for every ecosystem, makes the user's opt-in explicit, as the `HandleIssuer` service does for DIDs ([@!HVP]).
+A Solid WebID profile names the OpenID Connect issuers that can authenticate the user with `solid:oidcIssuer` ([@?SOLID-OIDC]), and a Linked Web Storage controlled identifier document names them with a service of type `https://www.w3.org/ns/lws#OpenIdProvider` ([@?LWS-AUTHN-OPENID]). But an HVT is not an OpenID Connect token: OpenID Connect is a two-party protocol, in which the issuer issues tokens to the relying party, and learns who it is, while HVP is a three-party protocol, in which the browser obtains the token and hides the verifier from the issuer. A user who authorized an issuer to sign them in with OpenID Connect has not necessarily authorized it to make statements that the browser presents to verifiers that the issuer does not know. A profile can also list several OpenID Connect issuers, while a handle has a single authorized issuer in HVP. The `HandleIssuer` service makes the user's opt-in explicit, and is the same service, defined once by [@!HVP], that the DID documents of domain handles use.
 
 ## Why Content Negotiation?
 
-ActivityPub servers serve actors through content negotiation ([@?ACTIVITYPUB]), and Solid servers serve every RDF document as Turtle or JSON-LD through content negotiation ([@?SOLID-PROTOCOL]). Requiring them to serve identity documents at another URL, such as a well-known URL, would require changes to every server, and would not fit identifiers that are not at the root of a domain. Websites that cannot vary their responses by media type can name their issuer in HTML instead ((#handle-issuer-link)).
+ActivityPub servers serve actors through content negotiation ([@?ACTIVITYPUB]), and Solid servers serve every RDF document as Turtle or JSON-LD through content negotiation ([@?SOLID-PROTOCOL]), so that the same URL can serve both a page for people and a document for machines. Requiring them to serve identity documents at another URL, such as a well-known URL, would require changes to every server, and would not fit identifiers that are not at the root of a domain. Websites that cannot vary their responses by media type can name their issuer in HTML instead ((#handle-issuer-link)).
 
-The `Accept` header requests JSON-LD with the ActivityStreams profile first, because ActivityPub servers are required to serve actors for it, and expanded JSON-LD next, because it can be read without a JSON-LD processor ((#subject-node)).
-
-> Open Issue: Requesting the ActivityStreams profile ties the `Accept` header to ActivityPub. Whether a profile that is not specific to any ecosystem can be requested instead, and how existing ActivityPub servers would respond to it, needs to be investigated.
+The `Accept` header requests a controlled identifier document first, and generic JSON-LD next, which ActivityPub servers such as Mastodon already serve their actors for, so that it does not name the media types of any ecosystem. It does not request `application/json`, for which some servers serve HTML.
 
 ## Why Replace the Handle With the Canonical Identifier? {#why-canonical}
 
@@ -473,9 +445,11 @@ A URL that the user types can serve a document about an account at another URL, 
 
 > Open Issue: Whether to let an identity document keep the URL that the user typed as its handle, when the document lists it, for example in its `alsoKnownAs` or `url` property.
 
-## Why Not Process JSON-LD?
+## Why Controlled Identifier Documents?
 
-A JSON-LD processor fetches remote contexts, which adds requests, latency, and attack surface to resolution, and is a large dependency for a browser and for verifiers. ActivityPub explicitly allows its documents to be processed as plain JSON ([@?ACTIVITYPUB]), and expanded JSON-LD has no contexts to process, so reading both forms as plain JSON ((#subject-node)) covers the documents that Solid and ActivityPub servers serve.
+A URL handle needs, from the document at its URL, a canonical identifier for the account and a place to name the issuer. Controlled identifier documents ([@!CID-1.0]) provide both, with the `id` member and its canonical URL rule, and with services, in a JSON format that is not specific to any ecosystem, that generalizes the DID documents that domain handles already use, and that the Linked Web Storage protocol uses to identify its users ([@?LWS-AUTHN-OPENID]). Using them lets URL handles and domain handles name their issuer with the same `HandleIssuer` service ([@!HVP]).
+
+Resolving parties read controlled identifier documents as plain JSON, without JSON-LD processing ([@?JSON-LD11]), which would fetch remote contexts, adding requests, latency, and attack surface to resolution, and which is a large dependency for a browser and for verifiers. Controlled identifier documents can be processed as plain JSON ([@!CID-1.0]), and so can the actors of ActivityPub ([@?ACTIVITYPUB]).
 
 # Implementation Status
 
@@ -494,20 +468,21 @@ There are no implementations of this document yet.
 
 # Examples {#examples}
 
-This appendix shows the resolution of URL handles. The identity documents of the Solid, ActivityPub, and IndieAuth examples are real at the time of writing, and are abbreviated. None of them names an issuer yet, so each shows what would be added to opt in. The values will change over time.
+This appendix shows the resolution of URL handles. The identity documents of the ActivityPub and IndieAuth examples are real at the time of writing, and are abbreviated; the Solid example shows what a Solid server would serve as a controlled identifier document. None of them names an issuer yet, so each shows what would be added to opt in. The values will change over time.
 
 ## Solid WebID
 
 ```
-Handle:        https://timbl.solidcommunity.net/profile/card#me
+Input:         https://timbl.solidcommunity.net/profile/card#me
+Handle:        https://timbl.solidcommunity.net/profile/card
 GET https://timbl.solidcommunity.net/profile/card
-  -> Content-Type: application/ld+json   (expanded)
-     [ ..., { "@id": "https://timbl.solidcommunity.net/profile/card#me",
-              "http://www.w3.org/ns/solid/terms#oidcIssuer":
-                [{ "@id": "https://solidcommunity.net/" }], ... } ]
-Identifier:    https://timbl.solidcommunity.net/profile/card#me
-To opt in, add to the WebID (oidcIssuer is not read):
-  <#me> hvp:handleIssuer <https://solidcommunity.net> .
+  -> Content-Type: application/cid
+     { "id": "https://timbl.solidcommunity.net/profile/card",
+       "service": [{ "id": "#handle_issuer",
+                     "type": "HandleIssuer",
+                     "serviceEndpoint":
+                       "https://solidcommunity.net" }] }
+Identifier:    https://timbl.solidcommunity.net/profile/card
 Issuer:        https://solidcommunity.net
 ```
 
@@ -521,7 +496,8 @@ GET https://w3c.social/users/goto
        "webfinger": "goto@w3c.social", ... }
 Identifier:    https://w3c.social/users/goto
 To opt in, add to the actor:
-  "handleIssuer": "https://w3c.social"
+  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+                "serviceEndpoint": "https://w3c.social" }]
 Issuer:        https://w3c.social
 ```
 
@@ -541,7 +517,8 @@ GET https://bumblefudge.com/did:scid:vh:1:QmWu.../actor
        ... }                                     (id ok)
 Identifier:    https://bumblefudge.com/did:scid:vh:1:QmWu.../actor
 To opt in, add to the actor:
-  "handleIssuer": "https://bumblefudge.com"
+  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+                "serviceEndpoint": "https://bumblefudge.com" }]
 Issuer:        https://bumblefudge.com
 ```
 
@@ -564,4 +541,4 @@ Issuer:        https://aaronparecki.com
 
 # Acknowledgments
 
-This document builds on the Handle Verification Protocol, on the WebID, Solid WebID Profile, and Solid-OIDC specifications of the Solid community, on ActivityPub, and on IndieAuth.
+This document builds on the Handle Verification Protocol, on Controlled Identifiers, on the WebID, Solid WebID Profile, and Solid-OIDC specifications of the Solid community, on the Linked Web Storage protocol, on ActivityPub, and on IndieAuth. Thanks to Elf Pavlik for pointing to Controlled Identifiers.

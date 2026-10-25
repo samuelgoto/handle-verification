@@ -1051,7 +1051,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Goto</td>
-<td class="center">Expires 27 April 2027</td>
+<td class="center">Expires 28 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg {
 <dd class="internet-draft">draft-goto-username-handle-verification-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-10-24" class="published">24 October 2026</time>
+<time datetime="2026-10-25" class="published">25 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-04-27">27 April 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-28">28 April 2027</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1111,7 +1111,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 27 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 28 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1432,7 +1432,7 @@ userpart    = unreserved / sub-delims
           <p id="section-5-3.3.1"><strong>Account URL.</strong> The account URL is the <code>href</code> of the first link whose <code>rel</code> is <code>self</code> and whose <code>href</code> is an <code>https</code> URL, whatever its <code>type</code>. If there is none, or it is not a URL handle once normalized (<span>[<a href="#URL-HANDLES" class="cite xref">URL-HANDLES</a>]</span>), fail. For an ActivityPub account, this is the URI of its actor.<a href="#section-5-3.3.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-5-3.4">
-          <p id="section-5-3.4.1"><strong>URL handle resolution.</strong> Resolve the account URL as a URL handle (<span>[<a href="#URL-HANDLES" class="cite xref">URL-HANDLES</a>]</span>). If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces: the account's identity document names the issuer, with a <code>handleIssuer</code> property or a <code>handle-issuer</code> link.<a href="#section-5-3.4.1" class="pilcrow">¶</a></p>
+          <p id="section-5-3.4.1"><strong>URL handle resolution.</strong> Resolve the account URL as a URL handle (<span>[<a href="#URL-HANDLES" class="cite xref">URL-HANDLES</a>]</span>). If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces: the account's identity document names the issuer, with the <code>HandleIssuer</code> service of its controlled identifier document (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>) or a <code>handle-issuer</code> link.<a href="#section-5-3.4.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-5-3.5">
           <p id="section-5-3.5.1"><strong>Back-link.</strong> Check that the server that hosts the account agrees that the account has the handle (<a href="#same-origin" class="auto internal xref">Section 9.1</a>):<a href="#section-5-3.5.1" class="pilcrow">¶</a></p>
@@ -1455,7 +1455,10 @@ userpart    = unreserved / sub-delims
      self:    https://social.example.com/users/alice
 GET https://social.example.com/users/alice      (URL handle)
   -&gt; { "id": "https://social.example.com/users/alice",
-       "handleIssuer": "https://social.example.com", ... }
+       "service": [{ "id": "#handle_issuer",
+                     "type": "HandleIssuer",
+                     "serviceEndpoint":
+                       "https://social.example.com" }], ... }
 User identifier:    https://social.example.com/users/alice
 Issuer:             https://social.example.com    (same origin)
 </pre><a href="#section-5-8" class="pilcrow">¶</a>
@@ -1487,7 +1490,7 @@ Issuer:             https://social.example.com    (same origin)
           <strong>Resolution.</strong> Resolve <em>named</em>, as described in <a href="#resolve-user" class="auto internal xref">Section 5</a> if it is a username handle, or in <span>[<a href="#URL-HANDLES" class="cite xref">URL-HANDLES</a>]</span> if it is a URL handle. If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces.<a href="#section-6-6.1" class="pilcrow">¶</a>
 </li>
         <li id="section-6-6.2">
-          <strong>Back-link.</strong> The identity document of the account (<span>[<a href="#URL-HANDLES" class="cite xref">URL-HANDLES</a>]</span>) MUST claim <em>handle</em> back, with <code>at://</code> followed by <em>handle</em>, compared after conversion to ASCII lowercase. A JSON identity document claims it in the <code>alsoKnownAs</code> property of its subject node, whose IRI is <code>https://www.w3.org/ns/activitystreams#alsoKnownAs</code>, as ActivityPub actors and DID documents (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>) do; the value of the property is read as in <span>[<a href="#URL-HANDLES" class="cite xref">URL-HANDLES</a>]</span>, except that it can be a JSON array of any number of values. An HTML identity document claims it with a link whose relation type is <code>me</code>, in a <code>Link</code> header field (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) or in a <code>&lt;link&gt;</code> element, as IndieWeb websites link to their other identities (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>). Otherwise fail. This check ensures that an account cannot be claimed by a domain handle that it did not agree to. The <code>at</code> URI form (<span>[<a href="#ATPROTO-URI" class="cite xref">ATPROTO-URI</a>]</span>) is the form in which <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> writes domain handles of every ecosystem.<a href="#section-6-6.2" class="pilcrow">¶</a>
+          <strong>Back-link.</strong> The identity document of the account (<span>[<a href="#URL-HANDLES" class="cite xref">URL-HANDLES</a>]</span>) MUST claim <em>handle</em> back, with <code>at://</code> followed by <em>handle</em>, compared after conversion to ASCII lowercase. A controlled identifier document claims it in its <code>alsoKnownAs</code> member (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), read as described in <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, whose value is a JSON array of strings; ActivityPub actors and DID documents (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>) use the same member, with the same meaning. As <span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span> advises, the two identifiers are treated as referring to the same account only because each refers to the other: the domain handle names the account, and the account's document lists the domain handle. An HTML identity document claims it with a link whose relation type is <code>me</code>, in a <code>Link</code> header field (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) or in a <code>&lt;link&gt;</code> element, as IndieWeb websites link to their other identities (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>). Otherwise fail. This check ensures that an account cannot be claimed by a domain handle that it did not agree to. The <code>at</code> URI form (<span>[<a href="#ATPROTO-URI" class="cite xref">ATPROTO-URI</a>]</span>) is the form in which <span>[<a href="#HVP" class="cite xref">HVP</a>]</span> writes domain handles of every ecosystem.<a href="#section-6-6.2" class="pilcrow">¶</a>
 </li>
       </ol>
 <p id="section-6-7">The named handle cannot itself be a domain handle, so resolution does not recurse. No DID is involved. The <code>handle</code> of the HVT request and of the HVT is the domain handle.<a href="#section-6-7" class="pilcrow">¶</a></p>
@@ -1706,6 +1709,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <a href="#section-14.1" class="section-number selfRef">14.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
+<dt id="CID-1.0">[CID-1.0]</dt>
+        <dd>
+<span class="refAuthor">W3C</span>, <span class="refTitle">"Controlled Identifiers v1.0"</span>, <span class="refContent">W3C Recommendation</span>, <time datetime="2025-05" class="refDate">May 2025</time>, <span>&lt;<a href="https://www.w3.org/TR/cid-1.0/">https://www.w3.org/TR/cid-1.0/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="HVP">[HVP]</dt>
         <dd>
 <span class="refAuthor">Goto, S.</span>, <span class="refTitle">"Handle Verification Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-goto-handle-verification-latest</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://samuelgoto.github.io/handle-verification/draft-goto-handle-verification.html">https://samuelgoto.github.io/handle-verification/draft-goto-handle-verification.html</a>&gt;</span>. </dd>
@@ -1810,7 +1817,7 @@ GET https://social.example/.well-known/webfinger
   self:    https://social.example/users/alice
 GET https://social.example/users/alice          (URL handle)
   id:           https://social.example/users/alice
-  handleIssuer: https://social.example
+  HandleIssuer: https://social.example         (service)
   alsoKnownAs:  ["at://alice.example"]          (back-link ok)
 Identifier:    https://social.example/users/alice
 Issuer:        https://social.example           (same origin)
@@ -1830,7 +1837,7 @@ DNS TXT _handle.alice.example
 Names:         https://social.example/users/alice
 GET https://social.example/users/alice          (URL handle)
   id:           https://social.example/users/alice
-  handleIssuer: https://social.example
+  HandleIssuer: https://social.example         (service)
   alsoKnownAs:  ["at://alice.example"]          (back-link ok)
 Identifier:    https://social.example/users/alice
 Issuer:        https://social.example
@@ -1854,7 +1861,8 @@ GET https://fedi.simonwillison.net/users/simon  (URL handle)
   id:      https://fedi.simonwillison.net/users/simon
 Identifier:    https://fedi.simonwillison.net/users/simon
 To opt in, add to the actor:
-  "handleIssuer": "https://fedi.simonwillison.net"
+  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+                "serviceEndpoint": "https://fedi.simonwillison.net" }]
 Issuer:        https://fedi.simonwillison.net   (same origin)
 </pre><a href="#appendix-A.3-2" class="pilcrow">¶</a>
 </div>
@@ -1876,7 +1884,8 @@ GET https://fed.brid.gy/snarfed.org             (URL handle)
   id:      https://fed.brid.gy/snarfed.org
 Identifier:    https://fed.brid.gy/snarfed.org
 To opt in, add to the actor:
-  "handleIssuer": "https://fed.brid.gy"
+  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+                "serviceEndpoint": "https://fed.brid.gy" }]
 Issuer:        https://fed.brid.gy              (same origin)
 </pre><a href="#appendix-A.4-2" class="pilcrow">¶</a>
 </div>
@@ -1897,7 +1906,8 @@ GET https://threads.net/.well-known/webfinger
 GET https://threads.net/ap/users/17841401746480004/  (URL handle)
 Identifier:    https://threads.net/ap/users/17841401746480004/
 To opt in, add to the actor:
-  "handleIssuer": "https://www.threads.com"
+  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+                "serviceEndpoint": "https://www.threads.com" }]
 Issuer:        https://www.threads.com          (other origin)
 Back-link:     WebFinger at threads.net for the resource
                https://threads.net/ap/users/17841401746480004/

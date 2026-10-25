@@ -1052,7 +1052,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Goto</td>
-<td class="center">Expires 27 April 2027</td>
+<td class="center">Expires 28 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-goto-handle-verification-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-10-24" class="published">24 October 2026</time>
+<time datetime="2026-10-25" class="published">25 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-04-27">27 April 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-28">28 April 2027</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1112,7 +1112,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 27 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 28 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1208,7 +1208,13 @@ svg {
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-handle-resolution-2" class="internal xref">Handle Resolution</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
-                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-caching" class="internal xref">Caching</a></p>
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-controlled-identifier-docum" class="internal xref">Controlled Identifier Documents</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-the-handleissuer-service" class="internal xref">The HandleIssuer Service</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-caching" class="internal xref">Caching</a></p>
 </li>
             </ul>
 </li>
@@ -1228,10 +1234,7 @@ svg {
                 <p id="section-toc.1-1.6.2.4.1"><a href="#section-6.4" class="auto internal xref">6.4</a>.  <a href="#name-resolution" class="internal xref">Resolution</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4.2.1">
-                    <p id="section-toc.1-1.6.2.4.2.1.1"><a href="#section-6.4.1" class="auto internal xref">6.4.1</a>.  <a href="#name-the-handleissuer-service" class="internal xref">The HandleIssuer Service</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4.2.2">
-                    <p id="section-toc.1-1.6.2.4.2.2.1"><a href="#section-6.4.2" class="auto internal xref">6.4.2</a>.  <a href="#name-backwards-compatibility-wit" class="internal xref">Backwards Compatibility with the AT Protocol</a></p>
+                    <p id="section-toc.1-1.6.2.4.2.1.1"><a href="#section-6.4.1" class="auto internal xref">6.4.1</a>.  <a href="#name-backwards-compatibility-wit" class="internal xref">Backwards Compatibility with the AT Protocol</a></p>
 </li>
                 </ul>
 </li>
@@ -1467,7 +1470,7 @@ svg {
             <strong>Issuance and verification</strong>: how a browser obtains a Handle Verification Token (HVT) from the authorized issuer, and how a verifier verifies it. This part reuses the token request, key binding, and token format of EVP, and is the same for every handle type.<a href="#section-1.2-2.3" class="pilcrow">¶</a>
 </li>
         </ol>
-<p id="section-1.2-3">This document defines one handle type, domain handles (<a href="#domain-handles" class="auto internal xref">Section 6</a>), which are resolved to a DID in a way that is backwards compatible with the AT Protocol (<a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a>). Nothing in issuance or verification depends on the handle type, or on the ecosystem that the account belongs to.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">This document defines one handle type, domain handles (<a href="#domain-handles" class="auto internal xref">Section 6</a>), which are resolved to a DID in a way that is backwards compatible with the AT Protocol (<a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>). Nothing in issuance or verification depends on the handle type, or on the ecosystem that the account belongs to.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
 <p id="section-1.2-4">HVP keeps the privacy properties of EVP: the browser intermediates between the verifier and the issuer, so the issuer does not learn which verifier the user is signing in to.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1526,28 +1529,32 @@ svg {
         <dd style="margin-left: 1.5em" id="section-2-3.10">A decentralized identifier (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>) that identifies a user's account more permanently than its handle, such as <code>did:plc:bftbdgcbe4zclvpkboe4hleq</code> or <code>did:web:alice.example</code>. A handle resolves to a DID.<a href="#section-2-3.10" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-3.11">DID document:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.12">The document that a DID resolves to. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuer.<a href="#section-2-3.12" class="pilcrow">¶</a>
+<dt id="section-2-3.11">Controlled identifier document:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.12">A JSON document that describes the subject of an identifier, which is its <code>id</code>, and lists the subject's other identifiers, verification methods, and services (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>). See <a href="#cid" class="auto internal xref">Section 5.1</a>.<a href="#section-2-3.12" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-3.13">Authorized issuer:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.14">The issuer identifier that resolution yields for a handle: for a domain handle, the one that its DID document names with its <code>HandleIssuer</code> service (<a href="#handle-issuer" class="auto internal xref">Section 6.4.1</a>). Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.<a href="#section-2-3.14" class="pilcrow">¶</a>
+<dt id="section-2-3.13">DID document:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.14">The document that a DID resolves to. It is a controlled identifier document whose <code>id</code> is the DID. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuer.<a href="#section-2-3.14" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-3.15">Issuer:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.16">A service that verifies the user controls a handle and issues HVTs for it, typically the server that hosts the user's account, such as an AT Protocol personal data server (PDS) or an ActivityPub server. An issuer is identified by an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 7.1</a>).<a href="#section-2-3.16" class="pilcrow">¶</a>
+<dt id="section-2-3.15">Authorized issuer:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.16">The issuer identifier that resolution yields for a handle, typically the one that a controlled identifier document names with its <code>HandleIssuer</code> service (<a href="#handle-issuer" class="auto internal xref">Section 5.2</a>): for a domain handle, its DID document. Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.<a href="#section-2-3.16" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-3.17">Handle Verification Token (HVT):</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.18">A JWT (<span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>) issued by an issuer that contains a handle, the unique user identifier it resolves to, and the browser's public key. See <a href="#hvt" class="auto internal xref">Section 8</a>.<a href="#section-2-3.18" class="pilcrow">¶</a>
+<dt id="section-2-3.17">Issuer:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.18">A service that verifies the user controls a handle and issues HVTs for it, typically the server that hosts the user's account, such as an AT Protocol personal data server (PDS) or an ActivityPub server. An issuer is identified by an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 7.1</a>).<a href="#section-2-3.18" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-3.19">HVT+KB:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.20">An HVT combined with a Key Binding JWT that binds it to a verifier and a session. See <a href="#kb" class="auto internal xref">Section 9</a>.<a href="#section-2-3.20" class="pilcrow">¶</a>
+<dt id="section-2-3.19">Handle Verification Token (HVT):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.20">A JWT (<span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>) issued by an issuer that contains a handle, the unique user identifier it resolves to, and the browser's public key. See <a href="#hvt" class="auto internal xref">Section 8</a>.<a href="#section-2-3.20" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-3.21">Verifier:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.22">The party, typically a website, to which the browser presents an HVT+KB, and which verifies it to learn that the user controls a handle. It corresponds to the relying party (RP) of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> and of federated sign-in protocols.<a href="#section-2-3.22" class="pilcrow">¶</a>
+<dt id="section-2-3.21">HVT+KB:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.22">An HVT combined with a Key Binding JWT that binds it to a verifier and a session. See <a href="#kb" class="auto internal xref">Section 9</a>.<a href="#section-2-3.22" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.23">Verifier:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.24">The party, typically a website, to which the browser presents an HVT+KB, and which verifies it to learn that the user controls a handle. It corresponds to the relying party (RP) of <span>[<a href="#EVP" class="cite xref">EVP</a>]</span> and of federated sign-in protocols.<a href="#section-2-3.24" class="pilcrow">¶</a>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -1750,12 +1757,51 @@ svg {
         <li class="compact" id="section-5-6.4">Responses are subject to reasonable limits on size and time, and resolving parties take the precautions of <a href="#ssrf" class="auto internal xref">Section 12.3</a>.<a href="#section-5-6.4" class="pilcrow">¶</a>
 </li>
       </ul>
-<div id="caching">
+<div id="cid">
 <section id="section-5.1">
-        <h3 id="name-caching">
-<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-caching" class="section-name selfRef">Caching</a>
+        <h3 id="name-controlled-identifier-docum">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-controlled-identifier-docum" class="section-name selfRef">Controlled Identifier Documents</a>
         </h3>
-<p id="section-5.1-1">A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying an HVT+KB, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-1">Handle types can resolve a handle to a controlled identifier document (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), which describes the account: a DID document for a domain handle (<a href="#resolution-steps" class="auto internal xref">Section 6.4</a>), or a document fetched from a URL for other handle types. A controlled identifier document names the account's authorized issuer with the <code>HandleIssuer</code> service (<a href="#handle-issuer" class="auto internal xref">Section 5.2</a>), and can claim the handle back with its <code>alsoKnownAs</code> member.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">Resolving parties read a controlled identifier document as JSON (<span>[<a href="#RFC8259" class="cite xref">RFC8259</a>]</span>), without JSON-LD processing (<span>[<a href="#JSON-LD11" class="cite xref">JSON-LD11</a>]</span>), as follows:<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-5.1-3.1">The document is a JSON object whose <code>id</code> member is a string. Otherwise, it is not a controlled identifier document.<a href="#section-5.1-3.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-5.1-3.2">Members are read by their literal names: <code>id</code>, <code>alsoKnownAs</code>, <code>service</code>, and, within each service, <code>id</code>, <code>type</code>, and <code>serviceEndpoint</code>. A JSON-LD <code>@context</code>, if present, is ignored, so a document that spells these members differently, for example in expanded JSON-LD form, has none of them.<a href="#section-5.1-3.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-5.1-3.3">Relative URLs in the <code>id</code> of a service, such as <code>#handle_issuer</code>, are resolved against the <code>id</code> of the document.<a href="#section-5.1-3.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-5.1-4">A handle type that resolves a handle to a controlled identifier document defines how the document is obtained, and how its <code>id</code> is checked: for example, a DID document's <code>id</code> is the DID, and a document fetched from a URL has that URL as its <code>id</code> (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>).<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="handle-issuer">
+<section id="section-5.2">
+        <h3 id="name-the-handleissuer-service">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-the-handleissuer-service" class="section-name selfRef">The HandleIssuer Service</a>
+        </h3>
+<p id="section-5.2-1">A controlled identifier document names the issuer authorized to vouch for its handles with a service (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>) whose <code>type</code> is <code>HandleIssuer</code>, whose <code>serviceEndpoint</code> is an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 7.1</a>), and whose <code>id</code> is <code>#handle_issuer</code>, that is, the document's <code>id</code> followed by <code>#handle_issuer</code>:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-5.2-2">
+<pre>{ "id": "#handle_issuer", "type": "HandleIssuer",
+  "serviceEndpoint": "https://issuer.example" }
+</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-3"><code>HandleIssuer</code> is a service type of <span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>, in the same way that, for example, the AT Protocol identifies the account's PDS with a service whose <code>id</code> is <code>#atproto_pds</code> (<span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>). Service <code>id</code>s are unique within a controlled identifier document (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), and in <code>did:plc</code> services are stored as a map keyed by <code>id</code> (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>), so a document names at most one issuer.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">If the document has no service whose <code>id</code> is <code>#handle_issuer</code>, or that service's <code>type</code> is not <code>HandleIssuer</code>, or its <code>serviceEndpoint</code> is not an issuer identifier, that is, not an <code>https</code> origin with no path, query, or fragment, the handle has no authorized issuer, and HVP cannot be used with it.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">Because a handle has a single authorized issuer, a change of issuer takes effect at once: as soon as the document names a new issuer, HVTs from the previous one no longer verify. This is the same as when a user moves their account to another server. A user who moves their account to another server, and whose issuer is that server, updates their <code>HandleIssuer</code> service as part of the move.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-6">Authorization is always explicit: resolution does not infer an issuer from the account's other services or properties, such as its AT Protocol PDS (the <code>#atproto_pds</code> service), the PDS's authorization server, or the server that hosts the document. An issuer has to deploy HVP anyway, and requiring the document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See <a href="#why-opt-in" class="auto internal xref">Section 14.7</a>.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
+<p id="section-5.2-7">Like other services of controlled identifier documents, the <code>HandleIssuer</code> service names a party to interact with, and does not involve the document's verification methods: the issuer signs HVTs with the keys of its own metadata (<a href="#issuer-metadata" class="auto internal xref">Section 7.2</a>).<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<blockquote id="section-5.2-8">
+          <p id="section-5.2-8.1">Open Issue: The name of the service type, whether it should be identified by a full IRI with a published JSON-LD context, and whether it should be registered in the W3C DID Extensions registry, or its successor for controlled identifier documents.<a href="#section-5.2-8.1" class="pilcrow">¶</a></p>
+</blockquote>
+</section>
+</div>
+<div id="caching">
+<section id="section-5.3">
+        <h3 id="name-caching">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-caching" class="section-name selfRef">Caching</a>
+        </h3>
+<p id="section-5.3-1">A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying an HVT+KB, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1862,11 +1908,11 @@ alnum     = ALPHA / DIGIT
         <h3 id="name-resolution">
 <a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-resolution" class="section-name selfRef">Resolution</a>
         </h3>
-<p id="section-6.4-1">A domain handle resolves to a DID (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>), which is its unique user identifier, and whose DID document claims the handle back and names the authorized issuer. This generalizes the handle resolution of the AT Protocol (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>, <span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>): it uses ecosystem-neutral names for the records that map a handle to its DID, also accepts the names of the AT Protocol (<a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a>), and adds the extraction of the authorized issuer.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.4-1">A domain handle resolves to a DID (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>), which is its unique user identifier, and whose DID document claims the handle back and names the authorized issuer. This generalizes the handle resolution of the AT Protocol (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>, <span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>): it uses ecosystem-neutral names for the records that map a handle to its DID, also accepts the names of the AT Protocol (<a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>), and adds the extraction of the authorized issuer.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
 <p id="section-6.4-2">Given a normalized domain handle <em>handle</em>:<a href="#section-6.4-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-6.4-3">
 <li id="section-6.4-3.1">
-            <p id="section-6.4-3.1.1"><strong>Handle to DID.</strong> Perform the following lookups. A DID MUST use the <code>plc</code> method (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>) or the <code>web</code> method (<span>[<a href="#DID-WEB" class="cite xref">DID-WEB</a>]</span>); otherwise fail. If both lookups yield a DID, and the DIDs differ, fail. If either lookup yields a DID, it is the handle's DID. If neither yields anything, the resolving party MUST fall back to the lookups of existing AT Protocol handles (<a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a>), but only if both lookups established that the handle names nothing: that is, if the DNS query returned no <code>TXT</code> record whose value starts with a recognized key, or no record at all, and the well-known request returned a 404 (Not Found) or 410 (Gone) response, or a document with no recognized member. If either lookup failed in any other way, for example because of a DNS server failure, a timeout, or a server error, fail. A resolving party MAY perform the lookups of <a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a> in parallel with these, to avoid adding a round trip, and use their results only when it falls back. A handle near the 253-character limit cannot use the DNS lookups, because the prefix would push the query name over the limit; the well-known lookups work for such handles.<a href="#section-6.4-3.1.1" class="pilcrow">¶</a></p>
+            <p id="section-6.4-3.1.1"><strong>Handle to DID.</strong> Perform the following lookups. A DID MUST use the <code>plc</code> method (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>) or the <code>web</code> method (<span>[<a href="#DID-WEB" class="cite xref">DID-WEB</a>]</span>); otherwise fail. If both lookups yield a DID, and the DIDs differ, fail. If either lookup yields a DID, it is the handle's DID. If neither yields anything, the resolving party MUST fall back to the lookups of existing AT Protocol handles (<a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>), but only if both lookups established that the handle names nothing: that is, if the DNS query returned no <code>TXT</code> record whose value starts with a recognized key, or no record at all, and the well-known request returned a 404 (Not Found) or 410 (Gone) response, or a document with no recognized member. If either lookup failed in any other way, for example because of a DNS server failure, a timeout, or a server error, fail. A resolving party MAY perform the lookups of <a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a> in parallel with these, to avoid adding a round trip, and use their results only when it falls back. A handle near the 253-character limit cannot use the DNS lookups, because the prefix would push the query name over the limit; the well-known lookups work for such handles.<a href="#section-6.4-3.1.1" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-6.4-3.1.2.1">
                 <strong>DNS <code>TXT</code> record.</strong> Query <code>TXT</code> records at the name <code>_handle.</code> <em>handle</em>. A record whose value starts with <code>did=</code> names a DID, in the remainder of the value. Records whose value starts with anything else are ignored. This method aligns with <span>[<a href="#RFC1464" class="cite xref">RFC1464</a>]</span>.<a href="#section-6.4-3.1.2.1" class="pilcrow">¶</a>
@@ -1877,7 +1923,7 @@ alnum     = ALPHA / DIGIT
             </ul>
 </li>
           <li id="section-6.4-3.2">
-            <p id="section-6.4-3.2.1"><strong>DID to DID document.</strong> Resolve the DID to its DID document (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>), whose <code>id</code> member MUST be identical to the DID:<a href="#section-6.4-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-6.4-3.2.1"><strong>DID to DID document.</strong> Resolve the DID to its DID document (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>), a controlled identifier document that is read as described in <a href="#cid" class="auto internal xref">Section 5.1</a>, and whose <code>id</code> member MUST be identical to the DID:<a href="#section-6.4-3.2.1" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-6.4-3.2.2.1">For <code>did:plc</code>, <code>GET</code> the DID from a PLC directory, by default <code>https://plc.directory/</code> followed by the DID.<a href="#section-6.4-3.2.2.1" class="pilcrow">¶</a>
 </li>
@@ -1889,11 +1935,11 @@ alnum     = ALPHA / DIGIT
             <p id="section-6.4-3.3.1"><strong>Back-link.</strong> Find the first element of the DID document's <code>alsoKnownAs</code> array that is <code>at://</code> followed by a string that satisfies <a href="#handle-syntax" class="auto internal xref">Section 6.1</a>. After normalization, that string MUST be identical to <em>handle</em>. Otherwise fail. This check ensures that a DID document cannot be claimed by a handle that it did not agree to.<a href="#section-6.4-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.4-3.4">
-            <p id="section-6.4-3.4.1"><strong>Issuer.</strong> The authorized issuer is the <code>serviceEndpoint</code> of the DID document's <code>HandleIssuer</code> service (<a href="#handle-issuer" class="auto internal xref">Section 6.4.1</a>). If there is none, fail.<a href="#section-6.4-3.4.1" class="pilcrow">¶</a></p>
+            <p id="section-6.4-3.4.1"><strong>Issuer.</strong> The authorized issuer is the <code>serviceEndpoint</code> of the DID document's <code>HandleIssuer</code> service (<a href="#handle-issuer" class="auto internal xref">Section 5.2</a>). If there is none, fail.<a href="#section-6.4-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-6.4-4">If any step fails, resolution fails. The unique user identifier is the DID.<a href="#section-6.4-4" class="pilcrow">¶</a></p>
-<p id="section-6.4-5">For example, the handle <code>@samuelgoto.bsky.social</code> resolves as follows at the time of writing, through the AT Protocol names (<a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a>), since it publishes none of the new ones:<a href="#section-6.4-5" class="pilcrow">¶</a></p>
+<p id="section-6.4-5">For example, the handle <code>@samuelgoto.bsky.social</code> resolves as follows at the time of writing, through the AT Protocol names (<a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>), since it publishes none of the new ones:<a href="#section-6.4-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4-6">
 <pre>GET https://samuelgoto.bsky.social/.well-known/atproto-did
   -&gt; did:plc:bftbdgcbe4zclvpkboe4hleq
@@ -1906,56 +1952,35 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
 <blockquote id="section-6.4-9">
           <p id="section-6.4-9.1">Open Issue: Other kinds of records could be added later with keys of their own: for example, <code>domain=</code> for another domain handle, resolved recursively and failing when a loop is detected, or <code>email=</code> for an email address verified with <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>. A handle could also be allowed to name several identifiers, any one of which proves it; this would require a rule for which unique user identifier an HVT for the handle carries, because each resolves to a different one, and a verifier identifies accounts by it.<a href="#section-6.4-9.1" class="pilcrow">¶</a></p>
 <p id="section-6.4-9.2">Open Issue: The SWICG Handles Task Force proposes <code>/.well-known/activitypub-actor</code>, a JSON document that refers to an ActivityPub actor, to resolve domain handles in ActivityPub (<span>[<a href="#HANDLES-TF" class="cite xref">HANDLES-TF</a>]</span>). This document proposes <code>/.well-known/handle</code> and <code>_handle</code>, which refer to a DID instead, so that the same names serve every ecosystem. The two need to be reconciled.<a href="#section-6.4-9.2" class="pilcrow">¶</a></p>
+<p id="section-6.4-9.3">Open Issue: Whether a server that the DID document already names, such as the PDS named by the <code>#atproto_pds</code> service, should be an authorized issuer by default, which would let HVP work with existing accounts without changing their DID documents, at the cost of the explicit opt-in.<a href="#section-6.4-9.3" class="pilcrow">¶</a></p>
 </blockquote>
-<div id="handle-issuer">
-<section id="section-6.4.1">
-          <h4 id="name-the-handleissuer-service">
-<a href="#section-6.4.1" class="section-number selfRef">6.4.1. </a><a href="#name-the-handleissuer-service" class="section-name selfRef">The HandleIssuer Service</a>
-          </h4>
-<p id="section-6.4.1-1">A DID document names the issuer authorized to vouch for its handle with a service (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>) whose <code>id</code> is <code>#handle_issuer</code>, whose <code>type</code> is <code>HandleIssuer</code>, and whose <code>serviceEndpoint</code> is an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 7.1</a>):<a href="#section-6.4.1-1" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-6.4.1-2">
-<pre>{ "id": "#handle_issuer", "type": "HandleIssuer",
-  "serviceEndpoint": "https://issuer.example" }
-</pre><a href="#section-6.4.1-2" class="pilcrow">¶</a>
-</div>
-<p id="section-6.4.1-3">The service is identified by its <code>id</code>, which can also be written as the DID followed by <code>#handle_issuer</code>, in the same way that the AT Protocol identifies the account's PDS by the <code>id</code> <code>#atproto_pds</code> (<span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>). Service <code>id</code>s are unique within a DID document (<span>[<a href="#DID-CORE" class="cite xref">DID-CORE</a>]</span>), and in <code>did:plc</code> services are stored as a map keyed by <code>id</code> (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>), so a DID document names at most one issuer.<a href="#section-6.4.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-4">If the DID document has no service whose <code>id</code> is <code>#handle_issuer</code>, or that service's <code>type</code> is not <code>HandleIssuer</code>, or its <code>serviceEndpoint</code> is not an issuer identifier, that is, not an <code>https</code> origin with no path, query, or fragment, the handle has no authorized issuer, and HVP cannot be used with it.<a href="#section-6.4.1-4" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-5">Because a handle has a single authorized issuer, a change of issuer takes effect at once: as soon as the DID document names a new issuer, HVTs from the previous one no longer verify. This is the same as when a user moves their account to another server.<a href="#section-6.4.1-5" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-6">Authorization is always explicit: resolution does not infer an issuer from the account's existing services, such as its AT Protocol PDS (the <code>#atproto_pds</code> service), the PDS's authorization server, or its ActivityPub server. An issuer has to deploy HVP anyway, and requiring the DID document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See <a href="#why-opt-in" class="auto internal xref">Section 14.7</a>.<a href="#section-6.4.1-6" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-7">A user who moves their account to another server, and whose issuer is that server, updates their <code>HandleIssuer</code> service as part of the move.<a href="#section-6.4.1-7" class="pilcrow">¶</a></p>
-<blockquote id="section-6.4.1-8">
-            <p id="section-6.4.1-8.1">Open Issue: The name of the DID service type, and whether it should be registered in the W3C DID Extensions registry.<a href="#section-6.4.1-8.1" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-8.2">Open Issue: Whether a server that the DID document already names, such as the PDS named by the <code>#atproto_pds</code> service, should be an authorized issuer by default, which would let HVP work with existing accounts without changing their DID documents, at the cost of the explicit opt-in.<a href="#section-6.4.1-8.2" class="pilcrow">¶</a></p>
-</blockquote>
-</section>
-</div>
 <div id="atproto-compat">
-<section id="section-6.4.2">
+<section id="section-6.4.1">
           <h4 id="name-backwards-compatibility-wit">
-<a href="#section-6.4.2" class="section-number selfRef">6.4.2. </a><a href="#name-backwards-compatibility-wit" class="section-name selfRef">Backwards Compatibility with the AT Protocol</a>
+<a href="#section-6.4.1" class="section-number selfRef">6.4.1. </a><a href="#name-backwards-compatibility-wit" class="section-name selfRef">Backwards Compatibility with the AT Protocol</a>
           </h4>
-<p id="section-6.4.2-1">The AT Protocol maps a handle to a DID with a <code>TXT</code> record at <code>_atproto.</code> followed by the handle, and with the well-known URL <code>/.well-known/atproto-did</code> (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>). These names are specific to the AT Protocol. This document defines ecosystem-neutral names, <code>_handle</code> and <code>/.well-known/handle</code>, which take precedence, and falls back to the AT Protocol names when a handle does not publish the new ones, so that every existing AT Protocol handle keeps working.<a href="#section-6.4.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.4.2-2">When step 1 of resolution (<a href="#resolution-steps" class="auto internal xref">Section 6.4</a>) falls back, the resolving party performs the following lookups, each of which yields the handle's DID:<a href="#section-6.4.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-1">The AT Protocol maps a handle to a DID with a <code>TXT</code> record at <code>_atproto.</code> followed by the handle, and with the well-known URL <code>/.well-known/atproto-did</code> (<span>[<a href="#ATPROTO-HANDLE" class="cite xref">ATPROTO-HANDLE</a>]</span>). These names are specific to the AT Protocol. This document defines ecosystem-neutral names, <code>_handle</code> and <code>/.well-known/handle</code>, which take precedence, and falls back to the AT Protocol names when a handle does not publish the new ones, so that every existing AT Protocol handle keeps working.<a href="#section-6.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-2">When step 1 of resolution (<a href="#resolution-steps" class="auto internal xref">Section 6.4</a>) falls back, the resolving party performs the following lookups, each of which yields the handle's DID:<a href="#section-6.4.1-2" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-6.4.2-3.1">
-              <strong>AT Protocol DNS <code>TXT</code> record.</strong> Query <code>TXT</code> records at the name <code>_atproto.</code> <em>handle</em>. Ignore records whose value does not start with <code>did=</code>. The DID is the remainder of the value.<a href="#section-6.4.2-3.1" class="pilcrow">¶</a>
+<li class="compact" id="section-6.4.1-3.1">
+              <strong>AT Protocol DNS <code>TXT</code> record.</strong> Query <code>TXT</code> records at the name <code>_atproto.</code> <em>handle</em>. Ignore records whose value does not start with <code>did=</code>. The DID is the remainder of the value.<a href="#section-6.4.1-3.1" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-6.4.2-3.2">
-              <strong>AT Protocol well-known URL.</strong> <code>GET https://</code> <em>handle</em> <code>/.well-known/atproto-did</code>. A 2xx response with the <code>text/plain</code> media type contains the DID, with leading and trailing whitespace removed.<a href="#section-6.4.2-3.2" class="pilcrow">¶</a>
+            <li class="compact" id="section-6.4.1-3.2">
+              <strong>AT Protocol well-known URL.</strong> <code>GET https://</code> <em>handle</em> <code>/.well-known/atproto-did</code>. A 2xx response with the <code>text/plain</code> media type contains the DID, with leading and trailing whitespace removed.<a href="#section-6.4.1-3.2" class="pilcrow">¶</a>
 </li>
           </ul>
-<p id="section-6.4.2-4">If both lookups yield a DID, and the DIDs differ, resolution fails, in the same way that an AT Protocol handle with conflicting <code>_atproto</code> records fails today. If neither yields a DID, resolution fails.<a href="#section-6.4.2-4" class="pilcrow">¶</a></p>
-<p id="section-6.4.2-5">As a consequence:<a href="#section-6.4.2-5" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-4">If both lookups yield a DID, and the DIDs differ, resolution fails, in the same way that an AT Protocol handle with conflicting <code>_atproto</code> records fails today. If neither yields a DID, resolution fails.<a href="#section-6.4.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-5">As a consequence:<a href="#section-6.4.1-5" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-6.4.2-6.1">A handle that is published with the AT Protocol names only, as every AT Protocol handle is today, resolves for every resolving party, without any change.<a href="#section-6.4.2-6.1" class="pilcrow">¶</a>
+<li class="compact" id="section-6.4.1-6.1">A handle that is published with the AT Protocol names only, as every AT Protocol handle is today, resolves for every resolving party, without any change.<a href="#section-6.4.1-6.1" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-6.4.2-6.2">A handle that is published with the new names resolves to what they name, whatever the AT Protocol names say. This lets the owner of a handle point it elsewhere, for example to a different DID, without first removing its AT Protocol records.<a href="#section-6.4.2-6.2" class="pilcrow">¶</a>
+            <li class="compact" id="section-6.4.1-6.2">A handle that is published with the new names resolves to what they name, whatever the AT Protocol names say. This lets the owner of a handle point it elsewhere, for example to a different DID, without first removing its AT Protocol records.<a href="#section-6.4.1-6.2" class="pilcrow">¶</a>
 </li>
-            <li class="compact" id="section-6.4.2-6.3">Operators of handle domains MAY publish both. AT Protocol software that does not yet support the new names reads only the AT Protocol names, so operators that want the handle to resolve the same way in both SHOULD keep them consistent.<a href="#section-6.4.2-6.3" class="pilcrow">¶</a>
+            <li class="compact" id="section-6.4.1-6.3">Operators of handle domains MAY publish both. AT Protocol software that does not yet support the new names reads only the AT Protocol names, so operators that want the handle to resolve the same way in both SHOULD keep them consistent.<a href="#section-6.4.1-6.3" class="pilcrow">¶</a>
 </li>
           </ul>
-<blockquote id="section-6.4.2-7">
-            <p id="section-6.4.2-7.1">Open Issue: Whether, and when, the AT Protocol adopts the new names, and whether resolving parties can eventually stop querying the AT Protocol names. This needs coordination with the AT Protocol community and the IETF ATP working group.<a href="#section-6.4.2-7.1" class="pilcrow">¶</a></p>
+<blockquote id="section-6.4.1-7">
+            <p id="section-6.4.1-7.1">Open Issue: Whether, and when, the AT Protocol adopts the new names, and whether resolving parties can eventually stop querying the AT Protocol names. This needs coordination with the AT Protocol community and the IETF ATP working group.<a href="#section-6.4.1-7.1" class="pilcrow">¶</a></p>
 </blockquote>
 </section>
 </div>
@@ -2281,7 +2306,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <p id="section-11.3-3">When the verifier resolves a handle to verify an HVT+KB, the requests carry nothing that names the verifier either, but they are sent by the verifier itself. The servers involved see the verifier's network address, which they can often attribute to the verifier, for example through reverse DNS or the verifier's hosting provider, or by signing in to a suspected verifier themselves and observing which address resolves their handle. Combined with the per-user nature of resolution, this can let them learn that a particular user signed in to the verifier at that time. When a server involved in resolution, such as the host of a domain handle or of its DID document, is also the user's issuer, as is common for handles under a server's domain, the issuer can correlate the HVTs it issues with the resolutions that follow, which weakens the property, described above, that the issuer does not learn which verifier the user signs in to. A verifier that goes on to interact with the user's account in the AT Protocol or ActivityPub reveals this anyway.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
 <p id="section-11.3-4">Verifiers can reduce this exposure by:<a href="#section-11.3-4" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-11.3-5.1">caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.1</a>, which helps for returning users but not for first sign-ins;<a href="#section-11.3-5.1" class="pilcrow">¶</a>
+<li class="compact" id="section-11.3-5.1">caching resolution results within the limits of <a href="#caching" class="auto internal xref">Section 5.3</a>, which helps for returning users but not for first sign-ins;<a href="#section-11.3-5.1" class="pilcrow">¶</a>
 </li>
           <li class="compact" id="section-11.3-5.2">resolving through an intermediary shared by many verifiers, such as a resolution service reached over Oblivious HTTP (<span>[<a href="#RFC9458" class="cite xref">RFC9458</a>]</span>), so that the servers involved do not see the verifier's network address; and<a href="#section-11.3-5.2" class="pilcrow">¶</a>
 </li>
@@ -2365,7 +2390,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
           <h4 id="name-conflicting-records">
 <a href="#section-12.5.3" class="section-number selfRef">12.5.3. </a><a href="#name-conflicting-records" class="section-name selfRef">Conflicting Records</a>
           </h4>
-<p id="section-12.5.3-1">A domain handle can be mapped to a DID by up to four records (<a href="#resolution-steps" class="auto internal xref">Section 6.4</a>): two with the new names, and two with the AT Protocol names, which are used only as a fallback (<a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a>). Resolution is designed so that the browser and the verifier cannot reach different results for the same handle, and so that an attacker who can block or delay some lookups cannot choose between them:<a href="#section-12.5.3-1" class="pilcrow">¶</a></p>
+<p id="section-12.5.3-1">A domain handle can be mapped to a DID by up to four records (<a href="#resolution-steps" class="auto internal xref">Section 6.4</a>): two with the new names, and two with the AT Protocol names, which are used only as a fallback (<a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>). Resolution is designed so that the browser and the verifier cannot reach different results for the same handle, and so that an attacker who can block or delay some lookups cannot choose between them:<a href="#section-12.5.3-1" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-12.5.3-2.1">Two records with the same names that name different DIDs cause resolution to fail, rather than letting the result depend on which record a resolving party happened to read.<a href="#section-12.5.3-2.1" class="pilcrow">¶</a>
 </li>
@@ -2437,7 +2462,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <ul class="compact normal">
 <li class="compact normal" id="section-13.1-2.3.2.1">Change controller: IETF<a href="#section-13.1-2.3.2.1" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-13.1-2.3.2.2">Reference: <a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a> of this document<a href="#section-13.1-2.3.2.2" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-13.1-2.3.2.2">Reference: <a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a> of this document<a href="#section-13.1-2.3.2.2" class="pilcrow">¶</a>
 </li>
               <li class="compact normal" id="section-13.1-2.3.2.3">Status: permanent<a href="#section-13.1-2.3.2.3" class="pilcrow">¶</a>
 </li>
@@ -2471,7 +2496,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <li class="compact normal" id="section-13.2-2.2.2.1">
                 <code>_NODE NAME</code>: <code>_atproto</code><a href="#section-13.2-2.2.2.1" class="pilcrow">¶</a>
 </li>
-              <li class="compact normal" id="section-13.2-2.2.2.2">Reference: <a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a> of this document<a href="#section-13.2-2.2.2.2" class="pilcrow">¶</a>
+              <li class="compact normal" id="section-13.2-2.2.2.2">Reference: <a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a> of this document<a href="#section-13.2-2.2.2.2" class="pilcrow">¶</a>
 </li>
             </ul>
 </li>
@@ -2540,7 +2565,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-why-new-names-for-the-handl">
 <a href="#section-14.3" class="section-number selfRef">14.3. </a><a href="#name-why-new-names-for-the-handl" class="section-name selfRef">Why New Names for the Handle Records?</a>
         </h3>
-<p id="section-14.3-1">The AT Protocol's <code>_atproto</code> record and <code>/.well-known/atproto-did</code> URL are specific to one ecosystem, and an ActivityPub account that published them would appear to be an AT Protocol account. Neutral names let any ecosystem use the same records. The names do not mention DIDs, so that they can refer to other kinds of identifiers later, and the well-known document is JSON, so that it can carry more information later. Resolving parties fall back to the AT Protocol names when the new ones are absent (<a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a>), so that every existing AT Protocol handle keeps working, and the new names take precedence when present, so that a handle can move to the new names at its own pace.<a href="#section-14.3-1" class="pilcrow">¶</a></p>
+<p id="section-14.3-1">The AT Protocol's <code>_atproto</code> record and <code>/.well-known/atproto-did</code> URL are specific to one ecosystem, and an ActivityPub account that published them would appear to be an AT Protocol account. Neutral names let any ecosystem use the same records. The names do not mention DIDs, so that they can refer to other kinds of identifiers later, and the well-known document is JSON, so that it can carry more information later. Resolving parties fall back to the AT Protocol names when the new ones are absent (<a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>), so that every existing AT Protocol handle keeps working, and the new names take precedence when present, so that a handle can move to the new names at its own pace.<a href="#section-14.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-not-oauth">
@@ -2573,7 +2598,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <h3 id="name-why-require-an-explicit-han">
 <a href="#section-14.7" class="section-number selfRef">14.7. </a><a href="#name-why-require-an-explicit-han" class="section-name selfRef">Why Require an Explicit HandleIssuer Service?</a>
         </h3>
-<p id="section-14.7-1">An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a <code>HandleIssuer</code> service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document.<a href="#section-14.7-1" class="pilcrow">¶</a></p>
+<p id="section-14.7-1">An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a <code>HandleIssuer</code> service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document, or other controlled identifier document.<a href="#section-14.7-1" class="pilcrow">¶</a></p>
 <p id="section-14.7-2">An explicit service also lets a user choose an issuer that is not the server that hosts their account, and gives both ecosystems the same way to name it.<a href="#section-14.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2630,6 +2655,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <a href="#section-17.1" class="section-number selfRef">17.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
+<dt id="CID-1.0">[CID-1.0]</dt>
+        <dd>
+<span class="refAuthor">W3C</span>, <span class="refTitle">"Controlled Identifiers v1.0"</span>, <span class="refContent">W3C Recommendation</span>, <time datetime="2025-05" class="refDate">May 2025</time>, <span>&lt;<a href="https://www.w3.org/TR/cid-1.0/">https://www.w3.org/TR/cid-1.0/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="EVP">[EVP]</dt>
         <dd>
 <span class="refAuthor">Hardt, D.</span> and <span class="refAuthor">S. Goto</span>, <span class="refTitle">"Email Verification Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-hardt-email-verification-latest</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/draft-hardt-email-verification/">https://datatracker.ietf.org/doc/draft-hardt-email-verification/</a>&gt;</span>. </dd>
@@ -2677,6 +2706,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8259">[RFC8259]</dt>
+        <dd>
+<span class="refAuthor">Bray, T., Ed.</span>, <span class="refTitle">"The JavaScript Object Notation (JSON) Data Interchange Format"</span>, <span class="seriesInfo">STD 90</span>, <span class="seriesInfo">RFC 8259</span>, <span class="seriesInfo">DOI 10.17487/RFC8259</span>, <time datetime="2017-12" class="refDate">December 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8259">https://www.rfc-editor.org/info/rfc8259</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8414">[RFC8414]</dt>
         <dd>
@@ -2757,6 +2790,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
         <dd>
 <span class="refAuthor">W3C Federated Identity Community Group</span>, <span class="refTitle">"IdP Registration API"</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://w3c-fedid.github.io/idp-registration/">https://w3c-fedid.github.io/idp-registration/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="JSON-LD11">[JSON-LD11]</dt>
+        <dd>
+<span class="refAuthor">W3C</span>, <span class="refTitle">"JSON-LD 1.1"</span>, <span class="refContent">W3C Recommendation</span>, <time datetime="2020-07" class="refDate">July 2020</time>, <span>&lt;<a href="https://www.w3.org/TR/json-ld11/">https://www.w3.org/TR/json-ld11/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC1464">[RFC1464]</dt>
         <dd>
 <span class="refAuthor">Rosenbaum, R.</span>, <span class="refTitle">"Using the Domain Name System To Store Arbitrary String Attributes"</span>, <span class="seriesInfo">RFC 1464</span>, <span class="seriesInfo">DOI 10.17487/RFC1464</span>, <time datetime="1993-05" class="refDate">May 1993</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc1464">https://www.rfc-editor.org/info/rfc1464</a>&gt;</span>. </dd>
@@ -2785,7 +2822,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
       <h2 id="name-examples">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
       </h2>
-<p id="appendix-A-1">This appendix shows the resolution of handles. The examples are real handles at the time of writing, which publish only the AT Protocol names, and so resolve through the fallback of <a href="#atproto-compat" class="auto internal xref">Section 6.4.2</a>. Neither publishes a <code>HandleIssuer</code> service yet, so each shows what would be added to opt in. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">This appendix shows the resolution of handles. The examples are real handles at the time of writing, which publish only the AT Protocol names, and so resolve through the fallback of <a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>. Neither publishes a <code>HandleIssuer</code> service yet, so each shows what would be added to opt in. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div id="at-protocol-handle-on-a-self-hosted-pds">
 <section id="appendix-A.1">
         <h3 id="name-at-protocol-handle-on-a-sel">

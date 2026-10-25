@@ -14,7 +14,7 @@ Defines the protocol, which is the same for every handle type: the issuers, the 
 * [Editor's Copy](https://samuelgoto.github.io/handle-verification/draft-goto-url-handle-verification.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-goto-url-handle-verification)
 
-A handle type of HVP for URL handles: users identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or an IndieAuth website. The URL is fetched with content negotiation, and its identity document names the authorized issuer with a `handleIssuer` property or a `handle-issuer` link, without anything specific to an ecosystem. Issuance and verification are those of HVP.
+A handle type of HVP for URL handles: users identified by an `https` URL, such as a Solid WebID, an ActivityPub actor, or an IndieAuth website. The URL is fetched as a [controlled identifier document](https://www.w3.org/TR/cid-1.0/), read as plain JSON, which names the authorized issuer with the same `HandleIssuer` service that domain handles use (or, for HTML pages, a `handle-issuer` link), without anything specific to an ecosystem. Issuance and verification are those of HVP.
 
 ## Username Handles
 

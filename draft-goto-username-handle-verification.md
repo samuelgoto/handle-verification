@@ -73,6 +73,17 @@ organization = "Google"
   </front>
 </reference>
 
+<reference anchor="CID-1.0" target="https://www.w3.org/TR/cid-1.0/">
+  <front>
+    <title>Controlled Identifiers v1.0</title>
+    <author>
+      <organization>W3C</organization>
+    </author>
+    <date year="2025" month="May"/>
+  </front>
+  <refcontent>W3C Recommendation</refcontent>
+</reference>
+
 <reference anchor="DID-CORE" target="https://www.w3.org/TR/did-1.0/">
   <front>
     <title>Decentralized Identifiers (DIDs) v1.0</title>
@@ -292,7 +303,7 @@ Given a normalized username handle *handle*, whose `acct` URI is `acct:` followe
 
 3. **Account URL.** The account URL is the `href` of the first link whose `rel` is `self` and whose `href` is an `https` URL, whatever its `type`. If there is none, or it is not a URL handle once normalized ([@!URL-HANDLES]), fail. For an ActivityPub account, this is the URI of its actor.
 
-4. **URL handle resolution.** Resolve the account URL as a URL handle ([@!URL-HANDLES]). If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces: the account's identity document names the issuer, with a `handleIssuer` property or a `handle-issuer` link.
+4. **URL handle resolution.** Resolve the account URL as a URL handle ([@!URL-HANDLES]). If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces: the account's identity document names the issuer, with the `HandleIssuer` service of its controlled identifier document ([@!HVP]) or a `handle-issuer` link.
 
 5. **Back-link.** Check that the server that hosts the account agrees that the account has the handle ((#same-origin)):
    - If the origin of the unique user identifier is identical to the authorized issuer, the check succeeds without any further request: the issuer is the server that hosts the account.
@@ -313,7 +324,10 @@ GET https://example.com/.well-known/webfinger
      self:    https://social.example.com/users/alice
 GET https://social.example.com/users/alice      (URL handle)
   -> { "id": "https://social.example.com/users/alice",
-       "handleIssuer": "https://social.example.com", ... }
+       "service": [{ "id": "#handle_issuer",
+                     "type": "HandleIssuer",
+                     "serviceEndpoint":
+                       "https://social.example.com" }], ... }
 User identifier:    https://social.example.com/users/alice
 Issuer:             https://social.example.com    (same origin)
 ```
@@ -334,7 +348,7 @@ The named handle is either a username handle, written with its leading `@`, such
 Given a domain handle *handle* that names another handle *named*:
 
 1. **Resolution.** Resolve *named*, as described in (#resolve-user) if it is a username handle, or in [@!URL-HANDLES] if it is a URL handle. If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces.
-2. **Back-link.** The identity document of the account ([@!URL-HANDLES]) MUST claim *handle* back, with `at://` followed by *handle*, compared after conversion to ASCII lowercase. A JSON identity document claims it in the `alsoKnownAs` property of its subject node, whose IRI is `https://www.w3.org/ns/activitystreams#alsoKnownAs`, as ActivityPub actors and DID documents ([@?DID-CORE]) do; the value of the property is read as in [@!URL-HANDLES], except that it can be a JSON array of any number of values. An HTML identity document claims it with a link whose relation type is `me`, in a `Link` header field ([@!RFC8288]) or in a `<link>` element, as IndieWeb websites link to their other identities ([@?INDIEAUTH]). Otherwise fail. This check ensures that an account cannot be claimed by a domain handle that it did not agree to. The `at` URI form ([@?ATPROTO-URI]) is the form in which [@!HVP] writes domain handles of every ecosystem.
+2. **Back-link.** The identity document of the account ([@!URL-HANDLES]) MUST claim *handle* back, with `at://` followed by *handle*, compared after conversion to ASCII lowercase. A controlled identifier document claims it in its `alsoKnownAs` member ([@!CID-1.0]), read as described in [@!HVP], whose value is a JSON array of strings; ActivityPub actors and DID documents ([@?DID-CORE]) use the same member, with the same meaning. As [@!CID-1.0] advises, the two identifiers are treated as referring to the same account only because each refers to the other: the domain handle names the account, and the account's document lists the domain handle. An HTML identity document claims it with a link whose relation type is `me`, in a `Link` header field ([@!RFC8288]) or in a `<link>` element, as IndieWeb websites link to their other identities ([@?INDIEAUTH]). Otherwise fail. This check ensures that an account cannot be claimed by a domain handle that it did not agree to. The `at` URI form ([@?ATPROTO-URI]) is the form in which [@!HVP] writes domain handles of every ecosystem.
 
 The named handle cannot itself be a domain handle, so resolution does not recurse. No DID is involved. The `handle` of the HVT request and of the HVT is the domain handle.
 
@@ -504,7 +518,7 @@ GET https://social.example/.well-known/webfinger
   self:    https://social.example/users/alice
 GET https://social.example/users/alice          (URL handle)
   id:           https://social.example/users/alice
-  handleIssuer: https://social.example
+  HandleIssuer: https://social.example         (service)
   alsoKnownAs:  ["at://alice.example"]          (back-link ok)
 Identifier:    https://social.example/users/alice
 Issuer:        https://social.example           (same origin)
@@ -519,7 +533,7 @@ DNS TXT _handle.alice.example
 Names:         https://social.example/users/alice
 GET https://social.example/users/alice          (URL handle)
   id:           https://social.example/users/alice
-  handleIssuer: https://social.example
+  HandleIssuer: https://social.example         (service)
   alsoKnownAs:  ["at://alice.example"]          (back-link ok)
 Identifier:    https://social.example/users/alice
 Issuer:        https://social.example
@@ -539,7 +553,8 @@ GET https://fedi.simonwillison.net/users/simon  (URL handle)
   id:      https://fedi.simonwillison.net/users/simon
 Identifier:    https://fedi.simonwillison.net/users/simon
 To opt in, add to the actor:
-  "handleIssuer": "https://fedi.simonwillison.net"
+  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+                "serviceEndpoint": "https://fedi.simonwillison.net" }]
 Issuer:        https://fedi.simonwillison.net   (same origin)
 ```
 
@@ -557,7 +572,8 @@ GET https://fed.brid.gy/snarfed.org             (URL handle)
   id:      https://fed.brid.gy/snarfed.org
 Identifier:    https://fed.brid.gy/snarfed.org
 To opt in, add to the actor:
-  "handleIssuer": "https://fed.brid.gy"
+  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+                "serviceEndpoint": "https://fed.brid.gy" }]
 Issuer:        https://fed.brid.gy              (same origin)
 ```
 
@@ -574,7 +590,8 @@ GET https://threads.net/.well-known/webfinger
 GET https://threads.net/ap/users/17841401746480004/  (URL handle)
 Identifier:    https://threads.net/ap/users/17841401746480004/
 To opt in, add to the actor:
-  "handleIssuer": "https://www.threads.com"
+  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+                "serviceEndpoint": "https://www.threads.com" }]
 Issuer:        https://www.threads.com          (other origin)
 Back-link:     WebFinger at threads.net for the resource
                https://threads.net/ap/users/17841401746480004/

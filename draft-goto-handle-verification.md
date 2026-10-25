@@ -199,6 +199,28 @@ organization = "Google"
   </front>
 </reference>
 
+<reference anchor="JSON-LD11" target="https://www.w3.org/TR/json-ld11/">
+  <front>
+    <title>JSON-LD 1.1</title>
+    <author>
+      <organization>W3C</organization>
+    </author>
+    <date year="2020" month="July"/>
+  </front>
+  <refcontent>W3C Recommendation</refcontent>
+</reference>
+
+<reference anchor="CID-1.0" target="https://www.w3.org/TR/cid-1.0/">
+  <front>
+    <title>Controlled Identifiers v1.0</title>
+    <author>
+      <organization>W3C</organization>
+    </author>
+    <date year="2025" month="May"/>
+  </front>
+  <refcontent>W3C Recommendation</refcontent>
+</reference>
+
 <reference anchor="DID-CORE" target="https://www.w3.org/TR/did-1.0/">
   <front>
     <title>Decentralized Identifiers (DIDs) v1.0</title>
@@ -286,11 +308,14 @@ Unique user identifier:
 DID:
 : A decentralized identifier ([@?DID-CORE]) that identifies a user's account more permanently than its handle, such as `did:plc:bftbdgcbe4zclvpkboe4hleq` or `did:web:alice.example`. A handle resolves to a DID.
 
+Controlled identifier document:
+: A JSON document that describes the subject of an identifier, which is its `id`, and lists the subject's other identifiers, verification methods, and services ([@!CID-1.0]). See (#cid).
+
 DID document:
-: The document that a DID resolves to. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuer.
+: The document that a DID resolves to. It is a controlled identifier document whose `id` is the DID. It lists the handle that the account claims, the account's services, and, for HVP, its authorized issuer.
 
 Authorized issuer:
-: The issuer identifier that resolution yields for a handle: for a domain handle, the one that its DID document names with its `HandleIssuer` service ((#handle-issuer)). Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.
+: The issuer identifier that resolution yields for a handle, typically the one that a controlled identifier document names with its `HandleIssuer` service ((#handle-issuer)): for a domain handle, its DID document. Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.
 
 Issuer:
 : A service that verifies the user controls a handle and issues HVTs for it, typically the server that hosts the user's account, such as an AT Protocol personal data server (PDS) or an ActivityPub server. An issuer is identified by an issuer identifier ((#issuer-identifier)).
@@ -414,6 +439,39 @@ The following rules apply to every resolution step, of every handle type:
 - Redirects are followed only to `https` URLs, and at most 5 times for a single request.
 - Responses are subject to reasonable limits on size and time, and resolving parties take the precautions of (#ssrf).
 
+## Controlled Identifier Documents {#cid}
+
+Handle types can resolve a handle to a controlled identifier document ([@!CID-1.0]), which describes the account: a DID document for a domain handle ((#resolution-steps)), or a document fetched from a URL for other handle types. A controlled identifier document names the account's authorized issuer with the `HandleIssuer` service ((#handle-issuer)), and can claim the handle back with its `alsoKnownAs` member.
+
+Resolving parties read a controlled identifier document as JSON ([@!RFC8259]), without JSON-LD processing ([@?JSON-LD11]), as follows:
+
+- The document is a JSON object whose `id` member is a string. Otherwise, it is not a controlled identifier document.
+- Members are read by their literal names: `id`, `alsoKnownAs`, `service`, and, within each service, `id`, `type`, and `serviceEndpoint`. A JSON-LD `@context`, if present, is ignored, so a document that spells these members differently, for example in expanded JSON-LD form, has none of them.
+- Relative URLs in the `id` of a service, such as `#handle_issuer`, are resolved against the `id` of the document.
+
+A handle type that resolves a handle to a controlled identifier document defines how the document is obtained, and how its `id` is checked: for example, a DID document's `id` is the DID, and a document fetched from a URL has that URL as its `id` ([@!CID-1.0]).
+
+## The HandleIssuer Service {#handle-issuer}
+
+A controlled identifier document names the issuer authorized to vouch for its handles with a service ([@!CID-1.0]) whose `type` is `HandleIssuer`, whose `serviceEndpoint` is an issuer identifier ((#issuer-identifier)), and whose `id` is `#handle_issuer`, that is, the document's `id` followed by `#handle_issuer`:
+
+```json
+{ "id": "#handle_issuer", "type": "HandleIssuer",
+  "serviceEndpoint": "https://issuer.example" }
+```
+
+`HandleIssuer` is a service type of [@!CID-1.0], in the same way that, for example, the AT Protocol identifies the account's PDS with a service whose `id` is `#atproto_pds` ([@?ATPROTO-DID]). Service `id`s are unique within a controlled identifier document ([@!CID-1.0]), and in `did:plc` services are stored as a map keyed by `id` ([@?DID-PLC]), so a document names at most one issuer.
+
+If the document has no service whose `id` is `#handle_issuer`, or that service's `type` is not `HandleIssuer`, or its `serviceEndpoint` is not an issuer identifier, that is, not an `https` origin with no path, query, or fragment, the handle has no authorized issuer, and HVP cannot be used with it.
+
+Because a handle has a single authorized issuer, a change of issuer takes effect at once: as soon as the document names a new issuer, HVTs from the previous one no longer verify. This is the same as when a user moves their account to another server. A user who moves their account to another server, and whose issuer is that server, updates their `HandleIssuer` service as part of the move.
+
+Authorization is always explicit: resolution does not infer an issuer from the account's other services or properties, such as its AT Protocol PDS (the `#atproto_pds` service), the PDS's authorization server, or the server that hosts the document. An issuer has to deploy HVP anyway, and requiring the document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See (#why-opt-in).
+
+Like other services of controlled identifier documents, the `HandleIssuer` service names a party to interact with, and does not involve the document's verification methods: the issuer signs HVTs with the keys of its own metadata ((#issuer-metadata)).
+
+> Open Issue: The name of the service type, whether it should be identified by a full IRI with a published JSON-LD context, and whether it should be registered in the W3C DID Extensions registry, or its successor for controlled identifier documents.
+
 ## Caching {#caching}
 
 A resolving party MAY cache the results of resolution, subject to DNS time-to-live values and HTTP caching rules. A verifier SHOULD NOT cache resolution results for longer than a few minutes when verifying an HVT+KB, because a user who moves their handle to another issuer, or who loses control of it, expects the change to take effect promptly.
@@ -487,7 +545,7 @@ Given a normalized domain handle *handle*:
    - **DNS `TXT` record.** Query `TXT` records at the name `_handle.` *handle*. A record whose value starts with `did=` names a DID, in the remainder of the value. Records whose value starts with anything else are ignored. This method aligns with [@?RFC1464].
    - **Well-known document.** `GET https://` *handle* `/.well-known/handle`. A 2xx response with the `application/json` media type is a JSON object whose `did` member, if present, names a DID. Other members are ignored.
 
-2. **DID to DID document.** Resolve the DID to its DID document ([@?DID-CORE]), whose `id` member MUST be identical to the DID:
+2. **DID to DID document.** Resolve the DID to its DID document ([@?DID-CORE]), a controlled identifier document that is read as described in (#cid), and whose `id` member MUST be identical to the DID:
    - For `did:plc`, `GET` the DID from a PLC directory, by default `https://plc.directory/` followed by the DID.
    - For `did:web`, `GET https://` *domain* `/.well-known/did.json`, where *domain* is the method-specific identifier ([@?DID-WEB]), such as `alice.example` for `did:web:alice.example`. A `did:web` DID with a path is not supported, as in the AT Protocol ([@?ATPROTO-DID]).
 
@@ -513,27 +571,6 @@ Because records and members with other keys are ignored, other kinds of records 
 > Open Issue: Other kinds of records could be added later with keys of their own: for example, `domain=` for another domain handle, resolved recursively and failing when a loop is detected, or `email=` for an email address verified with [@!EVP]. A handle could also be allowed to name several identifiers, any one of which proves it; this would require a rule for which unique user identifier an HVT for the handle carries, because each resolves to a different one, and a verifier identifies accounts by it.
 
 > Open Issue: The SWICG Handles Task Force proposes `/.well-known/activitypub-actor`, a JSON document that refers to an ActivityPub actor, to resolve domain handles in ActivityPub ([@?HANDLES-TF]). This document proposes `/.well-known/handle` and `_handle`, which refer to a DID instead, so that the same names serve every ecosystem. The two need to be reconciled.
-
-### The HandleIssuer Service {#handle-issuer}
-
-A DID document names the issuer authorized to vouch for its handle with a service ([@?DID-CORE]) whose `id` is `#handle_issuer`, whose `type` is `HandleIssuer`, and whose `serviceEndpoint` is an issuer identifier ((#issuer-identifier)):
-
-```json
-{ "id": "#handle_issuer", "type": "HandleIssuer",
-  "serviceEndpoint": "https://issuer.example" }
-```
-
-The service is identified by its `id`, which can also be written as the DID followed by `#handle_issuer`, in the same way that the AT Protocol identifies the account's PDS by the `id` `#atproto_pds` ([@?ATPROTO-DID]). Service `id`s are unique within a DID document ([@?DID-CORE]), and in `did:plc` services are stored as a map keyed by `id` ([@?DID-PLC]), so a DID document names at most one issuer.
-
-If the DID document has no service whose `id` is `#handle_issuer`, or that service's `type` is not `HandleIssuer`, or its `serviceEndpoint` is not an issuer identifier, that is, not an `https` origin with no path, query, or fragment, the handle has no authorized issuer, and HVP cannot be used with it.
-
-Because a handle has a single authorized issuer, a change of issuer takes effect at once: as soon as the DID document names a new issuer, HVTs from the previous one no longer verify. This is the same as when a user moves their account to another server.
-
-Authorization is always explicit: resolution does not infer an issuer from the account's existing services, such as its AT Protocol PDS (the `#atproto_pds` service), the PDS's authorization server, or its ActivityPub server. An issuer has to deploy HVP anyway, and requiring the DID document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See (#why-opt-in).
-
-A user who moves their account to another server, and whose issuer is that server, updates their `HandleIssuer` service as part of the move.
-
-> Open Issue: The name of the DID service type, and whether it should be registered in the W3C DID Extensions registry.
 
 > Open Issue: Whether a server that the DID document already names, such as the PDS named by the `#atproto_pds` service, should be an authorized issuer by default, which would let HVP work with existing accounts without changing their DID documents, at the cost of the explicit opt-in.
 
@@ -892,7 +929,7 @@ The verifier cannot trust the browser's resolution, which could be manipulated, 
 
 ## Why Require an Explicit HandleIssuer Service? {#why-opt-in}
 
-An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a `HandleIssuer` service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document.
+An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a `HandleIssuer` service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document, or other controlled identifier document.
 
 An explicit service also lets a user choose an issuer that is not the server that hosts their account, and gives both ecosystems the same way to name it.
 

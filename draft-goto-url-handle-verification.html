@@ -8,7 +8,7 @@
 <meta content="Sam Goto" name="author">
 <meta content="@bumblefudge.com" name="author">
 <meta content="
-       This document defines  URL handles , a handle type of the Handle Verification Protocol ( ), for users who are identified by an  https  URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it as a controlled identifier document ( ), which gives the canonical identifier of the account and names the issuer that the user has authorized to vouch for it with the  HandleIssuer  service of HVP, the same service that domain handles use, or by fetching it as an HTML page that names the issuer with a  handle-issuer  link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, as for any handle type of HVP. The resolution is not specific to any ecosystem. 
+       This document defines  URL handles , a handle type of the Handle Verification Protocol ( ), for users who are identified by an  https  URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it as a controlled identifier document ( ), which gives the canonical identifier of the account and names the issuer that the user has authorized to vouch for it with the  HandleVerification  service of HVP, the same service that domain handles use, or by fetching it as an HTML page that names the issuer with a  handle-verification  link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, as for any handle type of HVP. The resolution is not specific to any ecosystem. 
     " name="description">
 <meta content="xml2rfc 3.31.0" name="generator">
 <meta content="handle" name="keyword">
@@ -1052,7 +1052,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Goto &amp; @bumblefudge.com</td>
-<td class="center">Expires 28 April 2027</td>
+<td class="center">Expires 29 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-goto-url-handle-verification-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-10-25" class="published">25 October 2026</time>
+<time datetime="2026-10-26" class="published">26 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-04-28">28 April 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-29">29 April 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1086,7 +1086,7 @@ svg {
 <h1 id="title">URL Handles</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines <em>URL handles</em>, a handle type of the Handle Verification Protocol (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>), for users who are identified by an <code>https</code> URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it as a controlled identifier document (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), which gives the canonical identifier of the account and names the issuer that the user has authorized to vouch for it with the <code>HandleIssuer</code> service of HVP, the same service that domain handles use, or by fetching it as an HTML page that names the issuer with a <code>handle-issuer</code> link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, as for any handle type of HVP. The resolution is not specific to any ecosystem.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines <em>URL handles</em>, a handle type of the Handle Verification Protocol (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>), for users who are identified by an <code>https</code> URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it as a controlled identifier document (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), which gives the canonical identifier of the account and names the issuer that the user has authorized to vouch for it with the <code>HandleVerification</code> service of HVP, the same service that domain handles use, or by fetching it as an HTML page that names the issuer with a <code>handle-verification</code> link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, as for any handle type of HVP. The resolution is not specific to any ecosystem.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1114,7 +1114,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 29 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1170,7 +1170,7 @@ svg {
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-handle-resolution" class="internal xref">Handle Resolution</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
-                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-the-handle-issuer-link" class="internal xref">The handle-issuer Link</a></p>
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-the-handle-verification-lin" class="internal xref">The handle-verification Link</a></p>
 </li>
             </ul>
 </li>
@@ -1209,7 +1209,7 @@ svg {
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-design-rationale" class="internal xref">Design Rationale</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
-                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-why-the-handleissuer-servic" class="internal xref">Why the HandleIssuer Service?</a></p>
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-why-the-handleverification-" class="internal xref">Why the HandleVerification Service?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
                 <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-why-content-negotiation" class="internal xref">Why Content Negotiation?</a></p>
@@ -1281,7 +1281,7 @@ svg {
         <li class="compact" id="section-1-3.3">IndieAuth (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>) identifies users with the URL of their personal website, such as Aaron Parecki's <code>https://aaronparecki.com/</code>.<a href="#section-1-3.3" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-1-4">In each, fetching the URL returns a document about the user. Controlled Identifiers (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>) defines a JSON format for such documents, which generalizes DID documents to any URL, and which the Linked Web Storage protocol, the successor of Solid, uses to identify its users (<span>[<a href="#LWS-AUTHN-OPENID" class="cite xref">LWS-AUTHN-OPENID</a>]</span>). This document calls such a URL a <em>URL handle</em>, and defines URL handles as a handle type of HVP, whose resolution fetches the URL as a controlled identifier document, checks that its <code>id</code> is the URL, and reads the issuer that the user has authorized from its <code>HandleIssuer</code> service (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>), the same service that the DID documents of domain handles use. A website that serves HTML, such as an IndieAuth website, can name its issuer with a <code>handle-issuer</code> link instead. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">In each, fetching the URL returns a document about the user. Controlled Identifiers (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>) defines a JSON format for such documents, which generalizes DID documents to any URL, and which the Linked Web Storage protocol, the successor of Solid, uses to identify its users (<span>[<a href="#LWS-AUTHN-OPENID" class="cite xref">LWS-AUTHN-OPENID</a>]</span>). This document calls such a URL a <em>URL handle</em>, and defines URL handles as a handle type of HVP, whose resolution fetches the URL as a controlled identifier document, checks that its <code>id</code> is the URL, and reads the issuer that the user has authorized from its <code>HandleVerification</code> service (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>), the same service that the DID documents of domain handles use. A website that serves HTML, such as an IndieAuth website, can name its issuer with a <code>handle-verification</code> link instead. Everything after resolution, that is, the issuer metadata, the HVT request, the HVT, its key binding, and the verification of the HVT+KB, is that of HVP.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">The resolution does not depend on the ecosystem: it requests a controlled identifier document, or generic JSON-LD, and reads it as plain JSON, with the same algorithm, whether it is served by a Linked Web Storage server, an ActivityPub server, or any other server, and reads the same link from any HTML page.<a href="#section-1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1477,12 +1477,12 @@ HVT+KB Verification [GET URL;               |                    |
           <p id="section-5-3.4.1"><strong>Identity document.</strong> If the unique user identifier is identical to the final URL, the response of step 1 is the identity document, whose <code>id</code> is the URL from which it was fetched, as <span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span> requires. Otherwise, the document names an account at another URL: <code>GET</code> the unique user identifier, as in step 1, and parse it, as in step 2. The final URL of this response MUST be same origin with the unique user identifier, the response MUST be a controlled identifier document, and its <code>id</code> MUST be identical to the unique user identifier. Otherwise fail. This response is the identity document. This step is not repeated: an identity document that names yet another account fails.<a href="#section-5-3.4.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-5-3.5">
-          <p id="section-5-3.5.1"><strong>Issuer.</strong> Collect the issuer identifiers that the identity document names: from its <code>Link</code> header fields (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) whose relation type is <code>handle-issuer</code> (<a href="#handle-issuer-link" class="auto internal xref">Section 5.1</a>); for a controlled identifier document, from its <code>HandleIssuer</code> service (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>); and for an HTML document, from its <code>&lt;link&gt;</code> elements whose relation type is <code>handle-issuer</code> (<a href="#handle-issuer-link" class="auto internal xref">Section 5.1</a>). If there are none, or they are not all identical, or they are not an issuer identifier (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>), fail. Otherwise, it is the authorized issuer.<a href="#section-5-3.5.1" class="pilcrow">¶</a></p>
+          <p id="section-5-3.5.1"><strong>Issuer.</strong> Collect the issuer identifiers that the identity document names: from its <code>Link</code> header fields (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) whose relation type is <code>handle-verification</code> (<a href="#handle-verification-link" class="auto internal xref">Section 5.1</a>); for a controlled identifier document, from its <code>HandleVerification</code> service (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>); and for an HTML document, from its <code>&lt;link&gt;</code> elements whose relation type is <code>handle-verification</code> (<a href="#handle-verification-link" class="auto internal xref">Section 5.1</a>). If there are none, or they are not all identical, or they are not an issuer identifier (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>), fail. Otherwise, it is the authorized issuer.<a href="#section-5-3.5.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
 <p id="section-5-4">If any step fails, resolution fails.<a href="#section-5-4" class="pilcrow">¶</a></p>
 <p id="section-5-5">Resolution replaces the URL handle with the unique user identifier: from this point on, the unique user identifier is the handle, in the HVT request, in the HVT, and in what the browser displays. In most cases, the two are identical; they differ when the URL that the user typed serves a document about an account at another URL, or redirects to it. See <a href="#why-canonical" class="auto internal xref">Section 10.3</a>.<a href="#section-5-5" class="pilcrow">¶</a></p>
-<p id="section-5-6">A document is read as a controlled identifier document if it is a JSON object with an <code>id</code> member, whatever its media type: an ActivityPub actor, for example, is one, and can name its issuer by adding the <code>HandleIssuer</code> service to its <code>service</code> member, which <span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span> defines. The <code>service</code> member is unrelated to the <code>Service</code> actor type of ActivityStreams, and to the <code>endpoints</code> member of ActivityPub (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>). For example, an ActivityPub actor resolves as follows:<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-6">A document is read as a controlled identifier document if it is a JSON object with an <code>id</code> member, whatever its media type: an ActivityPub actor, for example, is one, and can name its issuer by adding the <code>HandleVerification</code> service to its <code>service</code> member, which <span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span> defines. The <code>service</code> member is unrelated to the <code>Service</code> actor type of ActivityStreams, and to the <code>endpoints</code> member of ActivityPub (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>). For example, an ActivityPub actor resolves as follows:<a href="#section-5-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5-7">
 <pre>GET https://social.example/users/alice
 Accept: application/cid, application/ld+json;q=0.9, ...
@@ -1491,8 +1491,8 @@ Accept: application/cid, application/ld+json;q=0.9, ...
                     "https://www.w3.org/ns/cid/v1"],
        "id": "https://social.example/users/alice",
        "type": "Person",
-       "service": [{ "id": "#handle_issuer",
-                     "type": "HandleIssuer",
+       "service": [{ "id": "#handle_verification",
+                     "type": "HandleVerification",
                      "serviceEndpoint": "https://social.example" }],
        ... }
 User identifier: https://social.example/users/alice
@@ -1501,22 +1501,22 @@ Issuer:          https://social.example
 </div>
 <blockquote id="section-5-8">
         <p id="section-5-8.1">Open Issue: Some ActivityPub servers serve actors only for the media types of ActivityPub (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>), and not for <code>application/ld+json</code> without a profile, so that resolution does not reach their actors. Such servers would need to serve their actors for <code>application/cid</code> or <code>application/ld+json</code>.<a href="#section-5-8.1" class="pilcrow">¶</a></p>
-<p id="section-5-8.2">Open Issue: Some ActivityPub servers, such as Mastodon servers with "authorized fetch" enabled, serve actors only to requests that are signed with the key of another server's actor, and respond to the unsigned requests of resolution with a 401 (Unauthorized) response, so that resolution of their actors fails. Resolving parties cannot sign their requests, because they have no actor, and because a signature would identify them. Such servers would need to serve their actors, or at least the <code>handle-issuer</code> link of their responses (<a href="#handle-issuer-link" class="auto internal xref">Section 5.1</a>), to unsigned requests. This needs to be discussed with Mastodon as an implementation detail.<a href="#section-5-8.2" class="pilcrow">¶</a></p>
+<p id="section-5-8.2">Open Issue: Some ActivityPub servers, such as Mastodon servers with "authorized fetch" enabled, serve actors only to requests that are signed with the key of another server's actor, and respond to the unsigned requests of resolution with a 401 (Unauthorized) response, so that resolution of their actors fails. Resolving parties cannot sign their requests, because they have no actor, and because a signature would identify them. Such servers would need to serve their actors, or at least the <code>handle-verification</code> link of their responses (<a href="#handle-verification-link" class="auto internal xref">Section 5.1</a>), to unsigned requests. This needs to be discussed with Mastodon as an implementation detail.<a href="#section-5-8.2" class="pilcrow">¶</a></p>
 <p id="section-5-8.3">Open Issue: Solid servers serve JSON-LD in expanded form, which has no <code>id</code> member, and so is not read as a controlled identifier document. Such servers would need to serve the profile documents of their users as controlled identifier documents, as the Linked Web Storage protocol does (<span>[<a href="#LWS-AUTHN-OPENID" class="cite xref">LWS-AUTHN-OPENID</a>]</span>).<a href="#section-5-8.3" class="pilcrow">¶</a></p>
 </blockquote>
-<div id="handle-issuer-link">
+<div id="handle-verification-link">
 <section id="section-5.1">
-        <h3 id="name-the-handle-issuer-link">
-<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-the-handle-issuer-link" class="section-name selfRef">The handle-issuer Link</a>
+        <h3 id="name-the-handle-verification-lin">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-the-handle-verification-lin" class="section-name selfRef">The handle-verification Link</a>
         </h3>
-<p id="section-5.1-1">An identity document can also name the issuer authorized to vouch for its handle with a link whose relation type is <code>handle-issuer</code> (<a href="#iana" class="auto internal xref">Section 9</a>), whose target is an issuer identifier, and whose context is the identity document: in a <code>Link</code> header field (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) of the response, with any media type, or, in an HTML document, in a <code>&lt;link&gt;</code> element (<span>[<a href="#WHATWG.HTML" class="cite xref">WHATWG.HTML</a>]</span>), whose <code>href</code> is resolved against the document's base URL:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-1">An identity document can also name the issuer authorized to vouch for its handle with a link whose relation type is <code>handle-verification</code> (<a href="#iana" class="auto internal xref">Section 9</a>), whose target is an issuer identifier, and whose context is the identity document: in a <code>Link</code> header field (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) of the response, with any media type, or, in an HTML document, in a <code>&lt;link&gt;</code> element (<span>[<a href="#WHATWG.HTML" class="cite xref">WHATWG.HTML</a>]</span>), whose <code>href</code> is resolved against the document's base URL:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <div class="lang-http sourcecode" id="section-5.1-2">
 <pre>HTTP/1.1 200 OK
 Content-Type: text/html
-Link: &lt;https://issuer.example&gt;; rel="handle-issuer"
+Link: &lt;https://issuer.example&gt;; rel="handle-verification"
 
 &lt;!doctype html&gt;
-&lt;link rel="handle-issuer" href="https://issuer.example"&gt;
+&lt;link rel="handle-verification" href="https://issuer.example"&gt;
 </pre><a href="#section-5.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-5.1-3">This is how IndieAuth websites already name their authorization endpoints (<span>[<a href="#INDIEAUTH" class="cite xref">INDIEAUTH</a>]</span>), and it lets a website that cannot vary its responses by media type, such as a static website, use its URL as a URL handle by serving HTML.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
@@ -1575,8 +1575,9 @@ Link: &lt;https://issuer.example&gt;; rel="handle-issuer"
         </h3>
 <p id="section-8.1-1">An identity document is controlled by the server that hosts its URL, and names both the unique user identifier and the issuer. A document at one URL could name another user's account as its <code>id</code>, and an issuer of its own choosing:<a href="#section-8.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-8.1-2">
-<pre>https://evil.example/ -&gt; id:            https://social.example/users/bob
-                         HandleIssuer:  https://evil.example
+<pre>https://evil.example/
+  -&gt; id:                 https://social.example/users/bob
+     HandleVerification: https://evil.example
 </pre><a href="#section-8.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-8.1-3">Step 4 of <a href="#resolution" class="auto internal xref">Section 5</a> prevents this: when the <code>id</code> of a document is not its own URL, resolution fetches the <code>id</code>, and reads the issuer from the document that the server that hosts the account serves, rather than from the document that named it. Bob's actor names his own issuer, or none, so the issuer of <code>evil.example</code> is never authorized for Bob's account. The URL that the user typed is replaced by Bob's account (<a href="#why-canonical" class="auto internal xref">Section 10.3</a>), and so <code>evil.example</code> cannot give Bob a handle that Bob did not agree to.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
@@ -1621,11 +1622,11 @@ Link: &lt;https://issuer.example&gt;; rel="handle-issuer"
         </h3>
 <p id="section-9.1-1">This document registers the following link relation type in the "Link Relation Types" registry (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>):<a href="#section-9.1-1" class="pilcrow">¶</a></p>
 <ul class="compact">
-<li class="compact" id="section-9.1-2.1">Relation Name: <code>handle-issuer</code><a href="#section-9.1-2.1" class="pilcrow">¶</a>
+<li class="compact" id="section-9.1-2.1">Relation Name: <code>handle-verification</code><a href="#section-9.1-2.1" class="pilcrow">¶</a>
 </li>
           <li class="compact" id="section-9.1-2.2">Description: Refers to the issuer that the context authorizes to issue Handle Verification Tokens for its handle.<a href="#section-9.1-2.2" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-9.1-2.3">Reference: <a href="#handle-issuer-link" class="auto internal xref">Section 5.1</a> of this document<a href="#section-9.1-2.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-9.1-2.3">Reference: <a href="#handle-verification-link" class="auto internal xref">Section 5.1</a> of this document<a href="#section-9.1-2.3" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>
@@ -1639,10 +1640,10 @@ Link: &lt;https://issuer.example&gt;; rel="handle-issuer"
       </h2>
 <div id="why-new-term">
 <section id="section-10.1">
-        <h3 id="name-why-the-handleissuer-servic">
-<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-why-the-handleissuer-servic" class="section-name selfRef">Why the HandleIssuer Service?</a>
+        <h3 id="name-why-the-handleverification-">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-why-the-handleverification-" class="section-name selfRef">Why the HandleVerification Service?</a>
         </h3>
-<p id="section-10.1-1">A Solid WebID profile names the OpenID Connect issuers that can authenticate the user with <code>solid:oidcIssuer</code> (<span>[<a href="#SOLID-OIDC" class="cite xref">SOLID-OIDC</a>]</span>), and a Linked Web Storage controlled identifier document names them with a service of type <code>https://www.w3.org/ns/lws#OpenIdProvider</code> (<span>[<a href="#LWS-AUTHN-OPENID" class="cite xref">LWS-AUTHN-OPENID</a>]</span>). But an HVT is not an OpenID Connect token: OpenID Connect is a two-party protocol, in which the issuer issues tokens to the relying party, and learns who it is, while HVP is a three-party protocol, in which the browser obtains the token and hides the verifier from the issuer. A user who authorized an issuer to sign them in with OpenID Connect has not necessarily authorized it to make statements that the browser presents to verifiers that the issuer does not know. A profile can also list several OpenID Connect issuers, while a handle has a single authorized issuer in HVP. The <code>HandleIssuer</code> service makes the user's opt-in explicit, and is the same service, defined once by <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, that the DID documents of domain handles use.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.1-1">A Solid WebID profile names the OpenID Connect issuers that can authenticate the user with <code>solid:oidcIssuer</code> (<span>[<a href="#SOLID-OIDC" class="cite xref">SOLID-OIDC</a>]</span>), and a Linked Web Storage controlled identifier document names them with a service of type <code>https://www.w3.org/ns/lws#OpenIdProvider</code> (<span>[<a href="#LWS-AUTHN-OPENID" class="cite xref">LWS-AUTHN-OPENID</a>]</span>). But an HVT is not an OpenID Connect token: OpenID Connect is a two-party protocol, in which the issuer issues tokens to the relying party, and learns who it is, while HVP is a three-party protocol, in which the browser obtains the token and hides the verifier from the issuer. A user who authorized an issuer to sign them in with OpenID Connect has not necessarily authorized it to make statements that the browser presents to verifiers that the issuer does not know. A profile can also list several OpenID Connect issuers, while a handle has a single authorized issuer in HVP. The <code>HandleVerification</code> service makes the user's opt-in explicit, and is the same service, defined once by <span>[<a href="#HVP" class="cite xref">HVP</a>]</span>, that the DID documents of domain handles use.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="why-content-negotiation">
@@ -1650,7 +1651,7 @@ Link: &lt;https://issuer.example&gt;; rel="handle-issuer"
         <h3 id="name-why-content-negotiation">
 <a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-why-content-negotiation" class="section-name selfRef">Why Content Negotiation?</a>
         </h3>
-<p id="section-10.2-1">ActivityPub servers serve actors through content negotiation (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>), and Solid servers serve every RDF document as Turtle or JSON-LD through content negotiation (<span>[<a href="#SOLID-PROTOCOL" class="cite xref">SOLID-PROTOCOL</a>]</span>), so that the same URL can serve both a page for people and a document for machines. Requiring them to serve identity documents at another URL, such as a well-known URL, would require changes to every server, and would not fit identifiers that are not at the root of a domain. Websites that cannot vary their responses by media type can name their issuer in HTML instead (<a href="#handle-issuer-link" class="auto internal xref">Section 5.1</a>).<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-1">ActivityPub servers serve actors through content negotiation (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>), and Solid servers serve every RDF document as Turtle or JSON-LD through content negotiation (<span>[<a href="#SOLID-PROTOCOL" class="cite xref">SOLID-PROTOCOL</a>]</span>), so that the same URL can serve both a page for people and a document for machines. Requiring them to serve identity documents at another URL, such as a well-known URL, would require changes to every server, and would not fit identifiers that are not at the root of a domain. Websites that cannot vary their responses by media type can name their issuer in HTML instead (<a href="#handle-verification-link" class="auto internal xref">Section 5.1</a>).<a href="#section-10.2-1" class="pilcrow">¶</a></p>
 <p id="section-10.2-2">The <code>Accept</code> header requests a controlled identifier document first, and generic JSON-LD next, which ActivityPub servers such as Mastodon already serve their actors for, so that it does not name the media types of any ecosystem. It does not request <code>application/json</code>, for which some servers serve HTML.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1670,7 +1671,7 @@ Link: &lt;https://issuer.example&gt;; rel="handle-issuer"
         <h3 id="name-why-controlled-identifier-d">
 <a href="#section-10.4" class="section-number selfRef">10.4. </a><a href="#name-why-controlled-identifier-d" class="section-name selfRef">Why Controlled Identifier Documents?</a>
         </h3>
-<p id="section-10.4-1">A URL handle needs, from the document at its URL, a canonical identifier for the account and a place to name the issuer. Controlled identifier documents (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>) provide both, with the <code>id</code> member and its canonical URL rule, and with services, in a JSON format that is not specific to any ecosystem, that generalizes the DID documents that domain handles already use, and that the Linked Web Storage protocol uses to identify its users (<span>[<a href="#LWS-AUTHN-OPENID" class="cite xref">LWS-AUTHN-OPENID</a>]</span>). Using them lets URL handles and domain handles name their issuer with the same <code>HandleIssuer</code> service (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>).<a href="#section-10.4-1" class="pilcrow">¶</a></p>
+<p id="section-10.4-1">A URL handle needs, from the document at its URL, a canonical identifier for the account and a place to name the issuer. Controlled identifier documents (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>) provide both, with the <code>id</code> member and its canonical URL rule, and with services, in a JSON format that is not specific to any ecosystem, that generalizes the DID documents that domain handles already use, and that the Linked Web Storage protocol uses to identify its users (<span>[<a href="#LWS-AUTHN-OPENID" class="cite xref">LWS-AUTHN-OPENID</a>]</span>). Using them lets URL handles and domain handles name their issuer with the same <code>HandleVerification</code> service (<span>[<a href="#HVP" class="cite xref">HVP</a>]</span>).<a href="#section-10.4-1" class="pilcrow">¶</a></p>
 <p id="section-10.4-2">Resolving parties read controlled identifier documents as plain JSON, without JSON-LD processing (<span>[<a href="#JSON-LD11" class="cite xref">JSON-LD11</a>]</span>), which would fetch remote contexts, adding requests, latency, and attack surface to resolution, and which is a large dependency for a browser and for verifiers. Controlled identifier documents can be processed as plain JSON (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), and so can the actors of ActivityPub (<span>[<a href="#ACTIVITYPUB" class="cite xref">ACTIVITYPUB</a>]</span>).<a href="#section-10.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1810,8 +1811,8 @@ Handle:        https://timbl.solidcommunity.net/profile/card
 GET https://timbl.solidcommunity.net/profile/card
   -&gt; Content-Type: application/cid
      { "id": "https://timbl.solidcommunity.net/profile/card",
-       "service": [{ "id": "#handle_issuer",
-                     "type": "HandleIssuer",
+       "service": [{ "id": "#handle_verification",
+                     "type": "HandleVerification",
                      "serviceEndpoint":
                        "https://solidcommunity.net" }] }
 Identifier:    https://timbl.solidcommunity.net/profile/card
@@ -1833,7 +1834,8 @@ GET https://w3c.social/users/goto
        "webfinger": "goto@w3c.social", ... }
 Identifier:    https://w3c.social/users/goto
 To opt in, add to the actor:
-  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+  "service": [{ "id": "#handle_verification",
+                "type": "HandleVerification",
                 "serviceEndpoint": "https://w3c.social" }]
 Issuer:        https://w3c.social
 </pre><a href="#appendix-A.2-1" class="pilcrow">¶</a>
@@ -1858,7 +1860,8 @@ GET https://bumblefudge.com/did:scid:vh:1:QmWu.../actor
        ... }                                     (id ok)
 Identifier:    https://bumblefudge.com/did:scid:vh:1:QmWu.../actor
 To opt in, add to the actor:
-  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+  "service": [{ "id": "#handle_verification",
+                "type": "HandleVerification",
                 "serviceEndpoint": "https://bumblefudge.com" }]
 Issuer:        https://bumblefudge.com
 </pre><a href="#appendix-A.3-2" class="pilcrow">¶</a>
@@ -1879,8 +1882,8 @@ GET https://aaronparecki.com/
              rel="authorization_endpoint"
 Identifier:    https://aaronparecki.com/
 To opt in, add a header or an element:
-  Link: &lt;https://aaronparecki.com&gt;; rel="handle-issuer"
-  &lt;link rel="handle-issuer" href="https://aaronparecki.com"&gt;
+  Link: &lt;https://aaronparecki.com&gt;; rel="handle-verification"
+  &lt;link rel="handle-verification" href="https://aaronparecki.com"&gt;
 Issuer:        https://aaronparecki.com
 </pre><a href="#appendix-A.4-2" class="pilcrow">¶</a>
 </div>

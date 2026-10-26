@@ -1052,7 +1052,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Goto</td>
-<td class="center">Expires 28 April 2027</td>
+<td class="center">Expires 29 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-goto-handle-verification-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-10-25" class="published">25 October 2026</time>
+<time datetime="2026-10-26" class="published">26 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-04-28">28 April 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-29">29 April 2027</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1112,7 +1112,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 29 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1211,7 +1211,7 @@ svg {
                 <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-controlled-identifier-docum" class="internal xref">Controlled Identifier Documents</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-the-handleissuer-service" class="internal xref">The HandleIssuer Service</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-the-handleverification-serv" class="internal xref">The HandleVerification Service</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
                 <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-caching" class="internal xref">Caching</a></p>
@@ -1377,7 +1377,7 @@ svg {
                 <p id="section-toc.1-1.14.2.6.1"><a href="#section-14.6" class="auto internal xref">14.6</a>.  <a href="#name-why-does-the-verifier-resol" class="internal xref">Why Does the Verifier Resolve the Handle?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.7">
-                <p id="section-toc.1-1.14.2.7.1"><a href="#section-14.7" class="auto internal xref">14.7</a>.  <a href="#name-why-require-an-explicit-han" class="internal xref">Why Require an Explicit HandleIssuer Service?</a></p>
+                <p id="section-toc.1-1.14.2.7.1"><a href="#section-14.7" class="auto internal xref">14.7</a>.  <a href="#name-why-require-an-explicit-han" class="internal xref">Why Require an Explicit HandleVerification Service?</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.8">
                 <p id="section-toc.1-1.14.2.8.1"><a href="#section-14.8" class="auto internal xref">14.8</a>.  <a href="#name-why-define-handle-resolutio" class="internal xref">Why Define Handle Resolution Here?</a></p>
@@ -1538,7 +1538,7 @@ svg {
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.15">Authorized issuer:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-3.16">The issuer identifier that resolution yields for a handle, typically the one that a controlled identifier document names with its <code>HandleIssuer</code> service (<a href="#handle-issuer" class="auto internal xref">Section 5.2</a>): for a domain handle, its DID document. Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.<a href="#section-2-3.16" class="pilcrow">¶</a>
+        <dd style="margin-left: 1.5em" id="section-2-3.16">The issuer identifier that resolution yields for a handle, typically the one that a controlled identifier document names with its <code>HandleVerification</code> service (<a href="#handle-verification-service" class="auto internal xref">Section 5.2</a>): for a domain handle, its DID document. Only the authorized issuer can issue an HVT that a verifier accepts for that handle. A handle has at most one authorized issuer.<a href="#section-2-3.16" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.17">Issuer:</dt>
@@ -1762,37 +1762,37 @@ svg {
         <h3 id="name-controlled-identifier-docum">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-controlled-identifier-docum" class="section-name selfRef">Controlled Identifier Documents</a>
         </h3>
-<p id="section-5.1-1">Handle types can resolve a handle to a controlled identifier document (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), which describes the account: a DID document for a domain handle (<a href="#resolution-steps" class="auto internal xref">Section 6.4</a>), or a document fetched from a URL for other handle types. A controlled identifier document names the account's authorized issuer with the <code>HandleIssuer</code> service (<a href="#handle-issuer" class="auto internal xref">Section 5.2</a>), and can claim the handle back with its <code>alsoKnownAs</code> member.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-1">Handle types can resolve a handle to a controlled identifier document (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), which describes the account: a DID document for a domain handle (<a href="#resolution-steps" class="auto internal xref">Section 6.4</a>), or a document fetched from a URL for other handle types. A controlled identifier document names the account's authorized issuer with the <code>HandleVerification</code> service (<a href="#handle-verification-service" class="auto internal xref">Section 5.2</a>), and can claim the handle back with its <code>alsoKnownAs</code> member.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">Resolving parties read a controlled identifier document as JSON (<span>[<a href="#RFC8259" class="cite xref">RFC8259</a>]</span>), without JSON-LD processing (<span>[<a href="#JSON-LD11" class="cite xref">JSON-LD11</a>]</span>), as follows:<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-5.1-3.1">The document is a JSON object whose <code>id</code> member is a string. Otherwise, it is not a controlled identifier document.<a href="#section-5.1-3.1" class="pilcrow">¶</a>
 </li>
           <li class="compact" id="section-5.1-3.2">Members are read by their literal names: <code>id</code>, <code>alsoKnownAs</code>, <code>service</code>, and, within each service, <code>id</code>, <code>type</code>, and <code>serviceEndpoint</code>. A JSON-LD <code>@context</code>, if present, is ignored, so a document that spells these members differently, for example in expanded JSON-LD form, has none of them.<a href="#section-5.1-3.2" class="pilcrow">¶</a>
 </li>
-          <li class="compact" id="section-5.1-3.3">Relative URLs in the <code>id</code> of a service, such as <code>#handle_issuer</code>, are resolved against the <code>id</code> of the document.<a href="#section-5.1-3.3" class="pilcrow">¶</a>
+          <li class="compact" id="section-5.1-3.3">Relative URLs in the <code>id</code> of a service, such as <code>#handle_verification</code>, are resolved against the <code>id</code> of the document.<a href="#section-5.1-3.3" class="pilcrow">¶</a>
 </li>
         </ul>
 <p id="section-5.1-4">A handle type that resolves a handle to a controlled identifier document defines how the document is obtained, and how its <code>id</code> is checked: for example, a DID document's <code>id</code> is the DID, and a document fetched from a URL has that URL as its <code>id</code> (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>).<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="handle-issuer">
+<div id="handle-verification-service">
 <section id="section-5.2">
-        <h3 id="name-the-handleissuer-service">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-the-handleissuer-service" class="section-name selfRef">The HandleIssuer Service</a>
+        <h3 id="name-the-handleverification-serv">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-the-handleverification-serv" class="section-name selfRef">The HandleVerification Service</a>
         </h3>
-<p id="section-5.2-1">A controlled identifier document names the issuer authorized to vouch for its handles with a service (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>) whose <code>type</code> is <code>HandleIssuer</code>, whose <code>serviceEndpoint</code> is an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 7.1</a>), and whose <code>id</code> is <code>#handle_issuer</code>, that is, the document's <code>id</code> followed by <code>#handle_issuer</code>:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-1">A controlled identifier document names the issuer authorized to vouch for its handles with a service (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>) whose <code>type</code> is <code>HandleVerification</code>, whose <code>serviceEndpoint</code> is an issuer identifier (<a href="#issuer-identifier" class="auto internal xref">Section 7.1</a>), and whose <code>id</code> is <code>#handle_verification</code>, that is, the document's <code>id</code> followed by <code>#handle_verification</code>:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-5.2-2">
-<pre>{ "id": "#handle_issuer", "type": "HandleIssuer",
+<pre>{ "id": "#handle_verification", "type": "HandleVerification",
   "serviceEndpoint": "https://issuer.example" }
 </pre><a href="#section-5.2-2" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2-3"><code>HandleIssuer</code> is a service type of <span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>, in the same way that, for example, the AT Protocol identifies the account's PDS with a service whose <code>id</code> is <code>#atproto_pds</code> (<span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>). Service <code>id</code>s are unique within a controlled identifier document (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), and in <code>did:plc</code> services are stored as a map keyed by <code>id</code> (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>), so a document names at most one issuer.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
-<p id="section-5.2-4">If the document has no service whose <code>id</code> is <code>#handle_issuer</code>, or that service's <code>type</code> is not <code>HandleIssuer</code>, or its <code>serviceEndpoint</code> is not an issuer identifier, that is, not an <code>https</code> origin with no path, query, or fragment, the handle has no authorized issuer, and HVP cannot be used with it.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
-<p id="section-5.2-5">Because a handle has a single authorized issuer, a change of issuer takes effect at once: as soon as the document names a new issuer, HVTs from the previous one no longer verify. This is the same as when a user moves their account to another server. A user who moves their account to another server, and whose issuer is that server, updates their <code>HandleIssuer</code> service as part of the move.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-3"><code>HandleVerification</code> is a service type of <span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>, in the same way that, for example, the AT Protocol identifies the account's PDS with a service whose <code>id</code> is <code>#atproto_pds</code> (<span>[<a href="#ATPROTO-DID" class="cite xref">ATPROTO-DID</a>]</span>). Service <code>id</code>s are unique within a controlled identifier document (<span>[<a href="#CID-1.0" class="cite xref">CID-1.0</a>]</span>), and in <code>did:plc</code> services are stored as a map keyed by <code>id</code> (<span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span>), so a document names at most one issuer.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">If the document has no service whose <code>id</code> is <code>#handle_verification</code>, or that service's <code>type</code> is not <code>HandleVerification</code>, or its <code>serviceEndpoint</code> is not an issuer identifier, that is, not an <code>https</code> origin with no path, query, or fragment, the handle has no authorized issuer, and HVP cannot be used with it.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">Because a handle has a single authorized issuer, a change of issuer takes effect at once: as soon as the document names a new issuer, HVTs from the previous one no longer verify. This is the same as when a user moves their account to another server. A user who moves their account to another server, and whose issuer is that server, updates their <code>HandleVerification</code> service as part of the move.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
 <p id="section-5.2-6">Authorization is always explicit: resolution does not infer an issuer from the account's other services or properties, such as its AT Protocol PDS (the <code>#atproto_pds</code> service), the PDS's authorization server, or the server that hosts the document. An issuer has to deploy HVP anyway, and requiring the document to name it means that a server does not become able to vouch for a handle in a new way, to verifiers it may never have dealt with, without the account's owner opting in. See <a href="#why-opt-in" class="auto internal xref">Section 14.7</a>.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
-<p id="section-5.2-7">Like other services of controlled identifier documents, the <code>HandleIssuer</code> service names a party to interact with, and does not involve the document's verification methods: the issuer signs HVTs with the keys of its own metadata (<a href="#issuer-metadata" class="auto internal xref">Section 7.2</a>).<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<p id="section-5.2-7">Like other services of controlled identifier documents, the <code>HandleVerification</code> service names a party to interact with, and does not involve the document's verification methods: the issuer signs HVTs with the keys of its own metadata (<a href="#issuer-metadata" class="auto internal xref">Section 7.2</a>).<a href="#section-5.2-7" class="pilcrow">¶</a></p>
 <blockquote id="section-5.2-8">
-          <p id="section-5.2-8.1">Open Issue: The name of the service type, whether it should be identified by a full IRI with a published JSON-LD context, and whether it should be registered in the W3C DID Extensions registry, or its successor for controlled identifier documents.<a href="#section-5.2-8.1" class="pilcrow">¶</a></p>
+          <p id="section-5.2-8.1">Open Issue: Whether the service type should be identified by a full IRI, for example a <code>w3id.org</code> URL, with a published JSON-LD context, so that JSON-LD consumers of DID documents and controlled identifier documents can process it, and its registration in the W3C DID Extensions registry, which also covers the properties of controlled identifier documents.<a href="#section-5.2-8.1" class="pilcrow">¶</a></p>
 </blockquote>
 </section>
 </div>
@@ -1935,7 +1935,7 @@ alnum     = ALPHA / DIGIT
             <p id="section-6.4-3.3.1"><strong>Back-link.</strong> Find the first element of the DID document's <code>alsoKnownAs</code> array that is <code>at://</code> followed by a string that satisfies <a href="#handle-syntax" class="auto internal xref">Section 6.1</a>. After normalization, that string MUST be identical to <em>handle</em>. Otherwise fail. This check ensures that a DID document cannot be claimed by a handle that it did not agree to.<a href="#section-6.4-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.4-3.4">
-            <p id="section-6.4-3.4.1"><strong>Issuer.</strong> The authorized issuer is the <code>serviceEndpoint</code> of the DID document's <code>HandleIssuer</code> service (<a href="#handle-issuer" class="auto internal xref">Section 5.2</a>). If there is none, fail.<a href="#section-6.4-3.4.1" class="pilcrow">¶</a></p>
+            <p id="section-6.4-3.4.1"><strong>Issuer.</strong> The authorized issuer is the <code>serviceEndpoint</code> of the DID document's <code>HandleVerification</code> service (<a href="#handle-verification-service" class="auto internal xref">Section 5.2</a>). If there is none, fail.<a href="#section-6.4-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-6.4-4">If any step fails, resolution fails. The unique user identifier is the DID.<a href="#section-6.4-4" class="pilcrow">¶</a></p>
@@ -1947,7 +1947,7 @@ GET https://plc.directory/did:plc:bftbdgcbe4zclvpkboe4hleq
   -&gt; alsoKnownAs: ["at://samuelgoto.bsky.social"]
 </pre><a href="#section-6.4-6" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4-7">so its unique user identifier is the DID <code>did:plc:bftbdgcbe4zclvpkboe4hleq</code>. Its DID document has no <code>HandleIssuer</code> service yet, so it has no authorized issuer. See <a href="#examples" class="auto internal xref">Appendix A</a>.<a href="#section-6.4-7" class="pilcrow">¶</a></p>
+<p id="section-6.4-7">so its unique user identifier is the DID <code>did:plc:bftbdgcbe4zclvpkboe4hleq</code>. Its DID document has no <code>HandleVerification</code> service yet, so it has no authorized issuer. See <a href="#examples" class="auto internal xref">Appendix A</a>.<a href="#section-6.4-7" class="pilcrow">¶</a></p>
 <p id="section-6.4-8">Because records and members with other keys are ignored, other kinds of records can be added later without affecting resolving parties that do not support them. For example, <span>[<a href="#USERNAME-HANDLES" class="cite xref">USERNAME-HANDLES</a>]</span> defines the <code>me=</code> key and the <code>me</code> member, which let a domain handle name a username handle or a URL handle (<span>[<a href="#URL-HANDLES" class="cite xref">URL-HANDLES</a>]</span>) instead of a DID.<a href="#section-6.4-8" class="pilcrow">¶</a></p>
 <blockquote id="section-6.4-9">
           <p id="section-6.4-9.1">Open Issue: Other kinds of records could be added later with keys of their own: for example, <code>domain=</code> for another domain handle, resolved recursively and failing when a loop is detected, or <code>email=</code> for an email address verified with <span>[<a href="#EVP" class="cite xref">EVP</a>]</span>. A handle could also be allowed to name several identifiers, any one of which proves it; this would require a rule for which unique user identifier an HVT for the handle carries, because each resolves to a different one, and a verifier identifies accounts by it.<a href="#section-6.4-9.1" class="pilcrow">¶</a></p>
@@ -2410,10 +2410,10 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <p id="section-12.5.4-3">Verifying the log does not remove all trust in the directory. As the "PLC Server Trust Model" section of <span>[<a href="#DID-PLC" class="cite xref">DID-PLC</a>]</span> states, some trust in the directory is required, and its attacks are limited to:<a href="#section-12.5.4-3" class="pilcrow">¶</a></p>
 <ul class="compact">
 <li class="compact" id="section-12.5.4-4.1">
-              <strong>Denial of service:</strong> rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that changes or removes the <code>HandleIssuer</code> service, so that a resolving party keeps accepting HVTs from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.<a href="#section-12.5.4-4.1" class="pilcrow">¶</a>
+              <strong>Denial of service:</strong> rejecting valid operations, or refusing to serve some information about the DID. For HVP, this includes withholding an operation that changes or removes the <code>HandleVerification</code> service, so that a resolving party keeps accepting HVTs from an issuer that the user no longer authorizes, or withholding an operation that adds one, so that a newly authorized issuer is rejected.<a href="#section-12.5.4-4.1" class="pilcrow">¶</a>
 </li>
             <li class="compact" id="section-12.5.4-4.2">
-              <strong>Misordering:</strong> in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which <code>HandleIssuer</code> service is in effect.<a href="#section-12.5.4-4.2" class="pilcrow">¶</a>
+              <strong>Misordering:</strong> in the event of a fork in the DID document's history, serving the "wrong" fork. For HVP, this determines which <code>HandleVerification</code> service is in effect.<a href="#section-12.5.4-4.2" class="pilcrow">¶</a>
 </li>
           </ul>
 <p id="section-12.5.4-5">Neither the browser nor the verifier can detect these attacks. Operations are submitted only to the PLC directory, and are not published anywhere else that a resolving party could observe independently: mirrors and replicas obtain their operations from the directory, and the timestamps that the directory assigns to operations, on which the resolution of forks depends, are not signed. Both the browser and the verifier therefore place this trust in the PLC directory, and HVP inherits it for every handle that resolves to a <code>did:plc</code> DID. Handles that resolve to a <code>did:web</code> DID instead rely on the security of the DID's domain, as described in <a href="#dns-security" class="auto internal xref">Section 12.5.1</a>.<a href="#section-12.5.4-5" class="pilcrow">¶</a></p>
@@ -2596,9 +2596,9 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
 <div id="why-opt-in">
 <section id="section-14.7">
         <h3 id="name-why-require-an-explicit-han">
-<a href="#section-14.7" class="section-number selfRef">14.7. </a><a href="#name-why-require-an-explicit-han" class="section-name selfRef">Why Require an Explicit HandleIssuer Service?</a>
+<a href="#section-14.7" class="section-number selfRef">14.7. </a><a href="#name-why-require-an-explicit-han" class="section-name selfRef">Why Require an Explicit HandleVerification Service?</a>
         </h3>
-<p id="section-14.7-1">An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a <code>HandleIssuer</code> service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document, or other controlled identifier document.<a href="#section-14.7-1" class="pilcrow">¶</a></p>
+<p id="section-14.7-1">An account already says who hosts it: an AT Protocol account names its PDS, whose authorization server authenticates it, and an ActivityPub account is hosted by the server of its actor. HVP could infer its issuer from them. It does not, for two reasons. First, there is little to gain: an issuer has to deploy HVP's issuance endpoint and metadata anyway, and a server can add a <code>HandleVerification</code> service to the DID documents of its accounts at the same time. Second, an HVT is a new kind of statement, presented to verifiers through the browser, and a user who authorized a server to host their account, or to sign them in with OAuth, has not necessarily authorized it to make that statement. An explicit service makes the user's opt-in visible in their DID document, or other controlled identifier document.<a href="#section-14.7-1" class="pilcrow">¶</a></p>
 <p id="section-14.7-2">An explicit service also lets a user choose an issuer that is not the server that hosts their account, and gives both ecosystems the same way to name it.<a href="#section-14.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2822,7 +2822,7 @@ Signature-Key: sig=hwk;kty="OKP";crv="Ed25519"; \
       <h2 id="name-examples">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
       </h2>
-<p id="appendix-A-1">This appendix shows the resolution of handles. The examples are real handles at the time of writing, which publish only the AT Protocol names, and so resolve through the fallback of <a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>. Neither publishes a <code>HandleIssuer</code> service yet, so each shows what would be added to opt in. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">This appendix shows the resolution of handles. The examples are real handles at the time of writing, which publish only the AT Protocol names, and so resolve through the fallback of <a href="#atproto-compat" class="auto internal xref">Section 6.4.1</a>. Neither publishes a <code>HandleVerification</code> service yet, so each shows what would be added to opt in. The values will change over time.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div id="at-protocol-handle-on-a-self-hosted-pds">
 <section id="appendix-A.1">
         <h3 id="name-at-protocol-handle-on-a-sel">
@@ -2835,7 +2835,7 @@ DID document (plc.directory):
   alsoKnownAs: ["at://sgo.to"]                  (back-link ok)
 DID:           did:plc:thaoj4hhvraos7y6v3yog7re
 To opt in, add to the DID document's services:
-  { "id": "#handle_issuer", "type": "HandleIssuer",
+  { "id": "#handle_verification", "type": "HandleVerification",
     "serviceEndpoint": "https://pds.sgo.to" }
 Issuer:        https://pds.sgo.to
 </pre><a href="#appendix-A.1-1" class="pilcrow">¶</a>
@@ -2855,7 +2855,7 @@ DID document (plc.directory):
   alsoKnownAs: ["at://samuelgoto.bsky.social"]  (back-link ok)
 DID:           did:plc:bftbdgcbe4zclvpkboe4hleq
 To opt in, add to the DID document's services:
-  { "id": "#handle_issuer", "type": "HandleIssuer",
+  { "id": "#handle_verification", "type": "HandleVerification",
     "serviceEndpoint": "https://bsky.social" }
 Issuer:        https://bsky.social
 </pre><a href="#appendix-A.2-1" class="pilcrow">¶</a>

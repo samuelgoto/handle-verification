@@ -303,7 +303,7 @@ Given a normalized username handle *handle*, whose `acct` URI is `acct:` followe
 
 3. **Account URL.** The account URL is the `href` of the first link whose `rel` is `self` and whose `href` is an `https` URL, whatever its `type`. If there is none, or it is not a URL handle once normalized ([@!URL-HANDLES]), fail. For an ActivityPub account, this is the URI of its actor.
 
-4. **URL handle resolution.** Resolve the account URL as a URL handle ([@!URL-HANDLES]). If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces: the account's identity document names the issuer, with the `HandleIssuer` service of its controlled identifier document ([@!HVP]) or a `handle-issuer` link.
+4. **URL handle resolution.** Resolve the account URL as a URL handle ([@!URL-HANDLES]). If resolution fails, fail. Otherwise, the unique user identifier and the authorized issuer are those that it produces: the account's identity document names the issuer, with the `HandleVerification` service of its controlled identifier document ([@!HVP]) or a `handle-verification` link.
 
 5. **Back-link.** Check that the server that hosts the account agrees that the account has the handle ((#same-origin)):
    - If the origin of the unique user identifier is identical to the authorized issuer, the check succeeds without any further request: the issuer is the server that hosts the account.
@@ -324,15 +324,15 @@ GET https://example.com/.well-known/webfinger
      self:    https://social.example.com/users/alice
 GET https://social.example.com/users/alice      (URL handle)
   -> { "id": "https://social.example.com/users/alice",
-       "service": [{ "id": "#handle_issuer",
-                     "type": "HandleIssuer",
+       "service": [{ "id": "#handle_verification",
+                     "type": "HandleVerification",
                      "serviceEndpoint":
                        "https://social.example.com" }], ... }
 User identifier:    https://social.example.com/users/alice
 Issuer:             https://social.example.com    (same origin)
 ```
 
-> Open Issue: Some ActivityPub servers, such as Mastodon servers with "authorized fetch" enabled, serve actors only to requests that are signed by another server's actor, and respond to the unsigned requests of resolution with a 401 (Unauthorized) response. Their WebFinger responses remain public, so step 3 succeeds, but step 4 fails, as it does for URL handles of such servers ([@!URL-HANDLES]). Such servers would need to serve their actors, or at least the `handle-issuer` link of their responses, to unsigned requests. This needs to be discussed with Mastodon as an implementation detail.
+> Open Issue: Some ActivityPub servers, such as Mastodon servers with "authorized fetch" enabled, serve actors only to requests that are signed by another server's actor, and respond to the unsigned requests of resolution with a 401 (Unauthorized) response. Their WebFinger responses remain public, so step 3 succeeds, but step 4 fails, as it does for URL handles of such servers ([@!URL-HANDLES]). Such servers would need to serve their actors, or at least the `handle-verification` link of their responses, to unsigned requests. This needs to be discussed with Mastodon as an implementation detail.
 
 # Domain Handles That Name Other Handles {#domain-handles}
 
@@ -517,9 +517,9 @@ GET https://social.example/.well-known/webfinger
   subject: acct:alice@social.example            (subject ok)
   self:    https://social.example/users/alice
 GET https://social.example/users/alice          (URL handle)
-  id:           https://social.example/users/alice
-  HandleIssuer: https://social.example         (service)
-  alsoKnownAs:  ["at://alice.example"]          (back-link ok)
+  id:                 https://social.example/users/alice
+  HandleVerification: https://social.example   (service)
+  alsoKnownAs:        ["at://alice.example"]    (back-link ok)
 Identifier:    https://social.example/users/alice
 Issuer:        https://social.example           (same origin)
 ```
@@ -532,9 +532,9 @@ DNS TXT _handle.alice.example
   -> "me=https://social.example/users/alice"
 Names:         https://social.example/users/alice
 GET https://social.example/users/alice          (URL handle)
-  id:           https://social.example/users/alice
-  HandleIssuer: https://social.example         (service)
-  alsoKnownAs:  ["at://alice.example"]          (back-link ok)
+  id:                 https://social.example/users/alice
+  HandleVerification: https://social.example   (service)
+  alsoKnownAs:        ["at://alice.example"]    (back-link ok)
 Identifier:    https://social.example/users/alice
 Issuer:        https://social.example
 ```
@@ -553,7 +553,8 @@ GET https://fedi.simonwillison.net/users/simon  (URL handle)
   id:      https://fedi.simonwillison.net/users/simon
 Identifier:    https://fedi.simonwillison.net/users/simon
 To opt in, add to the actor:
-  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+  "service": [{ "id": "#handle_verification",
+                "type": "HandleVerification",
                 "serviceEndpoint": "https://fedi.simonwillison.net" }]
 Issuer:        https://fedi.simonwillison.net   (same origin)
 ```
@@ -572,7 +573,8 @@ GET https://fed.brid.gy/snarfed.org             (URL handle)
   id:      https://fed.brid.gy/snarfed.org
 Identifier:    https://fed.brid.gy/snarfed.org
 To opt in, add to the actor:
-  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+  "service": [{ "id": "#handle_verification",
+                "type": "HandleVerification",
                 "serviceEndpoint": "https://fed.brid.gy" }]
 Issuer:        https://fed.brid.gy              (same origin)
 ```
@@ -590,7 +592,8 @@ GET https://threads.net/.well-known/webfinger
 GET https://threads.net/ap/users/17841401746480004/  (URL handle)
 Identifier:    https://threads.net/ap/users/17841401746480004/
 To opt in, add to the actor:
-  "service": [{ "id": "#handle_issuer", "type": "HandleIssuer",
+  "service": [{ "id": "#handle_verification",
+                "type": "HandleVerification",
                 "serviceEndpoint": "https://www.threads.com" }]
 Issuer:        https://www.threads.com          (other origin)
 Back-link:     WebFinger at threads.net for the resource

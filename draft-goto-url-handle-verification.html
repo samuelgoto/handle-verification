@@ -7,6 +7,7 @@
 <title>URL Handles</title>
 <meta content="Sam Goto" name="author">
 <meta content="@bumblefudge.com" name="author">
+<meta content="Aaron Coburn" name="author">
 <meta content="
        This document defines  URL handles , a handle type of the Handle Verification Protocol ( ), for users who are identified by an  https  URL, such as a Solid WebID, an ActivityPub actor, or the URL of an IndieAuth personal website. A URL handle is resolved by fetching it as a controlled identifier document ( ), which gives the canonical identifier of the account and names the issuer that the user has authorized to vouch for it with the  HandleVerification  service of HVP, the same service that domain handles use, or by fetching it as an HTML page that names the issuer with a  handle-verification  link. The browser then obtains a Handle Verification Token (HVT) from that issuer, and presents it to a verifier, as for any handle type of HVP. The resolution is not specific to any ecosystem. 
     " name="description">
@@ -1051,7 +1052,7 @@ svg {
 <td class="right">October 2026</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Goto &amp; @bumblefudge.com</td>
+<td class="left">Goto, et al.</td>
 <td class="center">Expires 29 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
@@ -1079,6 +1080,11 @@ svg {
 </div>
 <div class="author">
       <div class="author-name">@bumblefudge.com</div>
+<div class="org">Learning Proof</div>
+</div>
+<div class="author">
+      <div class="author-name">A. Coburn</div>
+<div class="org">Inrupt</div>
 </div>
 </dd>
 </dl>
@@ -1914,6 +1920,11 @@ Issuer:        https://aaronparecki.com
 </address>
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">@bumblefudge.com</span></div>
+<div dir="auto" class="left"><span class="org">Learning Proof</span></div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Aaron Coburn</span></div>
+<div dir="auto" class="left"><span class="org">Inrupt</span></div>
 </address>
 </section>
 </div>

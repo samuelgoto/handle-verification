@@ -42,7 +42,10 @@ organization = "Google"
       <organization>Google</organization>
     </author>
     <author fullname="@bumblefudge.com">
-      <organization/>
+      <organization>Learning Proof</organization>
+    </author>
+    <author initials="A." surname="Coburn" fullname="Aaron Coburn">
+      <organization>Inrupt</organization>
     </author>
     <date year="2026"/>
   </front>

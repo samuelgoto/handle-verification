@@ -24,6 +24,13 @@ organization = "Google"
 
 [[author]]
 fullname = "@bumblefudge.com"
+organization = "Learning Proof"
+
+[[author]]
+initials = "A."
+surname = "Coburn"
+fullname = "Aaron Coburn"
+organization = "Inrupt"
 
 %%%
 
